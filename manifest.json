@@ -1,0 +1,10 @@
+{
+  "name": "Koperasi Intisel Syariah",
+  "short_name": "Koperasi Intisel",
+  "description": "Pinjaman Karyawan PT Intisel Lampung Syariah - Tanpa Bunga 5jt",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0e7a5e",
+  "theme_color": "#0e7a5e",
+  "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/2830/2830284.png","sizes": "512x512","type": "image/png"}]
+}
