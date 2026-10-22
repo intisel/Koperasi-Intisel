@@ -1,60 +1,101 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Koperasi Intisel - Direct ke GForm</title>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Koperasi Intisel - Pinjaman Syariah</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<meta name="theme-color" content="#0e7a5e">
 <script src="anggota.js"></script>
 <style>
-*{box-sizing:border-box;font-family:system-ui}body{margin:0;background:#f4faf7}
-.header{background:#0e7a5e;color:#fff;padding:16px;text-align:center;font-weight:800}
-.card{background:#fff;border-radius:16px;padding:18px;margin:14px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
-.btn{width:100%;padding:14px;border-radius:12px;border:none;background:#0e7a5e;color:#fff;font-weight:700;font-size:16px}
-input,select,textarea{width:100%;padding:14px;border-radius:12px;border:1.5px solid #cfe5dc;margin:6px 0 12px;font-size:16px}
-input:focus{border-color:#0e7a5e;outline:none}
-.ok{background:#e7f3ef;border:1px solid #0e7a5e;padding:12px;border-radius:12px;color:#0e7a5e}
-.err{background:#fdecea;border:1px solid #e74c3c;padding:12px;border-radius:12px;color:#c0392b}
-.small{font-size:12px;color:#6b8a7f}
-</style></head><body>
-<div class="header">KOPERASI INTISEL LAMPUNG SYARIAH<br><span style="font-weight:400;font-size:12px">Validasi 118 Anggota → Direct ke GForm Resmi</span></div>
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
+body{margin:0;background:#f4faf7;color:#0e3d2e}
+.header{background:#0e7a5e;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.header img{width:46px;height:46px;background:#fff;border-radius:50%;padding:4px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.header b{line-height:1.1;font-size:15px}
+.header span{font-weight:400;font-size:11px;opacity:.9;display:block;margin-top:2px}
+.card{background:#fff;border-radius:18px;padding:18px;margin:14px;box-shadow:0 6px 20px rgba(14,122,94,.08)}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;background:#0e7a5e;color:#fff;font-weight:800;font-size:16px;cursor:pointer}
+.btn:active{transform:scale(.98)}
+input,select,textarea{width:100%;padding:14px;border-radius:12px;border:1.5px solid #cfe5dc;margin:6px 0 12px;font-size:16px;background:#fbfffe}
+input:focus,select:focus,textarea:focus{border-color:#0e7a5e;outline:none;box-shadow:0 0 0 3px #d1f0e6}
+.ok{background:#e7f3ef;border:1px solid #0e7a5e;padding:12px;border-radius:12px;color:#0e7a5e;font-size:14px}
+.err{background:#fdecea;border:1px solid #e74c3c;padding:12px;border-radius:12px;color:#c0392b;font-size:14px}
+.small{font-size:12px;color:#6b8a7f;line-height:1.4}
+.badge{display:inline-block;background:#0e7a5e;color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;margin-left:6px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="logo.png" alt="Logo Intisel">
+  <div><b>KOPERASI INTISEL LAMPUNG SYARIAH</b><span>Qardh - Tanpa Bunga - Khusus 118 Anggota</span></div>
+</div>
 
 <div class="card">
-<b>1. Cek NIK Anggota (angka saja)</b>
-<input id="nikInput" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 91207191" oninput="cekNIK()">
-<div id="hasilCek"></div>
+  <b>1. Cek NIK Anggota</b>
+  <p class="small">Ketik NIK angka saja, keyboard angka akan muncul otomatis. Hanya 118 anggota terdaftar yang bisa pinjam.</p>
+  <input id="nikInput" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 91207191" autocomplete="off" oninput="cekNIK()">
+  <div id="hasilCek" style="margin-top:8px"></div>
 </div>
 
 <div class="card" id="formPinjam" style="display:none">
-<b>2. <span id="namaAnggota"></span> - <span id="jabAnggota"></span></b>
-<p class="small">NIK terverifikasi. Klik tombol di bawah untuk lanjut isi form resmi koperasi.</p>
+  <b>2. Pengajuan - <span id="namaAnggota"></span> <span class="badge" id="jabAnggota"></span></b>
+  <p class="small">NIK terverifikasi <span id="nikAnggotaTxt" style="font-weight:700"></span>. Klik tombol di bawah untuk lanjut isi form resmi koperasi.</p>
 
-<label>Nominal Pinjaman</label>
-<select id="nom"><option value="500000">Rp 500.000</option><option value="1000000">Rp 1.000.000</option><option value="2000000" selected>Rp 2.000.000</option><option value="3000000">Rp 3.000.000</option><option value="5000000">Rp 5.000.000 (Maks)</option></select>
+  <label>Nominal Pinjaman</label>
+  <select id="nom">
+    <option value="500000">Rp 500.000</option>
+    <option value="1000000">Rp 1.000.000</option>
+    <option value="2000000" selected>Rp 2.000.000</option>
+    <option value="3000000">Rp 3.000.000</option>
+    <option value="5000000">Rp 5.000.000 (Maks)</option>
+  </select>
 
-<label>Tenor</label>
-<select id="tenor"><option value="3">3 Bulan</option><option value="6">6 Bulan</option><option value="10" selected>10 Bulan</option><option value="12">12 Bulan</option></select>
+  <label>Tenor</label>
+  <select id="tenor">
+    <option value="3">3 Bulan</option>
+    <option value="6">6 Bulan</option>
+    <option value="10" selected>10 Bulan</option>
+    <option value="12">12 Bulan</option>
+  </select>
 
-<label>Tujuan</label>
-<textarea id="tujuan" rows="2" placeholder="Biaya makan sekolah anak"></textarea>
+  <label>Tujuan Pinjaman</label>
+  <textarea id="tujuan" rows="2" placeholder="Contoh: Biaya makan sekolah anak"></textarea>
 
-<button class="btn" onclick="directKeGform()">Kirim Pengajuan ke Koperasi → Buka GForm</button>
-<p class="small">Kamu akan diarahkan ke: docs.google.com/forms/d/1jOW2zOA.../viewform</p>
+  <button class="btn" onclick="directKeGform()">Kirim Pengajuan ke Koperasi → Buka GForm</button>
+  <p class="small" style="margin-top:10px;text-align:center">Kamu akan diarahkan ke:<br><b>docs.google.com/forms/d/1jOW2zOA.../viewform</b><br>Data NIK & Nama otomatis kebawa.</p>
+</div>
+
+<div class="card" style="background:#0e7a5e;color:#fff;text-align:center">
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+    <img src="logo.png" style="width:32px;height:32px;background:#fff;border-radius:50%;padding:3px">
+    <b>PT. INTISEL PRODAKTIFAKOM</b>
+  </div>
+  <p class="small" style="color:#cfe5dc;margin:8px 0 0">Pinjaman Syariah Qardh - Tanpa Bunga, Tanpa Denda, Tanpa Riba</p>
 </div>
 
 <script>
 const GFORM_VIEW = "https://docs.google.com/forms/d/1jOW2zOAwsdsRpfibXglEUa2jv7Azzjleo-1iluj-LDg/viewform";
 let anggotaAktif=null;
+
 function cekNIK(){
  let v=document.getElementById('nikInput').value.trim();
  let hasil=document.getElementById('hasilCek'), form=document.getElementById('formPinjam');
  if(v.length<3){hasil.innerHTML='';form.style.display='none';return}
+ // Cari di anggota.js (support NIK atau Nama)
  let found=ANGGOTA.find(a=>a.nik===v || a.nama.toLowerCase().includes(v.toLowerCase()));
  if(found){
    anggotaAktif=found;
    hasil.innerHTML=`<div class="ok">✅ <b>${found.nama}</b> terdaftar sebagai ${found.jabatan}</div>`;
    document.getElementById('namaAnggota').innerText=found.nama;
    document.getElementById('jabAnggota').innerText=found.jabatan;
+   document.getElementById('nikAnggotaTxt').innerText=`(${found.nik})`;
    form.style.display='block';
  }else{
    anggotaAktif=null;
-   hasil.innerHTML=`<div class="err">❌ NIK tidak ada di daftar 118 anggota</div>`;
+   hasil.innerHTML=`<div class="err">❌ NIK tidak ada di daftar 118 anggota. Hubungi HRD.</div>`;
    form.style.display='none';
  }
 }
@@ -62,20 +103,27 @@ function cekNIK(){
 function directKeGform(){
  if(!anggotaAktif){alert('Cek NIK dulu');return}
  let tujuan=document.getElementById('tujuan').value;
- if(!tujuan){alert('Isi tujuan dulu');return}
+ if(!tujuan){alert('Isi tujuan pinjaman dulu');return}
 
- // Simpan data ke localStorage biar bisa dibaca nanti (opsional)
+ // Simpan ke localStorage biar bisa dibaca nanti (opsional untuk prefill)
  localStorage.setItem('intisel_nama', anggotaAktif.nama);
  localStorage.setItem('intisel_nik', anggotaAktif.nik);
  localStorage.setItem('intisel_nominal', document.getElementById('nom').value);
  localStorage.setItem('intisel_tenor', document.getElementById('tenor').value);
  localStorage.setItem('intisel_tujuan', tujuan);
+ localStorage.setItem('intisel_jabatan', anggotaAktif.jabatan);
 
- // DIRECT LANGSUNG KE GFORM - sesuai permintaan kamu
+ // DIRECT LANGSUNG KE GFORM - sesuai permintaan
  window.location.href = GFORM_VIEW;
  
- // Kalau mau buka tab baru (biar website tetap kebuka), ganti baris atas dengan ini:
+ // Kalau mau buka tab baru (biar website tetap kebuka), pakai baris ini:
  // window.open(GFORM_VIEW, "_blank");
 }
+
+// Auto register service worker biar bisa jadi APK
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
 </script>
-</body></html>
+</body>
+</html>
