@@ -1,54 +1,46 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Koperasi Intisel - Pinjaman Anggota</title>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Koperasi Intisel - Direct ke GForm</title>
 <script src="anggota.js"></script>
 <style>
 *{box-sizing:border-box;font-family:system-ui}body{margin:0;background:#f4faf7}
 .header{background:#0e7a5e;color:#fff;padding:16px;text-align:center;font-weight:800}
 .card{background:#fff;border-radius:16px;padding:18px;margin:14px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
 .btn{width:100%;padding:14px;border-radius:12px;border:none;background:#0e7a5e;color:#fff;font-weight:700;font-size:16px}
-.btn:disabled{background:#9cb8af}
 input,select,textarea{width:100%;padding:14px;border-radius:12px;border:1.5px solid #cfe5dc;margin:6px 0 12px;font-size:16px}
-input:focus{border-color:#0e7a5e;outline:none;box-shadow:0 0 0 3px #d1f0e6}
+input:focus{border-color:#0e7a5e;outline:none}
 .ok{background:#e7f3ef;border:1px solid #0e7a5e;padding:12px;border-radius:12px;color:#0e7a5e}
 .err{background:#fdecea;border:1px solid #e74c3c;padding:12px;border-radius:12px;color:#c0392b}
 .small{font-size:12px;color:#6b8a7f}
-.badge{display:inline-block;background:#0e7a5e;color:#fff;padding:4px 10px;border-radius:20px;font-size:12px}
 </style></head><body>
-<div class="header">KOPERASI INTISEL LAMPUNG SYARIAH<br><span style="font-weight:400;font-size:12px">Qardh - Tanpa Bunga - Khusus 118 Anggota</span></div>
+<div class="header">KOPERASI INTISEL LAMPUNG SYARIAH<br><span style="font-weight:400;font-size:12px">Validasi 118 Anggota → Direct ke GForm Resmi</span></div>
 
 <div class="card">
-<b>1. Cek NIK Anggota</b>
-<p class="small">Ketik NIK angka saja, keyboard angka akan muncul otomatis</p>
-<input id="nikInput" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 91207191" autocomplete="off" oninput="cekNIK()">
+<b>1. Cek NIK Anggota (angka saja)</b>
+<input id="nikInput" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 91207191" oninput="cekNIK()">
 <div id="hasilCek"></div>
 </div>
 
 <div class="card" id="formPinjam" style="display:none">
-<b>2. Pengajuan - <span id="namaAnggota"></span> <span class="badge" id="jabAnggota"></span></b>
-<label style="margin-top:12px">Nominal (Maks 5 Juta)</label>
-<input type="range" id="nom" min="500000" max="5000000" step="100000" value="2000000" oninput="hitung()">
-<div style="display:flex;justify-content:space-between;font-weight:800"><span id="nomTxt">Rp 2.000.000</span><span style="color:#0e7a5e">0% BUNGA</span></div>
+<b>2. <span id="namaAnggota"></span> - <span id="jabAnggota"></span></b>
+<p class="small">NIK terverifikasi. Klik tombol di bawah untuk lanjut isi form resmi koperasi.</p>
+
+<label>Nominal Pinjaman</label>
+<select id="nom"><option value="500000">Rp 500.000</option><option value="1000000">Rp 1.000.000</option><option value="2000000" selected>Rp 2.000.000</option><option value="3000000">Rp 3.000.000</option><option value="5000000">Rp 5.000.000 (Maks)</option></select>
 
 <label>Tenor</label>
-<select id="tenor" onchange="hitung()"><option value="3">3 Bulan</option><option value="6">6 Bulan</option><option value="10" selected>10 Bulan</option><option value="12">12 Bulan</option></select>
+<select id="tenor"><option value="3">3 Bulan</option><option value="6">6 Bulan</option><option value="10" selected>10 Bulan</option><option value="12">12 Bulan</option></select>
 
-<div class="ok" style="display:flex;justify-content:space-between"><span>Angsuran/bulan</span><b id="ang">Rp 200.000</b></div>
+<label>Tujuan</label>
+<textarea id="tujuan" rows="2" placeholder="Biaya makan sekolah anak"></textarea>
 
-<label>Tujuan Pinjaman</label>
-<textarea id="tujuan" placeholder="Contoh: Biaya makan sekolah anak" rows="2"></textarea>
-
-<label>No WA (angka saja)</label>
-<input id="wa" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="0852xxxxxxx" autocomplete="off">
-
-<button class="btn" id="btnAjukan" onclick="kirimKeDatabase()">Kirim Pengajuan ke Koperasi</button>
-<p class="small" id="statusKirim"></p>
+<button class="btn" onclick="directKeGform()">Kirim Pengajuan ke Koperasi → Buka GForm</button>
+<p class="small">Kamu akan diarahkan ke: docs.google.com/forms/d/1jOW2zOA.../viewform</p>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwGQyFRrt52M2MCjt1deeiVroVgZuUBgJLdIv2qrOF3YQfwv9M4k697Tg_4JkAQVjaV/exec";
+const GFORM_VIEW = "https://docs.google.com/forms/d/1jOW2zOAwsdsRpfibXglEUa2jv7Azzjleo-1iluj-LDg/viewform";
 let anggotaAktif=null;
-function rp(n){return 'Rp '+n.toLocaleString('id-ID')}
 function cekNIK(){
  let v=document.getElementById('nikInput').value.trim();
  let hasil=document.getElementById('hasilCek'), form=document.getElementById('formPinjam');
@@ -56,7 +48,7 @@ function cekNIK(){
  let found=ANGGOTA.find(a=>a.nik===v || a.nama.toLowerCase().includes(v.toLowerCase()));
  if(found){
    anggotaAktif=found;
-   hasil.innerHTML=`<div class="ok">✅ <b>${found.nama}</b> - ${found.jabatan} (${found.base})</div>`;
+   hasil.innerHTML=`<div class="ok">✅ <b>${found.nama}</b> terdaftar sebagai ${found.jabatan}</div>`;
    document.getElementById('namaAnggota').innerText=found.nama;
    document.getElementById('jabAnggota').innerText=found.jabatan;
    form.style.display='block';
@@ -66,18 +58,24 @@ function cekNIK(){
    form.style.display='none';
  }
 }
-function hitung(){let a=+document.getElementById('nom').value,t=+document.getElementById('tenor').value;document.getElementById('nomTxt').innerText=rp(a);document.getElementById('ang').innerText=rp(Math.round(a/t));}hitung();
-async function kirimKeDatabase(){
+
+function directKeGform(){
  if(!anggotaAktif){alert('Cek NIK dulu');return}
- let tujuan=document.getElementById('tujuan').value, wa=document.getElementById('wa').value;
- if(!tujuan||!wa){alert('Isi tujuan & WA');return}
- document.getElementById('btnAjukan').innerText='Mengirim...'; document.getElementById('btnAjukan').disabled=true;
- document.getElementById('statusKirim').innerText='Mengirim ke Google Sheet...';
- try{
-   await fetch(API_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({nik:anggotaAktif.nik,nama:anggotaAktif.nama,nominal:document.getElementById('nom').value,tenor:document.getElementById('tenor').value,tujuan:tujuan,wa:wa})});
-   document.getElementById('statusKirim').innerHTML='<span style="color:green;font-weight:700">✅ Terkirim! Data masuk ke Google Sheet & email koperasi.</span>';
-   document.getElementById('btnAjukan').innerText='✅ Berhasil';
- }catch(e){document.getElementById('statusKirim').innerText='Error: '+e; document.getElementById('btnAjukan').disabled=false; document.getElementById('btnAjukan').innerText='Coba Lagi';}
+ let tujuan=document.getElementById('tujuan').value;
+ if(!tujuan){alert('Isi tujuan dulu');return}
+
+ // Simpan data ke localStorage biar bisa dibaca nanti (opsional)
+ localStorage.setItem('intisel_nama', anggotaAktif.nama);
+ localStorage.setItem('intisel_nik', anggotaAktif.nik);
+ localStorage.setItem('intisel_nominal', document.getElementById('nom').value);
+ localStorage.setItem('intisel_tenor', document.getElementById('tenor').value);
+ localStorage.setItem('intisel_tujuan', tujuan);
+
+ // DIRECT LANGSUNG KE GFORM - sesuai permintaan kamu
+ window.location.href = GFORM_VIEW;
+ 
+ // Kalau mau buka tab baru (biar website tetap kebuka), ganti baris atas dengan ini:
+ // window.open(GFORM_VIEW, "_blank");
 }
 </script>
 </body></html>
