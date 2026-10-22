@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Koperasi Intisel - Pinjaman Karyawan Syariah 5 Jt</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e7a5e">
+<style>
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:#f4faf7;color:#12372c}
+.header{background:#0e7a5e;color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0}
+.hero{background:linear-gradient(180deg,#0e7a5e,#14a07e);color:#fff;padding:30px 20px;text-align:center}
+.card{background:#fff;border-radius:16px;padding:18px;margin:14px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;background:#0e7a5e;color:#fff;font-weight:700;font-size:16px}
+.btn2{width:100%;padding:12px;border-radius:12px;background:#fff;color:#0e7a5e;border:2px solid #0e7a5e;margin-top:10px;font-weight:600}
+input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1.5px solid #cfe5dc;margin:6px 0 12px}
+.result{background:#e7f3ef;border:1px dashed #0e7a5e;padding:12px;border-radius:10px}
+.small{font-size:12px;color:#6b8a7f}
+</style>
+</head>
+<body>
+<div class="header"><b>KOPERASI INTISEL</b><span style="font-size:12px;background:#fff;color:#0e7a5e;padding:4px 10px;border-radius:20px">SYARIAH</span></div>
+<div class="hero"><h2 style="margin:0">Pinjaman Karyawan<br>PT. Intisel Lampung Syariah</h2><p style="opacity:.9">Tanpa Bunga • Akad Qardh • Maks 5 Juta</p></div>
+
+<div class="card">
+<b>Simulasi Angsuran 0%</b>
+<input type="range" id="nom" min="500000" max="5000000" step="100000" value="2000000" oninput="hitung()">
+<div style="display:flex;justify-content:space-between;font-weight:700"><span id="nomTxt">Rp 2.000.000</span><span>0% BUNGA</span></div>
+<select id="tenor" onchange="hitung()"><option value="3">3 Bulan</option><option value="6">6 Bulan</option><option value="10" selected>10 Bulan</option><option value="12">12 Bulan</option></select>
+<div class="result"><div style="display:flex;justify-content:space-between"><span>Angsuran</span><b id="ang">Rp 200.000</b></div><div style="display:flex;justify-content:space-between"><span>Total Bayar</span><b id="tot">Rp 2.000.000</b></div><div style="display:flex;justify-content:space-between"><span>Bunga</span><b>Rp 0</b></div></div>
+<p class="small">Untuk karyawan aktif PT. Intisel Lampung. Tanpa denda, tanpa riba.</p>
+</div>
+
+<div class="card">
+<b>Form Pengajuan Karyawan</b>
+<input id="nama" placeholder="Nama Karyawan"><input id="nik" placeholder="NIK Karyawan / NIP"><input id="wa" placeholder="No WA"><textarea id="tujuan" placeholder="Tujuan pinjaman"></textarea>
+<button class="btn" onclick="ajukan()">Ajukan Pinjaman</button>
+<button class="btn2" onclick="notif()">🔔 Aktifkan Notifikasi Status</button>
+<button class="btn2" id="inst" style="display:none" onclick="install()">📲 Install Jadi Aplikasi Android</button>
+<p class="small" style="text-align:center">Setelah install, aplikasi ada di menu HP seperti aplikasi asli.</p>
+</div>
+
+<script>
+let pmt;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();pmt=e;document.getElementById('inst').style.display='block'});
+function install(){if(pmt)pmt.prompt()}
+function rp(n){return 'Rp '+n.toLocaleString('id-ID')}
+function hitung(){let a=+document.getElementById('nom').value,t=+document.getElementById('tenor').value;document.getElementById('nomTxt').innerText=rp(a);document.getElementById('ang').innerText=rp(Math.round(a/t));document.getElementById('tot').innerText=rp(a)}hitung();
+function ajukan(){let n=document.getElementById('nama').value;if(!n){alert('Isi nama');return}if(Notification&&Notification.permission=='granted')new Notification('Koperasi Intisel',{body:'Pengajuan '+n+' Rp '+document.getElementById('nomTxt').innerText+' diproses'});alert('Pengajuan berhasil (Simulasi). Admin Koperasi akan hubungi via WA.');if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')}
+function notif(){Notification.requestPermission().then(r=>{if(r=='granted'){alert('Notifikasi aktif!');navigator.serviceWorker.register('sw.js')}else alert('Izin ditolak')})}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')
+</script>
+</body>
+</html>
