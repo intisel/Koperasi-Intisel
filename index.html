@@ -1,110 +1,83 @@
 <!DOCTYPE html>
 <html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Koperasi Intisel - Keypad Anggota</title>
+<title>Koperasi Intisel - Pinjaman Anggota</title>
 <script src="anggota.js"></script>
 <style>
-*{box-sizing:border-box;font-family:system-ui,-apple-system}body{margin:0;background:#f7fbf9}
+*{box-sizing:border-box;font-family:system-ui}body{margin:0;background:#f4faf7}
 .header{background:#0e7a5e;color:#fff;padding:16px;text-align:center;font-weight:800}
-.card{background:#fff;border-radius:20px;padding:18px;margin:14px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-.btn{width:100%;padding:16px;border-radius:14px;border:none;background:#0e7a5e;color:#fff;font-weight:800;font-size:16px}
-.btn-outline{width:100%;padding:14px;border-radius:14px;background:#fff;color:#0e7a5e;border:2px solid #0e7a5e;font-weight:700;margin-top:10px}
-.key{padding:20px 0;font-size:22px;font-weight:800;border:none;background:#f6f6f6;border-radius:14px}
-.key:active{background:#0e7a5e;color:#fff;transform:scale(.96)}
+.card{background:#fff;border-radius:16px;padding:18px;margin:14px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;background:#0e7a5e;color:#fff;font-weight:700;font-size:16px}
+.btn:disabled{background:#9cb8af}
+input,select,textarea{width:100%;padding:14px;border-radius:12px;border:1.5px solid #cfe5dc;margin:6px 0 12px;font-size:16px}
+input:focus{border-color:#0e7a5e;outline:none;box-shadow:0 0 0 3px #d1f0e6}
 .ok{background:#e7f3ef;border:1px solid #0e7a5e;padding:12px;border-radius:12px;color:#0e7a5e}
 .err{background:#fdecea;border:1px solid #e74c3c;padding:12px;border-radius:12px;color:#c0392b}
 .small{font-size:12px;color:#6b8a7f}
-.nik-display{font-size:36px;font-weight:900;letter-spacing:2px;margin:12px 0;text-align:center;min-height:44px}
+.badge{display:inline-block;background:#0e7a5e;color:#fff;padding:4px 10px;border-radius:20px;font-size:12px}
 </style></head><body>
-<div class="header">KOPERASI INTISEL<br><span style="font-weight:400;font-size:12px">Pinjaman Syariah Qardh - Khusus Anggota - Tanpa Bunga</span></div>
+<div class="header">KOPERASI INTISEL LAMPUNG SYARIAH<br><span style="font-weight:400;font-size:12px">Qardh - Tanpa Bunga - Khusus 118 Anggota</span></div>
 
 <div class="card">
-<div style="display:flex;align-items:center;gap:12px;justify-content:center">
-<div style="width:56px;height:56px;background:#d1f0e6;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#0e7a5e;font-size:22px" id="initial">M</div>
-<div><b id="namaTop">Cek Anggota</b><br><span class="small" id="jabatanTop">Masukkan NIK</span></div>
-</div>
-
-<b style="display:block;margin-top:16px;text-align:center">Masukkan NIK Karyawan</b>
-<div class="nik-display" id="nikDisplay">0</div>
-<input type="hidden" id="nikInput">
+<b>1. Cek NIK Anggota</b>
+<p class="small">Ketik NIK angka saja, keyboard angka akan muncul otomatis</p>
+<input id="nikInput" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 91207191" autocomplete="off" oninput="cekNIK()">
 <div id="hasilCek"></div>
-
-<!-- KEYPAD PERSIS SCREENSHOT FLIP KAMU -->
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px">
-<button class="key" onclick="pressKey('1')">1</button>
-<button class="key" onclick="pressKey('2')">2</button>
-<button class="key" onclick="pressKey('3')">3</button>
-<button class="key" onclick="pressKey('4')">4</button>
-<button class="key" onclick="pressKey('5')">5</button>
-<button class="key" onclick="pressKey('6')">6</button>
-<button class="key" onclick="pressKey('7')">7</button>
-<button class="key" onclick="pressKey('8')">8</button>
-<button class="key" onclick="pressKey('9')">9</button>
-<button class="key" onclick="pressKey('000')">000</button>
-<button class="key" onclick="pressKey('0')">0</button>
-<button class="key" onclick="pressKey('del')">⌫</button>
-</div>
-
-<button class="btn-outline" onclick="cekNIK()" style="margin-top:16px;border-color:#ff6b3d;color:#ff6b3d">Cek Anggota</button>
 </div>
 
 <div class="card" id="formPinjam" style="display:none">
-<b>2. Pengajuan Pinjaman - <span id="namaAnggota"></span></b>
-<label style="margin-top:12px;display:block">Nominal (Maks Rp 5.000.000)</label>
+<b>2. Pengajuan - <span id="namaAnggota"></span> <span class="badge" id="jabAnggota"></span></b>
+<label style="margin-top:12px">Nominal (Maks 5 Juta)</label>
 <input type="range" id="nom" min="500000" max="5000000" step="100000" value="2000000" oninput="hitung()">
 <div style="display:flex;justify-content:space-between;font-weight:800"><span id="nomTxt">Rp 2.000.000</span><span style="color:#0e7a5e">0% BUNGA</span></div>
+
 <label>Tenor</label>
 <select id="tenor" onchange="hitung()"><option value="3">3 Bulan</option><option value="6">6 Bulan</option><option value="10" selected>10 Bulan</option><option value="12">12 Bulan</option></select>
-<div class="ok"><div style="display:flex;justify-content:space-between"><span>Angsuran / bulan</span><b id="ang">Rp 200.000</b></div><div style="display:flex;justify-content:space-between"><span>Total Bayar</span><b id="tot">Rp 2.000.000</b></div></div>
-<textarea id="tujuan" placeholder="Tujuan pinjaman..." rows="2"></textarea>
-<input id="wa" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="No WA (angka saja)">
+
+<div class="ok" style="display:flex;justify-content:space-between"><span>Angsuran/bulan</span><b id="ang">Rp 200.000</b></div>
+
+<label>Tujuan Pinjaman</label>
+<textarea id="tujuan" placeholder="Contoh: Biaya makan sekolah anak" rows="2"></textarea>
+
+<label>No WA (angka saja)</label>
+<input id="wa" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="0852xxxxxxx" autocomplete="off">
+
 <button class="btn" id="btnAjukan" onclick="kirimKeDatabase()">Kirim Pengajuan ke Koperasi</button>
 <p class="small" id="statusKirim"></p>
-<p class="small">Data akan masuk otomatis ke Google Sheet & email koperasi.intisel@gmail.com</p>
 </div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwGQyFRrt52M2MCjt1deeiVroVgZuUBgJLdIv2qrOF3YQfwv9M4k697Tg_4JkAQVjaV/exec";
-let anggotaAktif=null, nikValue="";
+let anggotaAktif=null;
 function rp(n){return 'Rp '+n.toLocaleString('id-ID')}
-function pressKey(k){
- if(k==='del'){nikValue=nikValue.slice(0,-1);}
- else{if(nikValue.length<15) nikValue+=k;}
- document.getElementById('nikInput').value=nikValue;
- document.getElementById('nikDisplay').innerText=nikValue||'0';
- if(nikValue.length>=4) cekNIK(); else {document.getElementById('hasilCek').innerHTML=''; document.getElementById('formPinjam').style.display='none';}
-}
 function cekNIK(){
- let v=document.getElementById('nikInput').value.trim()||nikValue;
+ let v=document.getElementById('nikInput').value.trim();
  let hasil=document.getElementById('hasilCek'), form=document.getElementById('formPinjam');
- if(v.length<3){hasil.innerHTML='';form.style.display='none';return;}
+ if(v.length<3){hasil.innerHTML='';form.style.display='none';return}
  let found=ANGGOTA.find(a=>a.nik===v || a.nama.toLowerCase().includes(v.toLowerCase()));
  if(found){
    anggotaAktif=found;
-   hasil.innerHTML=`<div class="ok">✅ <b>${found.nama}</b> terdaftar - ${found.jabatan}</div>`;
-   document.getElementById('namaTop').innerText=found.nama;
-   document.getElementById('jabatanTop').innerText=found.jabatan+' • '+found.base;
-   document.getElementById('initial').innerText=found.nama.charAt(0);
+   hasil.innerHTML=`<div class="ok">✅ <b>${found.nama}</b> - ${found.jabatan} (${found.base})</div>`;
    document.getElementById('namaAnggota').innerText=found.nama;
+   document.getElementById('jabAnggota').innerText=found.jabatan;
    form.style.display='block';
  }else{
    anggotaAktif=null;
-   hasil.innerHTML=`<div class="err">❌ NIK tidak ditemukan di 118 anggota</div>`;
+   hasil.innerHTML=`<div class="err">❌ NIK tidak ada di daftar 118 anggota</div>`;
    form.style.display='none';
  }
 }
-function hitung(){let a=+document.getElementById('nom').value,t=+document.getElementById('tenor').value;document.getElementById('nomTxt').innerText=rp(a);document.getElementById('ang').innerText=rp(Math.round(a/t));document.getElementById('tot').innerText=rp(a);}hitung();
+function hitung(){let a=+document.getElementById('nom').value,t=+document.getElementById('tenor').value;document.getElementById('nomTxt').innerText=rp(a);document.getElementById('ang').innerText=rp(Math.round(a/t));}hitung();
 async function kirimKeDatabase(){
- if(!anggotaAktif){alert('Cek NIK dulu');return;}
+ if(!anggotaAktif){alert('Cek NIK dulu');return}
  let tujuan=document.getElementById('tujuan').value, wa=document.getElementById('wa').value;
- if(!tujuan||!wa){alert('Isi tujuan & WA');return;}
- document.getElementById('btnAjukan').innerText='Mengirim...';
- document.getElementById('statusKirim').innerText='Menghubungkan ke database Koperasi...';
+ if(!tujuan||!wa){alert('Isi tujuan & WA');return}
+ document.getElementById('btnAjukan').innerText='Mengirim...'; document.getElementById('btnAjukan').disabled=true;
+ document.getElementById('statusKirim').innerText='Mengirim ke Google Sheet...';
  try{
    await fetch(API_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({nik:anggotaAktif.nik,nama:anggotaAktif.nama,nominal:document.getElementById('nom').value,tenor:document.getElementById('tenor').value,tujuan:tujuan,wa:wa})});
-   document.getElementById('statusKirim').innerHTML='<span style="color:green;font-weight:700">✅ Terkirim! Cek Google Sheet Form Responses 1</span>';
-   document.getElementById('btnAjukan').innerText='✅ Berhasil Dikirim';
-   alert('Berhasil! '+anggotaAktif.nama+' - Pengajuan masuk ke database.');
- }catch(e){document.getElementById('statusKirim').innerText='Error '+e; document.getElementById('btnAjukan').innerText='Coba Lagi';}
+   document.getElementById('statusKirim').innerHTML='<span style="color:green;font-weight:700">✅ Terkirim! Data masuk ke Google Sheet & email koperasi.</span>';
+   document.getElementById('btnAjukan').innerText='✅ Berhasil';
+ }catch(e){document.getElementById('statusKirim').innerText='Error: '+e; document.getElementById('btnAjukan').disabled=false; document.getElementById('btnAjukan').innerText='Coba Lagi';}
 }
 </script>
 </body></html>
