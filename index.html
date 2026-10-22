@@ -45,15 +45,12 @@ function cekNIK(){
 }
 function hitung(){let a=+document.getElementById('nom').value,t=+document.getElementById('tenor').value;document.getElementById('nomTxt').innerText=rp(a);document.getElementById('ang').innerText=rp(Math.round(a/t));document.getElementById('tot').innerText=rp(a)}hitung();
 function ajukan(){
-  if(!anggotaAktif){alert('Cek NIK dulu');return}
-  let tujuan=document.getElementById('tujuan').value;
-  // Simpan ke localStorage sebagai database sementara
-  let data=JSON.parse(localStorage.getItem('pinjaman')||'[]');
-  data.push({nik:anggotaAktif.nik,nama:anggotaAktif.nama,nominal:document.getElementById('nom').value,tenor:document.getElementById('tenor').value,tujuan:tujuan,waktu:new Date().toLocaleString()});
-  localStorage.setItem('pinjaman',JSON.stringify(data));
-  if(Notification&&Notification.permission=='granted')new Notification('Koperasi Intisel',{body:`Pengajuan ${anggotaAktif.nama} diproses`});
-  alert(`Berhasil! Pengajuan ${anggotaAktif.nama} - ${document.getElementById('nomTxt').innerText} disimpan di database lokal.`);
-  // Nanti ganti ini dengan kirim ke Google Sheet / Firebase
+  if(!anggotaAktif) return;
+  // Link form kamu + prefill nama
+  let formLink = "https://docs.google.com/forms/d/1jOW2zOAwsdsRpfibXglEUa2jv7Azzjleo-1iluj-LDg/viewform?usp=pp_url&entry.1234567890=" + encodeURIComponent(anggotaAktif.nama);
+  // Ganti entry.1234567890 dengan ID field Nama di form kamu
+  window.open(formLink, "_blank");
+}
 }
 function notif(){Notification.requestPermission().then(r=>{if(r=='granted'){alert('Notifikasi aktif');navigator.serviceWorker.register('sw.js')}})}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')
