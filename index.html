@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>KOPRASI INTISEL LAMPUNG</title>
+<title>KOPERASI INTISEL LAMPUNG</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#134e8a">
-<script src="anggota.js"></script>
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
 body{margin:0;background:#eef5ff;color:#0f2d4a;overflow-x:hidden}
-.header{background:linear-gradient(135deg,#0d3b6e 0%,#1a5ea8 50%,#2a7bd0 100%);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20;box-shadow:0 4px 12px rgba(13,59,110,.25)}
-.header img{width:58px;height:58px;background:#fff;border-radius:12px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.2);object-fit:contain;flex-shrink:0}
-.header-text{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
-.title-justify{display:block;width:100%;font-size:17px;font-weight:900;letter-spacing:.4px;color:#fff;line-height:1.15;text-align:justify;text-align-last:justify;white-space:nowrap;overflow:hidden;text-overflow:clip}
-.subtitle-justify{display:block;width:100%;font-size:13.5px;font-weight:600;color:#ffeb3b;line-height:1.25;margin-top:4px;text-align:justify;text-align-last:justify}
+.header{background:linear-gradient(135deg,#0d3b6e 0%,#1a5ea8 50%,#2a7bd0 100%);color:#fff;padding:12px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20;box-shadow:0 4px 12px rgba(13,59,110,.25)}
+.header img{width:80px;height:42px;background:#fff;border-radius:8px;padding:3px;box-shadow:0 2px 8px rgba(0,0,0,.2);object-fit:contain;flex-shrink:0}
+.header-text{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.title-justify{display:block;width:100%;font-size:clamp(12px,4vw,16px);font-weight:900;letter-spacing:.2px;color:#fff;line-height:1.15;text-align:center;text-align-last:center;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.subtitle-justify{display:block;width:100%;font-size:13.5px;font-weight:600;color:#ffeb3b;line-height:1.25;margin-top:4px;text-align:center;text-align-last:center}
 .subtitle-justify .line2{display:block}
 .card{background:#fff;border-radius:18px;padding:18px;margin:14px;box-shadow:0 6px 20px rgba(13,76,168,.1);border:1px solid #d6e6f8}
 .btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#134e8a,#1a6fbf);color:#fff;font-weight:800;font-size:16px;box-shadow:0 4px 12px rgba(19,78,138,.25);cursor:pointer}
@@ -37,9 +37,18 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
 .kpi b{display:block;font-size:15px;color:#134e8a}
 .kpi span{font-size:10px;color:#134e8a;font-weight:700;letter-spacing:.5px}
 .hero{margin:14px;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(13,59,110,.18);border:1px solid #d6e6f8}
-.hero img{width:100%;height:240px;object-fit:cover;display:block}
-.hero-small img{height:190px}
-.hero-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(13,59,110,.85),rgba(13,59,110,0));padding:18px;color:#fff}
+.hero img{width:100%;height:270px;object-fit:cover;object-position:50% 12%;display:block}
+.hero-small img{height:220px}
+.slideshow{position:relative;height:270px;background:#0d3b6e}
+.hero-small .slideshow{height:220px}
+.slideshow .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s ease}
+.slideshow .slide.active{opacity:1}
+.hero .slideshow .slide{height:100%}
+.slide-dots{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:2}
+.slide-dots button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 0 3px rgba(0,0,0,.4);cursor:pointer;transition:all .3s}
+.slide-dots button.active{background:#ffeb3b;width:20px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){.slideshow .slide{transition:none}}
+.hero-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(13,59,110,.92),rgba(13,59,110,.45) 60%,rgba(13,59,110,0));padding:28px 18px 18px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 .hero-overlay b{font-size:18px;color:#ffeb3b}
 .hero-overlay p{margin:4px 0 0;font-size:12px;line-height:1.3}
 .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px}
@@ -50,6 +59,24 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
 .choice-card b{display:block;color:#134e8a;font-size:15px}
 .choice-card p{font-size:11px;color:#5a7aa0;margin:6px 0 0;line-height:1.3}
 .hidden{display:none!important}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.mtile{border:1.5px solid #b9d2f0;background:#fff;border-radius:16px;padding:14px 10px;text-align:center;cursor:pointer;color:#134e8a;font-family:inherit}
+.mtile .ic{font-size:30px;display:block}.mtile b{display:block;font-size:14px;margin:4px 0 2px}.mtile span.sub{display:block;font-size:11px;color:#5a7aa0;line-height:1.3}
+.mtile{position:relative}.pbadge{position:absolute;top:8px;right:10px;background:#dc2626;color:#fff;border-radius:99px;font-size:11px;padding:1px 7px;font-weight:800;display:none}
+.chip{border:1.5px solid #b9d2f0;background:#fff;color:#134e8a;border-radius:99px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.stile{border:2px solid #b9d2f0;background:#fff;border-radius:16px;padding:14px 8px 10px;text-align:center;cursor:pointer;font-family:inherit;color:#134e8a}
+.stile .num{display:block;font-size:32px;font-weight:900;line-height:1.1}.stile .lbl{display:block;font-size:15px;font-weight:800;margin-top:4px;line-height:1.25}.stile .hint{display:block;font-size:11px;font-weight:700;color:#5a7aa0;margin-top:3px}
+.stile.on{background:#e8f1fc;box-shadow:0 0 0 2px #134e8a inset}.stile.wide{grid-column:1/3}
+.stt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.stt>div{border:1.5px solid #d6e6f8;border-radius:12px;padding:10px;text-align:center;background:#fff}.stt b{display:block;font-size:17px}
+.agr{border-bottom:1px solid #d6e6f8;padding:8px 0}.agr summary{cursor:pointer;list-style:none}.agr summary::-webkit-details-marker{display:none}
+.tag{display:inline-block;border-radius:99px;font-size:11px;font-weight:800;padding:2px 8px;margin:2px 4px 0 0;background:#e8f1fc;color:#134e8a}.tag.w{background:#fff3cd;color:#8a6100}.tag.r{background:#fde2e2;color:#b42318}.tag.g{background:#dcfce7;color:#166534}
+#cetakArea{display:none}
+@media print{@page{size:A4 landscape;margin:12mm}body.cetak>*:not(#cetakArea){display:none!important}body.cetak #cetakArea{display:block!important;font:11px Arial,sans-serif;color:#000}
+#cetakArea h2{margin:0 0 4px;font-size:16px}#cetakArea h3{margin:14px 0 4px;font-size:13px}#cetakArea table{border-collapse:collapse;width:100%;margin-bottom:6px}#cetakArea th,#cetakArea td{border:1px solid #888;padding:3px 5px;text-align:left;vertical-align:top}#cetakArea th{background:#e8f1fc}#cetakArea td.n{text-align:right}}
+.mtile.off{opacity:.45;cursor:not-allowed;background:#eef3f9}.mtile.wide{grid-column:1/3}
+.vback{display:inline-flex;margin-bottom:8px}
+.fotobtn{flex:1;padding:12px 6px;border-radius:12px;border:1.5px dashed #134e8a;background:#f1f8ff;color:#134e8a;font-weight:800;font-size:14px;text-align:center;cursor:pointer}
+.pktab{flex:1;padding:10px;border-radius:10px;border:1.5px solid #b9d2f0;background:#eef5ff;color:#134e8a;font-weight:800;font-size:14px;cursor:pointer}.pktab.on{background:#134e8a;color:#fff}
 .back-link{display:inline-flex;align-items:center;gap:6px;color:#134e8a;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:10px;background:#eef5ff;border:1px solid #b9d2f0;padding:6px 12px;border-radius:20px}
 .search-box{display:flex;gap:8px;margin:10px 0}
 .search-box input{flex:1}
@@ -62,12 +89,12 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
 <body>
 
 <div class="header">
-  <img src="logo.png" alt="Logo Intisel">
+  <img src="logo-intisel.png" alt="Logo Koperasi Intisel">
   <div class="header-text">
-    <b class="title-justify">KOPRASI INTISEL LAMPUNG</b>
+    <b class="title-justify">KOPERASI INTISEL LAMPUNG</b>
     <span class="subtitle-justify">
-      Sinergi karyawan untuk karyawan,
-      <span class="line2">Sejahtera tanpa beban</span>
+      Sinergi Karyawan untuk Karyawan
+      <span class="line2">Sejahtera Tanpa Beban</span>
     </span>
   </div>
 </div>
@@ -75,7 +102,12 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
 <!-- LANDING PAGE -->
 <div id="landing">
   <div class="hero">
-    <img src="hero-tower.png" alt="Tower Intisel - Pulau">
+    <div class="slideshow">
+      <img class="slide active" src="hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
+      <img class="slide" src="slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
+      <img class="slide" src="slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
+      <div class="slide-dots"></div>
+    </div>
     <div class="hero-overlay">
       <b>Koperasi Karyawan Intisel</b>
       <p>Pinjaman Qardh Tanpa Bunga • Limit sesuai masa kerja • Syariah & Transparan</p>
@@ -119,25 +151,121 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
 
 <!-- HALAMAN ANGGOTA -->
 <div id="pageAnggota" class="hidden">
-  <div class="card">
-    <div class="back-link" onclick="navigateLanding()">← Kembali ke Menu Utama</div>
-    <b>1. Cek NIK Karyawan</b>
-    <p class="small">Masukkan NIK, sistem otomatis cek Tgl Masuk & Masa Kerja dari database 118 anggota.</p>
-    <input id="nikInput" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 91207191" autocomplete="off" oninput="cekNIK()">
+  <div class="card" id="loginCard">
+    <div id="sesiBar" style="display:none;justify-content:space-between;align-items:center;gap:8px;margin-top:6px">
+      <div>✅ <b id="sbNama"></b><div class="small" id="sbInfo"></div></div>
+      <span class="back-link" style="margin:0" onclick="keluarAnggota()">Keluar</span>
+    </div>
+    <div id="loginForm">
+    <div style="font-weight:800;font-size:17px;margin:2px 0 6px">Masuk Anggota</div>
+    <p class="small">Masukkan NIK dan tanggal lahir, sistem otomatis cek Tgl Masuk &amp; Masa Kerja dari database anggota.</p>
+    <input id="nikInput" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="12" placeholder="Contoh: 91207191" autocomplete="off" oninput="resetNik()" onkeydown="if(event.key==='Enter')cekNIK()">
+    <label style="margin-top:10px;display:block">Tanggal Lahir</label>
+    <div style="display:flex;gap:6px">
+      <select id="lhTgl" onchange="resetNik()" style="flex:1"></select>
+      <select id="lhBln" onchange="resetNik()" style="flex:2"></select>
+      <select id="lhThn" onchange="resetNik()" style="flex:2"></select>
+    </div>
+    <p class="small">Tanggal lahir dipakai untuk memastikan Anda benar-benar anggota yang bersangkutan.</p>
+    <button class="btn" id="btnCekNik" onclick="cekNIK()" style="margin-top:8px">🔍 Masuk</button>
     <div id="hasilCek" style="margin-top:8px"></div>
-  </div>
-
-  <!-- GAMBAR PULAU TOWER DI BAWAH NIK - SESUAI REQUEST -->
-  <div class="hero hero-small" style="margin:0 14px 14px">
-    <img src="hero-tower.png" alt="Pulau Tower Intisel">
-    <div class="hero-overlay" style="padding:12px">
-      <b style="font-size:14px">Pulau & Tower Intisel Lampung</b>
-      <p style="font-size:10px">Infrastruktur untuk karyawan - Sinergi untuk sejahtera</p>
     </div>
   </div>
 
-  <div class="card" id="formPinjam" style="display:none">
-    <b>2. <span id="namaAnggota"></span> <span class="badge" id="jabAnggota"></span></b>
+  <!-- MENU ANGGOTA -->
+  <div class="card" id="menuCard" style="display:none">
+    <b id="mnNama" style="font-size:17px"></b> <span class="badge" id="mnJab"></span>
+    <p class="small" id="mnMasa" style="margin:4px 0 0"></p>
+    <div class="warn" id="mnStatus" style="display:none;margin-top:8px"></div>
+    <div class="mgrid">
+      <button class="mtile" id="tlKasbon" onclick="bukaMenu('vKasbon')"><span class="ic">💸</span><b>Pengajuan Kasbon</b><span class="sub" id="tlKasbonSub"></span></button>
+      <button class="mtile" id="tlKoperasi" onclick="bukaMenu('formPinjam')"><span class="ic">🏦</span><b>Pengajuan Koperasi</b><span class="sub" id="tlKoperasiSub"></span></button>
+      <button class="mtile" onclick="bukaMenu('vApproval')"><span class="ic">📋</span><b>Status Approval</b><span class="sub" id="tlApprovalSub">Koperasi / Kasbon</span></button>
+      <button class="mtile" onclick="bukaMenu('vBerjalan')"><span class="ic">📊</span><b>Pinjaman Berjalan</b><span class="sub" id="tlBerjalanSub"></span></button>
+      <button class="mtile wide" onclick="bukaMenu('vBayar')"><span class="ic">🧾</span><b>Laporan Pembayaran Angsuran</b><span class="sub" id="tlBayarSub">Upload foto bukti transaksi</span></button>
+      <button class="mtile wide" onclick="bukaMenu('vKontak')"><span class="ic">📞</span><b>Kontak &amp; Bantuan</b><span class="sub">Hubungi pengurus lewat WhatsApp</span></button>
+    </div>
+  </div>
+
+  <!-- KONTAK & BANTUAN -->
+  <div class="card view" id="vKontak" style="display:none">
+    <b style="font-size:16px">📞 Kontak &amp; Bantuan</b>
+    <p class="small" style="margin:4px 0 10px">Ada pertanyaan soal pengajuan, angsuran, atau pencairan? Hubungi pengurus langsung lewat WhatsApp.</p>
+    <div id="kontakList"></div>
+    <div class="ok" style="margin-top:12px;line-height:1.6"><b>Info singkat</b><br>
+      • Angsuran dibayar tanggal 1–5 setiap bulan.<br>
+      • Pencairan reguler tanggal 6; pencairan urgen maksimal 2 hari kerja.<br>
+      • Kasbon: maksimal Rp 500.000, 30 hari (masa kerja &lt; 2 tahun).<br>
+      • Pinjaman koperasi: masa kerja ≥ 2 tahun, masa tunggu 3 bulan setelah lunas.</div>
+  </div>
+
+  <!-- KASBON -->
+  <div class="card view" id="vKasbon" style="display:none">
+    <b style="font-size:16px">💸 Pengajuan Kasbon</b>
+    <div class="err" id="kbBlok" style="display:none;margin-top:8px"></div>
+    <div class="warn" style="margin:8px 0">Khusus masa kerja di bawah 2 tahun. Maksimal <b>Rp 500.000</b>, jangka waktu <b>30 hari</b> (1 bulan), dikembalikan sekaligus.</div>
+    <label>Nominal Kasbon</label>
+    <input type="range" id="kbNominal" min="50000" max="500000" step="50000" value="300000" oninput="kbUpdate()">
+    <div style="display:flex;justify-content:space-between;font-weight:800"><span id="kbNomTxt">Rp 300.000</span><span class="small">Maks Rp 500.000</span></div>
+    <div class="ok" style="display:flex;justify-content:space-between;margin:10px 0"><span>Jatuh tempo</span><b id="kbTempo"></b></div>
+    <label>Alasan / Keperluan</label><textarea id="kbAlasan" rows="2" placeholder="Contoh: Kebutuhan mendadak keluarga"></textarea>
+    <label>Alamat Lengkap</label><textarea id="kbAlamat" rows="2"></textarea>
+    <label>Nomor HP</label><input id="kbHp" type="tel" inputmode="numeric" data-fmt="hp" placeholder="+62 8xx-xxxx-xxxx" autocomplete="tel">
+    <label>Email aktif</label><input id="kbEmail" type="email" data-fmt="email" inputmode="email" autocapitalize="none" placeholder="nama@email.com">
+    <label>Nomor Rekening BNI</label><input id="kbRek" type="text" inputmode="numeric" data-fmt="digits" placeholder="Hanya angka">
+    <label>Gaji Under</label><select id="kbGajiUnder"><option value="">-- Pilih --</option><option>HRD</option><option>Project</option></select>
+    <label>Gaji terakhir yang diterima (Rp)</label><input id="kbGaji1" type="text" inputmode="numeric" data-fmt="money" placeholder="Contoh: 2.500.000">
+    <label>Nama kontak darurat</label><input id="kbNamaD">
+    <label>No. HP kontak darurat</label><input id="kbHpD" type="tel" inputmode="numeric" data-fmt="hp" placeholder="+62 8xx-xxxx-xxxx">
+    <label>Hubungan dengan peminjam</label><input id="kbHub" list="hubList" placeholder="Istri / Suami / Orang Tua ...">
+    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="kbSetuju" style="width:auto;margin-top:3px">
+    <span class="small">Data saya isi dengan jujur. Formulir ini berfungsi sebagai surat kuasa pemotongan gaji ke HRD bila terjadi keterlambatan.</span></label>
+    <button class="btn" id="btnKb" onclick="kirimKasbon()">Kirim Pengajuan Kasbon</button>
+  </div>
+
+  <!-- STATUS APPROVAL -->
+  <div class="card view" id="vApproval" style="display:none">
+    <b style="font-size:16px">📋 Status Approval</b>
+    <p class="small">Pengajuan pinjaman koperasi dan kasbon Anda.</p>
+    <div id="apBox"></div>
+  </div>
+
+  <!-- PINJAMAN BERJALAN -->
+  <div class="card view" id="vBerjalan" style="display:none">
+    <b style="font-size:16px">📊 Pinjaman Berjalan</b>
+    <div id="bjBox" style="margin-top:8px"></div>
+  </div>
+
+  <!-- LAPORAN PEMBAYARAN -->
+  <div class="card view" id="vBayar" style="display:none">
+    <b style="font-size:16px">🧾 Laporan Pembayaran Angsuran</b>
+    <div id="byInfo" class="small" style="margin:6px 0"></div>
+    <div id="byForm">
+      <label>Angsuran yang dibayar</label><select id="bySelect" onchange="byIsiJumlah()"></select>
+      <label>Tanggal pembayaran</label><input id="byTgl" type="date">
+      <label>Jumlah dibayar (Rp)</label><input id="byJumlah" type="text" inputmode="numeric" data-fmt="money" placeholder="Contoh: 500.000">
+      <label>Catatan (opsional)</label><input id="byCatatan" maxlength="200" placeholder="Contoh: Transfer BNI a.n. ...">
+      <label>Foto bukti transaksi</label>
+      <div style="display:flex;gap:8px">
+        <label class="fotobtn" for="byKamera">📷 Ambil Foto</label>
+        <label class="fotobtn" for="byGaleri">🖼️ Pilih dari Galeri</label>
+      </div>
+      <input type="file" id="byKamera" accept="image/*" capture="environment" style="display:none" onchange="pilihFoto(this)">
+      <input type="file" id="byGaleri" accept="image/*" style="display:none" onchange="pilihFoto(this)">
+      <div id="byPreviewWrap" style="display:none;margin-top:8px;text-align:center">
+        <img id="byPreview" alt="Pratinjau bukti" style="max-width:100%;max-height:260px;border-radius:12px;border:1px solid #b9d2f0">
+        <div class="small" id="byFotoInfo"></div>
+        <span class="back-link" style="margin:4px 0 0" onclick="hapusFoto()">✖ Ganti foto</span>
+      </div>
+      <button class="btn" id="btnBayar" onclick="kirimLaporan()" style="margin-top:12px">Kirim Laporan Pembayaran</button>
+    </div>
+    <div style="font-weight:800;margin-top:16px">Riwayat Laporan</div>
+    <div id="byRiwayat" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card view" id="formPinjam" style="display:none">
+    <b>🏦 Pengajuan Koperasi - <span id="namaAnggota"></span> <span class="badge" id="jabAnggota"></span></b>
+    <div class="err" id="kpBlok" style="display:none;margin-top:8px"></div>
     <p class="small" id="tglMasukTxt"></p>
     <div class="kpi">
       <div><span>MASA KERJA</span><b id="mkTxt">-</b></div>
@@ -161,137 +289,249 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
     <label>Tujuan Pinjaman</label>
     <textarea id="tujuan" rows="2" placeholder="Contoh: Biaya sekolah"></textarea>
 
-    <button class="btn" id="btnKirim" onclick="directKeGform()">Kirim Pengajuan → Buka GForm</button>
+
+    <label>Alamat Lengkap</label><textarea id="alamat" rows="2"></textarea>
+    <label>Nomor HP</label><input id="hp" type="tel" inputmode="numeric" data-fmt="hp" placeholder="+62 8xx-xxxx-xxxx" autocomplete="tel">
+    <label>Email aktif</label><input id="email" type="email" data-fmt="email" inputmode="email" autocapitalize="none" autocomplete="email" placeholder="nama@email.com">
+    <label>Nomor Rekening BNI</label><input id="rek" type="text" inputmode="numeric" data-fmt="digits" placeholder="Hanya angka">
+    <label>Gaji Under</label><select id="gajiUnder"><option value="">-- Pilih --</option><option>HRD</option><option>Project</option></select>
+    <label>Infaq Sukarela (Rp.)</label><input id="infaq" type="text" inputmode="numeric" data-fmt="money" data-opt="1" placeholder="Contoh: 50.000">
+    <label>Pernah meminjam koperasi sebelumnya?</label>
+    <select id="pernahPinjam" onchange="togglePernah()"><option>Tidak</option><option>Ya</option></select>
+    <div id="tglLunasWrap" style="display:none"><label>Tanggal lunas / cicilan terakhir pinjaman sebelumnya</label><input id="tglLunas" type="date"></div>
+    <label>Berapa bulan gaji yang ditahan (dari 6 bulan terakhir)?</label>
+    <select id="jmlDitahan"><option value="0">Tidak ada</option><option value="1">1 bulan</option><option value="2">Lebih dari 1 bulan</option></select>
+    <label>Gaji bulan apa saja yang ditahan (isi bila ada)</label><input id="gajiDitahan">
+    <label>Gaji terakhir yang diterima (Rp)</label><input id="gaji1" type="text" inputmode="numeric" data-fmt="money" placeholder="Contoh: 2.500.000">
+    <label>Gaji 2 bulan sebelumnya (Rp)</label><input id="gaji2" type="text" inputmode="numeric" data-fmt="money" placeholder="Contoh: 2.500.000">
+    <label>Gaji 3 bulan sebelumnya (Rp)</label><input id="gaji3" type="text" inputmode="numeric" data-fmt="money" placeholder="Contoh: 2.500.000">
+    <label>Nama kontak darurat</label><input id="namaDarurat">
+    <label>No. HP kontak darurat</label><input id="hpDarurat" type="tel" inputmode="numeric" data-fmt="hp" placeholder="+62 8xx-xxxx-xxxx">
+    <label>Hubungan dengan peminjam</label><input id="hubungan" list="hubList" placeholder="Istri / Suami / Orang Tua ...">
+    <datalist id="hubList"><option>Istri</option><option>Suami</option><option>Orang Tua</option><option>Saudara Kandung</option><option>Anak</option></datalist>
+    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="setuju" style="width:auto;margin-top:3px">
+    <span class="small">Data saya isi dengan jujur dan dapat dipertanggungjawabkan secara hukum. Formulir ini berfungsi sebagai surat kuasa pemotongan gaji ke HRD.</span></label>
+    <button class="btn" id="btnKirim" onclick="kirimPengajuan()">Kirim Pengajuan</button>
     <p class="small" style="text-align:center;margin-top:8px">Validasi: nominal ≤ limit & tenor ≤ limit maks sesuai masa kerja</p>
+  </div>
+
+  <div class="hero hero-small" style="margin:0 14px 14px">
+    <div class="slideshow">
+      <img class="slide active" src="hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
+      <img class="slide" src="slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
+      <img class="slide" src="slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
+      <div class="slide-dots"></div>
+    </div>
+    <div class="hero-overlay" style="padding:12px">
+      <b style="font-size:14px">Pulau &amp; Tower Intisel Lampung</b>
+      <p style="font-size:10px">Infrastruktur untuk karyawan - Sinergi untuk sejahtera</p>
+    </div>
   </div>
 </div>
 
-<!-- HALAMAN PENGURUS LOGIN -->
+<!-- HALAMAN PENGURUS -->
 <div id="pagePengurus" class="hidden">
-  <div class="card">
-    <div class="back-link" onclick="navigateLanding()">← Kembali ke Menu Utama</div>
-    <b>Login Pengurus Koperasi</b>
-    <p class="small">Pilih nama pengurus dan masukkan password percobaan <b>2027</b>.</p>
-    
-    <label>Nama Pengurus</label>
-    <select id="pengurusNama">
-      <option value="">-- Pilih Pengurus --</option>
-      <option value="Akhmad Sofyan">Akhmad Sofyan</option>
-      <option value="Mahmudi">Mahmudi</option>
-      <option value="Mulyana">Mulyana</option>
-      <option value="Vivi Atvilina">Vivi Atvilina</option>
-    </select>
-
-    <label>Password</label>
-    <div class="pass-wrap">
-      <input id="pengurusPass" type="password" placeholder="Password: 2027">
-      <button type="button" class="eye-btn" onclick="togglePass()" id="eyeBtn">👁️</button>
+  <div class="card" id="pkLogin">
+    <div style="font-weight:800;font-size:17px;margin:2px 0 8px">Masuk Pengurus / Pimpinan</div>
+    <label style="display:block;margin-top:4px">Email terdaftar</label>
+    <input id="pkEmail" type="email" inputmode="email" autocapitalize="none" autocomplete="username" placeholder="email@contoh.com">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="pktab on" id="pkTabKode" onclick="pkTab('kode')">✉️ Kode Email</button>
+      <button class="pktab" id="pkTabPw" onclick="pkTab('pw')">🔑 Password</button>
     </div>
-
-    <button class="btn btn-yellow" onclick="loginPengurus()">Masuk sebagai Pengurus</button>
-    <div id="loginMsg" style="margin-top:10px"></div>
-    <p class="small" style="margin-top:10px">Password percobaan tahap awal: <b>2027</b></p>
+    <div id="pkBoxKode">
+      <p class="small">Kode masuk 6 angka akan dikirim ke email Anda.</p>
+      <button class="btn" id="pkBtnMinta" onclick="pkMinta()">Kirim Kode</button>
+      <div id="pkKodeWrap" class="hidden" style="margin-top:14px">
+        <label>Kode 6 angka dari email</label>
+        <input id="pkKode" type="tel" inputmode="numeric" maxlength="6" placeholder="••••••" style="letter-spacing:6px;text-align:center;font-size:22px" onkeydown="if(event.key==='Enter')pkVerifikasi()">
+        <button class="btn" id="pkBtnVer" onclick="pkVerifikasi()">Masuk</button>
+      </div>
+    </div>
+    <div id="pkBoxPw" class="hidden">
+      <label>Password</label>
+      <input id="pkPw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')pkLoginPw()">
+      <label class="small" style="display:flex;gap:6px;align-items:center;margin:-4px 0 10px"><input type="checkbox" style="width:auto;margin:0" onchange="pkLihat(['pkPw'],this.checked)"> Tampilkan password</label>
+      <button class="btn" id="pkBtnPw" onclick="pkLoginPw()">Masuk</button>
+      <p class="small" style="margin-top:10px">Pertama kali? Gunakan password awal dari pengurus, lalu Anda akan diminta membuat password baru. <a href="#" onclick="pkLupa();return false">Lupa password?</a></p>
+    </div>
+    <div id="pkBoxAtur" class="hidden">
+      <div class="ok" id="pkAturInfo" style="margin-bottom:8px"></div>
+      <label>Kode 6 angka dari email</label>
+      <input id="pkAturKode" type="tel" inputmode="numeric" maxlength="6" placeholder="••••••" style="letter-spacing:6px;text-align:center;font-size:22px">
+      <label>Password baru</label>
+      <input id="pkBaru" type="password" autocomplete="new-password" placeholder="Min. 8 karakter, huruf + angka">
+      <label>Ulangi password baru</label>
+      <input id="pkBaru2" type="password" autocomplete="new-password" onkeydown="if(event.key==='Enter')pkAtur()">
+      <label class="small" style="display:flex;gap:6px;align-items:center;margin:-4px 0 10px"><input type="checkbox" style="width:auto;margin:0" onchange="pkLihat(['pkBaru','pkBaru2'],this.checked)"> Tampilkan password</label>
+      <button class="btn" id="pkBtnAtur" onclick="pkAtur()">Simpan &amp; Masuk</button>
+    </div>
+    <div id="pkPesan" style="margin-top:10px"></div>
   </div>
-
-  <!-- GAMBAR PULAU TOWER DI HALAMAN PENGURUS JUGA -->
+  <div id="pkDash" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div><b id="pkNama"></b><div class="small" id="pkPeran"></div></div>
+        <div style="display:flex;gap:6px"><span class="back-link" style="margin:0" onclick="pkMuat()">↻ Muat ulang</span><span class="back-link" style="margin:0" onclick="pkGantiTampil()">🔑</span><span class="back-link" style="margin:0" onclick="pkKeluar()">Keluar</span></div>
+      </div>
+    </div>
+    <div class="card hidden" id="pkGanti">
+      <b>Ganti Password</b>
+      <label style="margin-top:8px">Password lama</label><input id="pkLama" type="password" autocomplete="current-password">
+      <label>Password baru</label><input id="pkGBaru" type="password" autocomplete="new-password" placeholder="Min. 8 karakter, huruf + angka">
+      <label>Ulangi password baru</label><input id="pkGBaru2" type="password" autocomplete="new-password">
+      <div style="display:flex;gap:8px"><button class="btn" onclick="pkGantiSimpan()">Simpan</button><button class="btn" style="background:#6b7f99" onclick="pkGantiTampil(false)">Batal</button></div>
+      <div id="pkGantiPesan" style="margin-top:8px"></div>
+    </div>
+    <!-- MENU UTAMA PENGURUS -->
+    <div class="pkv" id="pkvMenu">
+      <div class="card"><b>Menu Pengurus</b>
+        <div class="mgrid">
+          <button class="mtile" onclick="go('pengurus-validasi')"><span class="pbadge" id="pbValidasi"></span><span class="ic">✅</span><b>Validasi Pinjaman</b><span class="sub">Tinjau, setujui, atau tolak pengajuan</span></button>
+          <button class="mtile" onclick="go('pengurus-bayar')"><span class="pbadge" id="pbBayar"></span><span class="ic">🧾</span><b>Validasi Pembayaran</b><span class="sub">Verifikasi bukti transfer angsuran</span></button>
+          <button class="mtile" onclick="go('pengurus-cair')"><span class="pbadge" id="pbCair"></span><span class="ic">💸</span><b>Pencairan Dana</b><span class="sub">Pinjaman disetujui, siap dicairkan</span></button>
+          <button class="mtile" onclick="go('pengurus-berjalan')"><span class="pbadge" id="pbBerjalan"></span><span class="ic">📊</span><b>Pinjaman Berjalan</b><span class="sub">Catat angsuran &amp; pelunasan</span></button>
+          <button class="mtile" onclick="go('pengurus-statistik')"><span class="ic">📈</span><b>Dasbor &amp; Grafik</b><span class="sub">Rekap pinjaman &amp; tunggakan</span></button>
+          <button class="mtile" onclick="go('pengurus-anggota')"><span class="ic">👥</span><b>Database Anggota</b><span class="sub">Cari anggota &amp; riwayat pinjaman</span></button>
+          <button class="mtile wide" onclick="go('pengurus-laporan')"><span class="ic">📑</span><b>Laporan &amp; Ekspor</b><span class="sub">Unduh Excel atau cetak PDF</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="pkv hidden" id="pkvValidasi">
+      <div class="card"><b>✅ Validasi Pinjaman</b><p class="small" style="margin:2px 0 8px">Tinjau, setujui, atau tolak pengajuan yang menunggu keputusan Anda.</p><div id="pkMenunggu"></div></div>
+      <div class="card"><b>Riwayat Pengajuan (30 terakhir)</b><div id="pkRiwayat" style="margin-top:8px"></div></div>
+    </div>
+    <div class="pkv hidden" id="pkvBayar">
+      <div class="card"><b>🧾 Validasi Pembayaran Angsuran</b><p class="small" style="margin:2px 0 8px">Cocokkan bukti transfer anggota dengan rekening koperasi.</p><div id="pkLaporan"></div></div>
+    </div>
+    <div class="pkv hidden" id="pkvCair">
+      <div class="card"><b>💸 Pencairan Dana</b><p class="small" style="margin:2px 0 8px">Pinjaman yang sudah disetujui pimpinan. Setelah transfer, tandai sudah dicairkan.</p><div id="pkPencairan"></div></div>
+    </div>
+    <div class="pkv hidden" id="pkvBerjalan">
+      <div class="card"><b>📊 Pinjaman Berjalan</b><p class="small" style="margin:2px 0 8px">Catat angsuran/pelunasan dan ingatkan anggota lewat WhatsApp.</p><div id="pkPinjaman"></div></div>
+    </div>
+    <div class="pkv hidden" id="pkvStatistik">
+      <div class="card"><b>📈 Dasbor &amp; Grafik</b><div id="pkStat" style="margin-top:8px"><p class="small">Memuat...</p></div></div>
+    </div>
+    <div class="pkv hidden" id="pkvAnggota">
+      <div class="card"><b>👥 Database Anggota</b>
+        <input id="agCari" type="search" placeholder="Cari nama / NIK / jabatan..." oninput="agRender()" style="margin-top:8px" autocomplete="off">
+        <select id="agFilter" onchange="agRender()">
+          <option value="">Semua anggota</option><option value="berjalan">Punya pinjaman berjalan</option><option value="terlambat">Angsuran terlambat</option>
+          <option value="proses">Pengajuan sedang diproses</option><option value="Koperasi">Layanan Koperasi (≥ 2 th)</option><option value="Kasbon">Layanan Kasbon (&lt; 2 th)</option>
+        </select>
+        <p class="small" id="agInfo"></p><div id="agList"></div>
+      </div>
+    </div>
+    <div class="pkv hidden" id="pkvLaporan">
+      <div class="card"><b>📑 Laporan &amp; Ekspor</b>
+        <p class="small" style="margin:2px 0 8px">Data operasional dan rekap keuangan pada rentang tanggal tertentu.</p>
+        <div style="display:flex;gap:8px"><div style="flex:1"><label>Dari</label><input type="date" id="lpDari" onchange="lpStale()"></div><div style="flex:1"><label>Sampai</label><input type="date" id="lpSampai" onchange="lpStale()"></div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 8px">
+          <span class="chip" onclick="lpPreset('bulan')">Bulan ini</span><span class="chip" onclick="lpPreset('3bulan')">3 bulan</span><span class="chip" onclick="lpPreset('tahun')">Tahun ini</span>
+        </div>
+        <button class="btn" id="lpBtn" onclick="lpMuat()">Tampilkan Laporan</button>
+        <div id="lpPesan" style="margin-top:8px"></div>
+      </div>
+      <div class="card hidden" id="lpHasil">
+        <div id="lpRingkas"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn" style="flex:1;min-width:140px;background:#0f766e;padding:12px;font-size:14px" onclick="lpExcel()">⬇ Excel (.xlsx)</button>
+          <button class="btn" style="flex:1;min-width:140px;background:#134e8a;padding:12px;font-size:14px" onclick="lpCetak()">🖨 PDF / Cetak</button>
+        </div>
+        <p class="small">PDF: pada jendela cetak pilih <b>Simpan sebagai PDF</b>.</p>
+        <div id="lpPreview"></div>
+      </div>
+    </div>
+  </div>
   <div class="hero hero-small">
-    <img src="hero-tower.png" alt="Pulau Tower">
+    <div class="slideshow">
+      <img class="slide active" src="hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
+      <img class="slide" src="slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
+      <img class="slide" src="slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
+      <div class="slide-dots"></div>
+    </div>
     <div class="hero-overlay" style="padding:12px">
       <b style="font-size:14px">Monitoring Tower - Koperasi Intisel</b>
-      <p style="font-size:10px">Kelola & pantau pinjaman anggota dengan amanah</p>
+      <p style="font-size:10px">Kelola &amp; pantau pinjaman anggota dengan amanah</p>
     </div>
   </div>
+</div>
 
-  <div id="pengurusDashboard" class="hidden">
-    <div class="card">
-      <b>Dashboard Pengurus - <span id="pengurusActive"></span></b>
-      <p class="small">Kelola 118 anggota, cek masa kerja & limit otomatis.</p>
-      <div class="kpi">
-        <div><span>TOTAL ANGGOTA</span><b>118</b></div>
-        <div><span>LAYAK PINJAM ≥2TH</span><b id="statLayak">-</b></div>
-        <div><span>BELUM LAYAK &lt;2TH</span><b id="statBelum">-</b></div>
-      </div>
-      <div class="search-box">
-        <input id="searchAnggota" type="text" placeholder="Cari NIK / Nama / Jabatan..." oninput="filterAnggota()">
-        <button class="btn" style="width:auto;padding:10px 16px" onclick="filterAnggota()">Cari</button>
-      </div>
-      <div class="table-wrap">
-        <table class="table-ref" id="tabelAnggota">
-          <thead><tr><th>NIK</th><th>Nama</th><th>Jabatan</th><th>Tgl Masuk</th><th>Masa Kerja</th><th>Limit</th><th>Tenor Maks</th></tr></thead>
-          <tbody id="tbodyAnggota"></tbody>
-        </table>
-      </div>
-      <button class="btn" style="margin-top:12px;background:#6c757d" onclick="logoutPengurus()">Keluar / Ganti Pengurus</button>
-      <div style="margin-top:8px"><div class="back-link" onclick="navigateLanding()" style="width:100%;justify-content:center">← Kembali ke Menu Utama</div></div>
+<div id="cetakArea"></div>
+
+<!-- KONFIRMASI PENGAJUAN + TANDA TANGAN -->
+<div id="ttdModal" style="display:none;position:fixed;inset:0;background:rgba(10,30,60,.6);z-index:50;overflow-y:auto;padding:14px">
+  <div class="card" style="max-width:480px;margin:0 auto">
+    <div style="font-weight:800;font-size:17px">✍️ Konfirmasi Pengajuan</div>
+    <div class="ok" id="ttdJanji" style="margin:10px 0;line-height:1.5;font-size:14px"></div>
+    <label style="display:flex;gap:8px;align-items:flex-start;margin:10px 0"><input type="checkbox" id="ttdSetuju" style="width:auto;margin-top:3px"><b>Saya setuju dengan pernyataan di atas</b></label>
+    <div style="font-weight:700;margin-top:6px">Tanda tangan (coret di layar)</div>
+    <canvas id="ttdCanvas" style="display:block;width:100%;height:180px;border:1.5px dashed #134e8a;border-radius:12px;background:#fff;touch-action:none;margin-top:6px"></canvas>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><span class="small" id="ttdNama" style="font-weight:700"></span><span class="back-link" style="margin:0" onclick="ttdHapus()">🗑️ Hapus tanda tangan</span></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn" id="ttdBatal" style="flex:1;background:#6b7f99" onclick="ttdBatal()">Batal</button>
+      <button class="btn" id="ttdKirim" style="flex:2" onclick="ttdKirim()">Kirim Pengajuan</button>
     </div>
   </div>
 </div>
 
 <script>
-const GFORM_VIEW = "https://docs.google.com/forms/d/1jOW2zOAwsdsRpfibXglEUa2jv7Azzjleo-1iluj-LDg/viewform";
-const PASS_PENGURUS = "2027";
 let anggotaAktif=null;
+let ttdOpen=false, ttdNext=null; // jendela tanda tangan (diatur di ttd.js)
 let limitAktif={maxNominal:0,maxTenor:0};
 let currentPage='landing';
 
-// NAVIGATION WITH HISTORY FIX
-function showLandingNoPush(){
-  document.getElementById('landing').classList.remove('hidden');
-  document.getElementById('pageAnggota').classList.add('hidden');
-  document.getElementById('pagePengurus').classList.add('hidden');
-  currentPage='landing';
-  window.scrollTo(0,0);
-}
-function showAnggotaNoPush(){
-  document.getElementById('landing').classList.add('hidden');
-  document.getElementById('pageAnggota').classList.remove('hidden');
-  document.getElementById('pagePengurus').classList.add('hidden');
-  currentPage='anggota';
-  window.scrollTo(0,0);
-}
-function showPengurusNoPush(){
-  document.getElementById('landing').classList.add('hidden');
-  document.getElementById('pageAnggota').classList.add('hidden');
-  document.getElementById('pagePengurus').classList.remove('hidden');
-  currentPage='pengurus';
-  window.scrollTo(0,0);
-}
-function navigateLanding(){
-  if(currentPage!=='landing'){
-    history.pushState({page:'landing'},'', '#landing');
+// ROUTER RIWAYAT PERAMBAN: setiap layar = 1 entri riwayat, tombol back HP mundur 1 langkah
+// landing > anggota (Cek NIK) > anggota-menu > anggota-{kasbon|koperasi|approval|berjalan|bayar}
+// landing > pengurus (Login) > pengurus-dashboard
+const ROUTES=['landing','anggota','anggota-menu','anggota-kasbon','anggota-koperasi','anggota-approval','anggota-berjalan','anggota-bayar','anggota-kontak','pengurus','pengurus-dashboard','pengurus-validasi','pengurus-bayar','pengurus-cair','pengurus-berjalan','pengurus-statistik','pengurus-anggota','pengurus-laporan'];
+const ROUTE_LEVEL={'anggota':0,'anggota-menu':1,'anggota-kasbon':2,'anggota-koperasi':2,'anggota-approval':2,'anggota-berjalan':2,'anggota-bayar':2,'anggota-kontak':2,'pengurus':0,'pengurus-dashboard':1,'pengurus-validasi':2,'pengurus-bayar':2,'pengurus-cair':2,'pengurus-berjalan':2,'pengurus-statistik':2,'pengurus-anggota':2,'pengurus-laporan':2};
+let currentRoute='landing';
+function renderRoute(name,fromPop){
+  if(ROUTES.indexOf(name)<0) name='landing';
+  if(name.indexOf('anggota-')===0 && !anggotaAktif){ // layar terlindungi tanpa sesi
+    if(fromPop){ history.back(); return; }
+    history.replaceState({r:'anggota'},'','#anggota'); name='anggota';
   }
-  showLandingNoPush();
+  if(name.indexOf('pengurus-')===0 && !(typeof pkToken!=='undefined' && pkToken)){
+    if(fromPop){ history.back(); return; }
+    history.replaceState({r:'pengurus'},'','#pengurus'); name='pengurus';
+  }
+  const grp=name.split('-')[0];
+  document.getElementById('landing').classList.toggle('hidden',grp!=='landing');
+  document.getElementById('pageAnggota').classList.toggle('hidden',grp!=='anggota');
+  document.getElementById('pagePengurus').classList.toggle('hidden',grp!=='pengurus');
+  currentRoute=name; currentPage=grp;
+  if(grp==='anggota' && typeof anggotaRender==='function') anggotaRender(name);
+  if(grp==='pengurus' && typeof pengurusRender==='function') pengurusRender(name);
+  window.scrollTo(0,0);
 }
-function navigateAnggota(){
-  history.pushState({page:'anggota'},'', '#anggota');
-  showAnggotaNoPush();
-}
-function navigatePengurus(){
-  history.pushState({page:'pengurus'},'', '#pengurus');
-  showPengurusNoPush();
-}
-window.addEventListener('popstate', (e)=>{
-  let state = e.state;
-  if(!state){ showLandingNoPush(); return; }
-  if(state.page==='anggota') showAnggotaNoPush();
-  else if(state.page==='pengurus') showPengurusNoPush();
-  else showLandingNoPush();
-});
-window.addEventListener('load',()=>{
-  history.replaceState({page:'landing'},'', '#landing');
-  let saved = localStorage.getItem('pengurus_login');
-  if(saved){document.getElementById('pengurusNama').value=saved}
-  // handle direct hash
-  if(location.hash==='#anggota') navigateAnggota();
-  if(location.hash==='#pengurus') navigatePengurus();
+function go(name){ history.pushState({r:name},'','#'+name); renderRoute(name); }          // layar baru (tombol back kembali ke layar ini)
+function goReplace(name){ history.replaceState({r:name},'','#'+name); renderRoute(name); } // ganti layar tanpa menambah riwayat
+function navigateAnggota(){ go('anggota'); }
+function navigatePengurus(){ go('pengurus'); }
+window.addEventListener('popstate',e=>{
+  if(ttdOpen){ // tombol back HP menutup jendela tanda tangan (1 langkah), tetap di formulir
+    ttdOpen=false; ttdTutupUI();
+    if(ttdNext){ const n=ttdNext; ttdNext=null; goReplace(n); return; }
+    if(e.state&&e.state.r===currentRoute) return;
+  }
+  renderRoute((e.state&&e.state.r)||location.hash.replace('#',''),true); });
+window.addEventListener('DOMContentLoaded',()=>{
+  const start=location.hash.replace('#','');
+  history.replaceState({r:'landing'},'','#landing'); renderRoute('landing');
+  if(start.indexOf('anggota')===0) go('anggota');
+  else if(start==='pengurus') go('pengurus');
+  else if(start.indexOf('pengurus-')===0){
+    if(typeof pkToken!=='undefined' && pkToken){ // sisipkan Login > Menu di bawah layar yang dibuka, tanpa menghapus sesi
+      history.pushState({r:'pengurus'},'','#pengurus');
+      if(start!=='pengurus-dashboard' && ROUTES.indexOf(start)>=0){ history.pushState({r:'pengurus-dashboard'},'','#pengurus-dashboard'); go(start); }
+      else go('pengurus-dashboard');
+    } else go('pengurus');
+  }
 });
 
-function togglePass(){
-  let inp=document.getElementById('pengurusPass');
-  let btn=document.getElementById('eyeBtn');
-  if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; }
-  else { inp.type='password'; btn.textContent='👁️'; }
-}
 
 function getLimitByMasaKerja(mk){
   if(mk >= 10) return {maxNominal:5000000, maxTenor:10, bracket:"10 TAHUN"};
@@ -303,62 +543,68 @@ function getLimitByMasaKerja(mk){
 }
 function rp(n){return 'Rp '+n.toLocaleString('id-ID')}
 
-function cekNIK(){
- let v=document.getElementById('nikInput').value.trim();
- let hasil=document.getElementById('hasilCek'), form=document.getElementById('formPinjam');
- if(v.length<3){hasil.innerHTML='';form.style.display='none';return}
- let found=ANGGOTA.find(a=>a.nik===v || a.nama.toLowerCase().includes(v.toLowerCase()));
- if(!found){
-   anggotaAktif=null;
-   hasil.innerHTML=`<div class="err">❌ NIK tidak ada di daftar 118 anggota</div>`;
-   form.style.display='none';
-   return;
+let cekBusy=false;
+function resetNik(){
+  let el=document.getElementById('nikInput'); el.value=el.value.replace(/\D/g,'');
+  anggotaAktif=null;
+  document.getElementById('hasilCek').innerHTML='';
+  document.querySelectorAll('.view,#menuCard').forEach(v=>v.style.display='none');
+}
+async function cekNIK(){
+ if(cekBusy) return;
+ let v=document.getElementById('nikInput').value.replace(/\D/g,'');
+ let hasil=document.getElementById('hasilCek'), form=document.getElementById('formPinjam'), btnCek=document.getElementById('btnCekNik');
+ let lahir=lahirVal();
+ if(v.length<4||!lahir){hasil.innerHTML='<div class="err">Isi NIK dan tanggal lahir dengan lengkap</div>';form.style.display='none';return}
+ cekBusy=true; btnCek.disabled=true; btnCek.innerText='Memeriksa...';
+ try{
+   let r=await (await fetch(API_URL,{method:'POST',body:JSON.stringify({a:'cek',nik:v,lahir:lahir})})).json();
+   if(!r.ok){
+     anggotaAktif=null; form.style.display='none';
+     hasil.innerHTML='<div class="err">❌ '+esc(r.msg||'NIK tidak ditemukan')+'</div>';
+     return;
+   }
+   anggotaAktif={nik:v,lahir:lahir,nama:r.nama,jabatan:r.jabatan,tglMasuk:r.tglMasuk,masaKerja:r.masaKerja,masaKerjaTahun:r.masaKerjaTahun};
+   let mk=r.masaKerja, mkBulat=r.masaKerjaTahun;
+   limitAktif = r.limit || {maxNominal:0,maxTenor:0,bracket:'BELUM CUKUP',notEligible:true};
+
+   hasil.innerHTML=`<div class="ok">✅ <b>${esc(r.nama)}</b> - ${esc(r.jabatan)}<br><span class="small">Tgl Masuk: ${r.tglMasuk} | Masa kerja: ${mk.toFixed(1)} tahun (${mkBulat} tahun)</span></div>`;
+   document.getElementById('namaAnggota').innerText=r.nama;
+   document.getElementById('jabAnggota').innerText=r.jabatan;
+   document.getElementById('tglMasukTxt').innerText=`Tgl Masuk Kerja: ${r.tglMasuk} • Masa Kerja Real: ${mk.toFixed(1)} tahun`;
+   document.getElementById('mkTxt').innerText= mkBulat + " Th (" + mk.toFixed(1) +")";
+   document.getElementById('limitTxt').innerText= rp(limitAktif.maxNominal);
+   document.getElementById('tenorMaxTxt').innerText= limitAktif.maxTenor + " Bln";
+
+   if(limitAktif.notEligible){
+     document.getElementById('limitInfo').innerHTML=`❌ Masa kerja < 2 tahun (${mk.toFixed(1)} th) belum bisa pinjam sesuai kebijakan. Minimal 2 tahun.`;
+     masukMenu();
+     return;
+   }
+   document.getElementById('btnKirim').disabled=false;
+   document.getElementById('btnKirim').innerText='Kirim Pengajuan';
+   document.getElementById('limitInfo').innerHTML=`Masa kerja <b>${mk.toFixed(1)} tahun</b> (bracket <b>${limitAktif.bracket}</b>) → <b>Limit Maks ${rp(limitAktif.maxNominal)} tenor maks ${limitAktif.maxTenor} bulan</b>. Kamu boleh pinjam di bawah itu dan tenor lebih cepat. Contoh: kerja 5 tahun → limit 3,5jt/7 bln, boleh ambil 3jt/6 bln.`;
+
+   let range=document.getElementById('nomRange');
+   range.max=limitAktif.maxNominal; range.min=500000;
+   if(parseInt(range.value)>limitAktif.maxNominal) range.value=limitAktif.maxNominal;
+   if(parseInt(range.value)<500000) range.value=limitAktif.maxNominal;
+   document.getElementById('nomMaxTxt').innerText="Maks "+rp(limitAktif.maxNominal);
+
+   let tenorSel=document.getElementById('tenor'); tenorSel.innerHTML="";
+   for(let i=3;i<=limitAktif.maxTenor;i++){
+     let opt=document.createElement('option'); opt.value=i;
+     opt.text=i+" Bulan"+(i===limitAktif.maxTenor?" (Maks)":" (Boleh lebih cepat)");
+     if(i===limitAktif.maxTenor) opt.selected=true;
+     tenorSel.appendChild(opt);
+   }
+   updateNominal();
+   masukMenu();
+ }catch(e){
+   hasil.innerHTML='<div class="err">❌ Gagal terhubung ke server. Periksa internet lalu coba lagi.</div>';
+ }finally{
+   cekBusy=false; btnCek.disabled=false; btnCek.innerText='🔍 Masuk';
  }
- anggotaAktif=found;
- let mk = found.masaKerja;
- let mkBulat = found.masaKerjaTahun;
- limitAktif = getLimitByMasaKerja(mk);
-
- hasil.innerHTML=`<div class="ok">✅ <b>${found.nama}</b> - ${found.jabatan}<br><span class="small">Tgl Masuk: ${found.tglMasuk} | Masa kerja: ${mk.toFixed(1)} tahun (${mkBulat} tahun)</span></div>`;
- document.getElementById('namaAnggota').innerText=found.nama;
- document.getElementById('jabAnggota').innerText=found.jabatan;
- document.getElementById('tglMasukTxt').innerText=`Tgl Masuk Kerja: ${found.tglMasuk} • Masa Kerja Real: ${mk.toFixed(1)} tahun`;
- document.getElementById('mkTxt').innerText= mkBulat + " Th (" + mk.toFixed(1) +")";
- document.getElementById('limitTxt').innerText= rp(limitAktif.maxNominal);
- document.getElementById('tenorMaxTxt').innerText= limitAktif.maxTenor + " Bln";
-
- if(limitAktif.notEligible){
-   document.getElementById('limitInfo').innerHTML=`❌ Masa kerja < 2 tahun (${mk.toFixed(1)} th) belum bisa pinjam sesuai kebijakan. Minimal 2 tahun.`;
-   form.style.display='block';
-   document.getElementById('btnKirim').disabled=true;
-   document.getElementById('btnKirim').innerText='Belum Memenuhi Syarat';
-   return;
- }
- document.getElementById('btnKirim').disabled=false;
- document.getElementById('btnKirim').innerText='Kirim Pengajuan → Buka GForm';
-
- document.getElementById('limitInfo').innerHTML=`Masa kerja <b>${mk.toFixed(1)} tahun</b> (bracket <b>${limitAktif.bracket}</b>) → <b>Limit Maks ${rp(limitAktif.maxNominal)} tenor maks ${limitAktif.maxTenor} bulan</b>. Kamu boleh pinjam di bawah itu dan tenor lebih cepat. Contoh: kerja 5 tahun → limit 3,5jt/7 bln, boleh ambil 3jt/6 bln.`;
-
- let range = document.getElementById('nomRange');
- range.max = limitAktif.maxNominal;
- range.min = 500000;
- if(parseInt(range.value) > limitAktif.maxNominal) range.value = limitAktif.maxNominal;
- if(parseInt(range.value) < 500000) range.value = limitAktif.maxNominal;
-
- document.getElementById('nomMaxTxt').innerText = "Maks " + rp(limitAktif.maxNominal);
-
- let tenorSel = document.getElementById('tenor');
- tenorSel.innerHTML = "";
- for(let i=3;i<=limitAktif.maxTenor;i++){
-   let opt = document.createElement('option');
-   opt.value=i;
-   opt.text = i + " Bulan" + (i===limitAktif.maxTenor ? " (Maks)" : " (Boleh lebih cepat)");
-   if(i===limitAktif.maxTenor) opt.selected=true;
-   tenorSel.appendChild(opt);
- }
-
- updateNominal();
- form.style.display='block';
 }
 
 function updateNominal(){
@@ -375,65 +621,34 @@ function hitungAngsuran(){
   document.getElementById('tenorInfo').innerText = `Tenor ${tenor} bulan (maks ${limitAktif.maxTenor} bulan) - angsuran ${rp(angs)}/bulan - 0% bunga`;
 }
 
-function directKeGform(){
- if(!anggotaAktif){alert('Cek NIK dulu');return}
- let tujuan=document.getElementById('tujuan').value;
- if(!tujuan){alert('Isi tujuan dulu');return}
- let nom = document.getElementById('nomRange').value;
- let tenor = document.getElementById('tenor').value;
 
- if(parseInt(nom) > limitAktif.maxNominal){alert('Nominal melebihi limit masa kerja! Maks ' + rp(limitAktif.maxNominal));return}
- if(parseInt(tenor) > limitAktif.maxTenor){alert('Tenor melebihi limit! Maks ' + limitAktif.maxTenor + ' bulan');return}
-
- localStorage.setItem('intisel_nama', anggotaAktif.nama);
- localStorage.setItem('intisel_nik', anggotaAktif.nik);
- localStorage.setItem('intisel_masaKerja', anggotaAktif.masaKerja);
- localStorage.setItem('intisel_nominal', nom);
- localStorage.setItem('intisel_tenor', tenor);
- localStorage.setItem('intisel_tujuan', tujuan);
-
- window.location.href = GFORM_VIEW;
-}
-
-// PENGURUS
-function loginPengurus(){
-  let nama = document.getElementById('pengurusNama').value;
-  let pass = document.getElementById('pengurusPass').value;
-  let msg = document.getElementById('loginMsg');
-  if(!nama){msg.innerHTML='<div class="err">Pilih nama pengurus dulu</div>';return}
-  if(pass !== PASS_PENGURUS){msg.innerHTML='<div class="err">❌ Password salah! Gunakan password percobaan: 2027</div>';return}
-  msg.innerHTML='<div class="ok">✅ Login berhasil sebagai '+nama+'</div>';
-  document.getElementById('pengurusActive').innerText = nama;
-  document.getElementById('pengurusDashboard').classList.remove('hidden');
-  renderAnggotaTable(ANGGOTA);
-  let layak = ANGGOTA.filter(a=>a.masaKerja>=2).length;
-  let belum = ANGGOTA.length - layak;
-  document.getElementById('statLayak').innerText = layak;
-  document.getElementById('statBelum').innerText = belum;
-  localStorage.setItem('pengurus_login', nama);
-}
-function logoutPengurus(){
-  document.getElementById('pengurusDashboard').classList.add('hidden');
-  document.getElementById('loginMsg').innerHTML='';
-  document.getElementById('pengurusPass').value='';
-  localStorage.removeItem('pengurus_login');
-}
-function renderAnggotaTable(list){
-  let tbody = document.getElementById('tbodyAnggota');
-  tbody.innerHTML='';
-  list.forEach(a=>{
-    let lim = getLimitByMasaKerja(a.masaKerja);
-    let tr = document.createElement('tr');
-    tr.innerHTML = `<td>${a.nik||'-'}</td><td style="text-align:left">${a.nama}</td><td>${a.jabatan}</td><td>${a.tglMasuk}</td><td>${a.masaKerjaTahun} Th (${a.masaKerja.toFixed(1)})</td><td>${lim.notEligible?'<span style="color:#c0392b">Belum layak</span>':rp(lim.maxNominal)}</td><td>${lim.notEligible?'-':lim.maxTenor+' Bln'}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-function filterAnggota(){
-  let q = document.getElementById('searchAnggota').value.toLowerCase();
-  if(!q){renderAnggotaTable(ANGGOTA);return}
-  let filtered = ANGGOTA.filter(a=> (a.nik+a.nama+a.jabatan).toLowerCase().includes(q));
-  renderAnggotaTable(filtered);
-}
 </script>
+<script>
+// Slideshow banner di semua halaman: ganti otomatis tiap 4 detik, titik bisa diklik
+(function(){
+  var DELAY=4000, reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var shows=[];
+  document.querySelectorAll('.slideshow').forEach(function(box){
+    var slides=box.querySelectorAll('.slide'), dots=box.querySelector('.slide-dots'), st={cur:0,timer:null};
+    function show(n){
+      st.cur=(n+slides.length)%slides.length;
+      slides.forEach(function(el,i){el.classList.toggle('active',i===st.cur);});
+      Array.prototype.forEach.call(dots.children,function(d,i){d.classList.toggle('active',i===st.cur);});
+    }
+    function start(){clearInterval(st.timer); if(!reduce) st.timer=setInterval(function(){ if(box.offsetParent!==null) show(st.cur+1); },DELAY);}
+    slides.forEach(function(_,i){
+      var b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label','Foto '+(i+1));
+      b.onclick=function(){show(i);start();}; dots.appendChild(b);
+    });
+    show(0); start(); shows.push({stop:function(){clearInterval(st.timer);},start:start});
+  });
+  document.addEventListener('visibilitychange',function(){shows.forEach(function(x){document.hidden?x.stop():x.start();});});
+})();
+</script>
+<script src="pengajuan.js"></script>
+<script src="ttd.js"></script>
+<script src="layanan.js"></script>
+<script src="pengurus.js"></script>
+<script src="pengurus2.js"></script>
 </body>
 </html>
