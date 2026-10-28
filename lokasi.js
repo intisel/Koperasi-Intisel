@@ -18,7 +18,7 @@ function lokasiMinta(){
 ['btnKb', 'btnKirim', 'btnBayar'].forEach(id => {
   const b = document.getElementById(id); if(!b || !b.parentNode) return;
   const n = document.createElement('p'); n.className = 'small'; n.style.cssText = 'margin:8px 0 6px;text-align:center';
-  n.textContent = '📍 Saat Anda menekan kirim, lokasi Anda dicatat satu kali untuk verifikasi oleh Ketua koperasi. Jika izin lokasi ditolak, data tetap terkirim.';
+  n.textContent = '📍 Saat anda menekan kirim, Data anda akan dicatat untuk diverifikasi oleh pengurus koperasi.';
   b.parentNode.insertBefore(n, b);
 });
 
