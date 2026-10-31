@@ -75,6 +75,7 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
 body.kartu-open{overflow:hidden}
 @media print{#kartuZoomBox{zoom:1!important}body.kartu-open>*:not(#kartuModal){display:none!important}.kartu-modal{position:static;background:#fff;padding:0;overflow:visible}.kartu-aksi{display:none}.kartu-box{border-radius:0;font-size:12px}.kartu-tbl{font-size:11.5px}}
 .pktabs{display:flex;background:#fff;border:1.5px solid #d6e6f8;border-radius:99px;padding:4px;margin:0 0 12px}.pktabs button{flex:1;border:0;background:transparent;border-radius:99px;padding:11px 4px;font-weight:700;font-size:13px;white-space:nowrap;color:#5a7aa0;cursor:pointer;font-family:inherit}.pktabs button.on{background:#ffd400;color:#4a3b00}#kasTabBtnM.on,#kbpTabM.on{background:#16a34a;color:#fff}#kasTabBtnK.on,#kbpTabK.on{background:#dc2626;color:#fff}#kasTabBtnM:not(.on),#kbpTabM:not(.on){color:#166534}#kasTabBtnK:not(.on),#kbpTabK:not(.on){color:#b91c1c}.kas-m{background:#ecfdf3!important;border:1.5px solid #86efac!important}.kas-k{background:#fef2f2!important;border:1.5px solid #fca5a5!important}.pktabs button.notif{background:#dc2626;color:#fff}.pktabs button.notif.on{background:#dc2626;color:#fff;box-shadow:inset 0 0 0 3px #ffd400}
+#pkvAnggota .pktabs button{flex:1 1 0;min-width:0;font-size:12px;padding:9px 3px;white-space:normal;line-height:1.2}
 .sesibar{display:flex;align-items:center;gap:10px;margin-top:6px}.sesiinfo{flex:1;min-width:0;line-height:1.3}.sesiinfo b{font-size:16px;overflow-wrap:anywhere}.sesiinfo .small{margin:1px 0 0}
 .sesibtn{flex:none;border:1.5px solid #b9d2f0;background:#eef5ff;color:#134e8a;border-radius:99px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;position:relative}.sesibtn.bell{width:42px;height:42px;font-size:20px;padding:0}.sesibtn.bell.big{width:54px;height:54px;font-size:27px}
 .pkaksi{display:flex;justify-content:space-between;gap:6px;margin-top:10px;align-items:center}.pkaksi .back-link{margin:0;padding:8px 9px;font-size:12.5px;white-space:nowrap}.sesibtn.out{padding:10px 12px}
@@ -719,14 +720,9 @@ body.kartu-open{overflow:hidden}
       </div>
     </div>
     <div class="pkv hidden" id="pkvAnggota">
-      <div class="pktabs"><button id="agTabBtnD" class="on" onclick="agTab('D')">👥 Database</button><button id="agTabBtnU" onclick="agTab('U')">📝 Perubahan Data <span id="agTabNU"></span></button></div>
+      <div class="pktabs"><button id="agTabBtnD" class="on" onclick="agTab('D')">👥 Database</button><button id="agTabBtnU" onclick="agTab('U')">📝 Perubahan Data <span id="agTabNU"></span></button><button id="agTabBtnT" class="hidden" onclick="agTab('T')">➕ Tambah Anggota</button></div>
       <div id="agTabD">
-      <div class="card hidden" id="agBaruCard"><b>➕ Tambah Anggota Baru</b>
-        <p class="small" style="margin:2px 0 8px">Diajukan oleh satu pengurus dan harus disetujui pengurus lain. Pimpinan diberi tahu lewat email (tanpa persetujuan). Anggota baru masuk pertama kali dengan kode OTP yang dikirim ke email di bawah.</p>
-        <div id="agBaruForm"></div>
-        <button class="btn" id="agBaruBtn" onclick="agTambahKirim()">📨 Ajukan Anggota Baru</button>
-      </div>
-      <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>👥 Database Anggota</b><button class="btn hidden" id="agBaruTombol" style="width:auto;margin:0;padding:8px 12px;font-size:13px" onclick="agTambahToggle()">➕ Tambah Anggota</button></div>
+      <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>👥 Database Anggota</b></div>
         <input id="agCari" type="search" placeholder="Cari nama / NIK / jabatan..." oninput="agRender()" style="margin-top:8px" autocomplete="off">
         <select id="agFilter" onchange="agRender()">
           <option value="">Semua anggota aktif</option><option value="nonaktif">Anggota nonaktif (berhenti)</option><option value="berjalan">Punya pinjaman berjalan</option><option value="terlambat">Angsuran terlambat</option>
@@ -739,6 +735,18 @@ body.kartu-open{overflow:hidden}
         <div class="card"><b>📝 Perubahan Data Anggota</b>
           <p class="small" style="margin:2px 0 8px">Anggota mengajukan perubahan lewat halaman Profil. Cukup satu pengurus untuk menyetujui; setelah disetujui, sheet Anggota langsung diperbarui. NIK, nama, dan tanggal masuk kerja tidak dapat diubah lewat jalur ini. Perubahan data Anda sendiri harus diputuskan pengurus lain.</p>
           <div id="ubList"></div></div>
+      </div>
+      <div id="agTabT" class="hidden">
+        <div class="card"><b>➕ Tambah Anggota Baru</b>
+          <p class="small" style="margin:2px 0 8px">Diajukan oleh satu pengurus dan harus disetujui pengurus lain. Pimpinan diberi tahu lewat email (tanpa persetujuan). Anggota baru masuk pertama kali dengan kode OTP yang dikirim ke email di bawah.</p>
+          <div id="agBaruForm"></div>
+          <button class="btn" id="agBaruBtn" onclick="agTambahKirim()">📨 Ajukan Anggota Baru</button>
+        </div>
+        <div class="card"><b>⛔ Nonaktifkan / Aktifkan Anggota</b>
+          <p class="small" style="margin:2px 0 8px">Untuk anggota yang berhenti kerja (resign, pensiun, PHK) atau kembali bekerja. Cari anggotanya, lalu pilih tindakan. Diajukan oleh satu pengurus dan harus disetujui pengurus lain.</p>
+          <input id="agKelolaCari" type="search" placeholder="Ketik nama atau NIK anggota..." oninput="agKelolaRender()" autocomplete="off">
+          <p class="small" id="agKelolaInfo"></p><div id="agKelolaList"></div>
+        </div>
       </div>
     </div>
     <div class="pkv hidden" id="pkvInfo">

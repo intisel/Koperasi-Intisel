@@ -475,8 +475,8 @@ const kDua = (lg, sm) => `<span class="lg">${lg}</span><span class="sm">${sm}</s
 function kTglPanjang(d){ return HARI_K[d.getDay()] + ', ' + ('0' + d.getDate()).slice(-2) + ' ' + BLN_KP[d.getMonth()] + ' ' + d.getFullYear(); }
 function kSelisih(a, b){ const x = Date.parse(a + 'T00:00:00Z'), y = Date.parse(b + 'T00:00:00Z'); return isNaN(x) || isNaN(y) ? 0 : Math.round((x - y) / 864e5); }
 const kAngka = n => Number(n || 0).toLocaleString('id-ID');
-function kartuBuka(id){
-  const p = (dataSaya.list || []).find(x => x.id === id && x.angsuran);
+function kartuBuka(id, pLuar, namaLuar){ // pLuar/namaLuar: dipakai pengurus untuk membuka kartu anggota lain; anggota memakai datanya sendiri
+  const p = pLuar || (dataSaya.list || []).find(x => x.id === id && x.angsuran);
   if(!p){ alert('Data kartu belum tersedia. Muat ulang halaman lalu coba lagi.'); return; }
   const a = p.angsuran, k = p.kartu || {}, kas = p.jenis === 'KASBON', jad = a.jadwal || [], ik = a.infaq || {target: +k.infaq || 0, terbayar: 0, sisa: +k.infaq || 0, riwayat: []}, infaq = ik.target;
   const infaqTxt = infaq ? kAngka(infaq) + (ik.sisa ? ' (Terbayar ' + kAngka(ik.terbayar) + ', sisa ' + kAngka(ik.sisa) + ')' : ' (Lunas' + (ik.terbayar > infaq ? ', terbayar ' + kAngka(ik.terbayar) : '') + ')') : '-';
@@ -489,7 +489,7 @@ function kartuBuka(id){
     return `<tr><td class="c">${j.ke}</td><td>${kas ? 'Kasbon' : kDua('Angsuran Ke ' + j.ke, 'Ke ' + j.ke)}</td><td class="c">${kDua(esc(kTgl(j.due)), kTglS(j.due))}</td><td class="c">${bayar ? kDua(esc(kTgl(j.tglBayar)), kTglS(j.tglBayar)) : ''}</td>` +
       `<td class="r">${bayar ? kAngka(j.jumlah) : ''}</td><td class="c"${!bayar && telat ? ' style="color:#c0392b;font-weight:700"' : ''}>${telat === null ? '' : telat + ' Hari'}</td><td class="c">${bayar ? 'Lunas' : ''}</td></tr>`;
   }).join('') + infaqBaris.map(x => `<tr><td class="c">-</td><td>Infaq</td><td class="c"></td><td class="c">${kDua(esc(kTgl(x.tgl)), kTglS(x.tgl))}</td><td class="r">${kAngka(x.jumlah)}</td><td class="c"></td><td class="c">Infaq</td></tr>`).join('');
-  const nm = anggotaAktif ? anggotaAktif.nama : '';
+  const nm = namaLuar !== undefined ? namaLuar : (anggotaAktif ? anggotaAktif.nama : '');
   window.KARTU_CUR = { id: p.id, kas, judul: 'BUKTI PEMBAYARAN ' + (kas ? 'KASBON' : 'PINJAMAN KOPERASI'), info: [
     ['No Registrasi', p.id, 1], ['Nama', nm, 1], ['Jumlah Pinjaman', kAngka(p.nominal)], ['Alamat', k.alamat || '-'],
     ['Lama Pinjaman', kas ? '30 Hari' : p.tenor + ' Bulan'], ['No.HP', k.hp || '-'], ['Angsuran', jad.length ? kAngka((jad.find(j => j.asli > 0) || jad[0]).asli) : '-'], ['Email', k.email || '-'],
@@ -502,7 +502,7 @@ function kartuBuka(id){
   const html = `<div class="kartu-box" id="kartuBox">
     <div class="kartu-judul">BUKTI PEMBAYARAN ${kas ? 'KASBON' : 'PINJAMAN KOPERASI'}</div>
     <div class="kartu-info">
-      ${info('No Registrasi', esc(p.id), 1)}${info('Nama', esc(anggotaAktif ? anggotaAktif.nama : ''), 1)}
+      ${info('No Registrasi', esc(p.id), 1)}${info('Nama', esc(nm), 1)}
       ${info('Jumlah Pinjaman', kAngka(p.nominal))}${info('Alamat', esc(k.alamat || '-'))}
       ${info('Lama Pinjaman', kas ? '30 Hari' : p.tenor + ' Bulan')}${info('No.HP', esc(k.hp || '-'))}
       ${info('Angsuran', jad.length ? kAngka((jad.find(j => j.asli > 0) || jad[0]).asli) : '-')}${info('Email', esc(k.email || '-'))}
