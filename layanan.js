@@ -10,7 +10,23 @@ const KOMEN = a => a ? `<div style="margin:2px 0 6px 22px;color:#334"><i>“${es
 const rpf = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
 const tglf = s => s ? String(s).split('-').reverse().join('/') : '-';
 const hariIniStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const PV_BACA = ['cek', 'status', 'kuota_info', 'kuota_bulan', 'tln_saya', 'ubah_saya', 'foto_a_ambil', 'foto_kontak', 'keluar_a'];
+const adaPreview = () => typeof anggotaAktif !== 'undefined' && anggotaAktif && String(anggotaAktif.atoken || '').indexOf('PV-') === 0;
+function pvSpanduk(nama){
+  let e = document.getElementById('pvSpanduk');
+  if(!nama){ if(e) e.remove(); return; }
+  if(!e){ e = document.createElement('div'); e.id = 'pvSpanduk'; e.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:260;background:#374151;color:#fff;padding:9px 14px;font-size:13px;font-weight:700;text-align:center;display:flex;gap:10px;align-items:center;justify-content:center'; document.body.appendChild(e); }
+  e.innerHTML = '<span>👁️ LIHAT SAJA — ' + esc(nama) + ' (tidak ada data yang dikirim)</span><button onclick="keluarAnggota()" style="border:0;border-radius:8px;padding:6px 12px;font-weight:800;background:#fff;color:#374151">Keluar</button>';
+}
+async function anggotaPreviewMulai(nik, atoken, nama){ // Ketua: buka tampilan anggota baca-saja
+  if(anggotaAktif) resetAnggota();
+  $('nikInput').value = nik;
+  renderRoute('anggota');
+  await masukDenganToken(nik, atoken);
+  if(adaPreview()) pvSpanduk(nama);
+}
 const apiPost = async body => { // sesi anggota yang ditolak server (habis / tidak sah) -> otomatis ke layar login
+  if(String(body.atoken || '').indexOf('PV-') === 0 && PV_BACA.indexOf(body.a) < 0){ alert('Mode lihat saja: tidak dapat mengirim atau mengubah data.'); return {ok:false, msg:'Mode lihat saja: tidak dapat mengirim atau mengubah data.'}; }
   const r = await (await fetch(API_URL, {method:'POST', body:JSON.stringify(body)})).json();
   if(r && r.expired && body.atoken && typeof anggotaAktif !== 'undefined' && anggotaAktif) sesiServerHabis();
   return r;
@@ -203,6 +219,7 @@ function masukMenu(){
 }
 async function keluarKonfirmasi(){ if(await dialogKonfirmasi('Apakah Anda yakin ingin keluar?')) keluarAnggota(); }
 function keluarAnggota(){ // tombol Keluar: cabut sesi di server, hapus sesi tersimpan, lalu kembali ke halaman depan
+  pvSpanduk('');
   try{ const t = anggotaAktif && anggotaAktif.atoken; if(t) fetch(API_URL, {method:'POST', body:JSON.stringify({a:'keluar_a', atoken:t})}).catch(() => {}); }catch(e){}
   sesiHapus(); anggotaAktif = null; sesiLoginT = 0; sesiSpanduk(''); // keluar = sesi di memori ikut dihapus (tanpa ini, membuka Anggota lagi memunculkan 'Sesi berakhir')
   const lv = (typeof ROUTE_LEVEL !== 'undefined' && ROUTE_LEVEL[currentRoute]) || 0;
