@@ -307,6 +307,7 @@ body.kartu-open{overflow:hidden}
       <button class="mtile" id="tlKoperasi" onclick="bukaMenu('formPinjam')"><span class="ic">🏦</span><b>Pengajuan Koperasi</b><span class="sub" id="tlKoperasiSub"></span></button>
       <button class="mtile" onclick="bukaMenu('vApproval')"><span class="ic">📋</span><b>Status Approval</b><span class="sub" id="tlApprovalSub">Koperasi / Kasbon</span></button>
       <button class="mtile" onclick="bukaMenu('vBerjalan')"><span class="ic">📊</span><b>Pinjaman Berjalan</b><span class="sub" id="tlBerjalanSub"></span></button>
+      <button class="mtile wide" id="tlDispensasi" style="display:none" onclick="bukaMenu('vDispensasi')"><span class="pbadge" id="pbDispAng"></span><span class="ic">🎟️</span><b>Dispensasi Masa Tunggu</b><span class="sub" id="tlDispensasiSub"></span></button>
       <button class="mtile wide" onclick="bukaMenu('vBayar')"><span class="ic">🧾</span><b>Laporan Pembayaran Angsuran</b><span class="sub" id="tlBayarSub">Upload foto bukti transaksi</span></button>
       <button class="mtile" onclick="window.open('panduan-anggota.html','_blank')"><span class="ic">📖</span><b>Panduan Penggunaan</b><span class="sub">Cara memakai setiap menu</span></button>
       <button class="mtile" onclick="bukaMenu('vKontak')"><span class="ic">📞</span><b>Kontak &amp; Bantuan</b><span class="sub">Hubungi pengurus lewat WhatsApp</span></button>
@@ -429,6 +430,23 @@ body.kartu-open{overflow:hidden}
     </div>
     <div style="font-weight:800;margin-top:16px">Riwayat Laporan</div>
     <div id="byRiwayat" style="margin-top:6px"></div>
+  </div>
+
+  <!-- DISPENSASI MASA TUNGGU (dibuka pengurus) -->
+  <div class="card view" id="vDispensasi" style="display:none">
+    <b style="font-size:16px">🎟️ Dispensasi Masa Tunggu</b>
+    <div id="dsmInfo" class="small" style="margin:6px 0"></div>
+    <div id="dsmForm">
+      <label>Alasan</label>
+      <select id="dsmAlasan"><option value="musibah">Musibah / kedukaan keluarga</option><option value="sakit">Sakit / biaya pengobatan</option><option value="mendesak">Kebutuhan mendesak keluarga</option><option value="lain">Alasan lain</option></select>
+      <label>Uraian (jelaskan keadaan Anda, minimal 30 huruf)</label>
+      <textarea id="dsmUraian" rows="5" maxlength="800" placeholder="Ceritakan kejadian dan mengapa Anda sangat membutuhkan pinjaman sekarang..."></textarea>
+      <label>Foto bukti pendukung (wajib)</label>
+      <div class="small" style="margin:0 0 6px">Contoh: foto kejadian/musibah, surat keterangan dokter atau rumah sakit, atau bukti lain yang relevan.</div>
+      <input type="file" accept="image/*" onchange="dsmPilihFoto(this)">
+      <div id="dsmPreviewWrap" style="display:none;margin-top:6px"><img id="dsmPreview" style="max-width:100%;border-radius:10px;border:1px solid #b9d2f0" alt="Bukti"><br><span class="back-link" onclick="dsmHapusFoto()">✖ Hapus foto</span></div>
+      <button class="btn" id="btnDsm" onclick="dsmKirim()" style="margin-top:10px">Kirim Permohonan</button>
+    </div>
   </div>
 
   <!-- PERMOHONAN KERINGANAN -->
@@ -715,14 +733,12 @@ body.kartu-open{overflow:hidden}
     </div>
     <div class="pkv hidden" id="pkvDispensasi">
       <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b>⏳ Dispensasi Masa Tunggu</b></div>
-        <p class="small" style="margin:2px 0 8px">Untuk anggota yang baru lunas tetapi sangat mendesak membutuhkan pinjaman (misalnya musibah). Wajib disetujui <b>Penasehat, Ketua, dan Bendahara</b>; satu penolakan berarti ditolak. Pimpinan diberi tahu setelah disetujui dan tetap memutuskan pengajuan pinjamannya. Limit <b>dipotong Rp 500.000 untuk setiap bulan masa tunggu yang dilewati</b>. Berlaku 14 hari, sekali pakai.</p>
+        <p class="small" style="margin:2px 0 8px">Untuk anggota yang baru lunas tetapi sangat mendesak membutuhkan pinjaman (misalnya musibah). <b>Alur:</b> anggota meminta ke pengurus → salah satu pengurus membuka menu ini untuk anggota → anggota mengisi formulirnya sendiri di aplikasi → wajib disetujui <b>Penasehat, Ketua, dan Bendahara</b>; satu penolakan berarti ditolak. Pimpinan diberi tahu setelah disetujui dan tetap memutuskan pengajuan pinjamannya. Limit <b>dipotong Rp 500.000 untuk setiap bulan masa tunggu yang dilewati</b>. Berlaku 14 hari, sekali pakai.</p>
         <div id="dsDaftar"><p class="small">Memuat...</p></div></div>
-      <div class="card hidden" id="dsFormBox" style="background:#e5e7eb;border-color:#cbd5e1"><b>➕ Usulkan Dispensasi</b>
+      <div class="card hidden" id="dsFormBox" style="background:#e5e7eb;border-color:#cbd5e1"><b>🔓 Buka Menu Dispensasi untuk Anggota</b>
+        <p class="small" style="margin:2px 0 6px">Setelah anggota meminta langsung (telepon, WA, atau bertemu), buka aksesnya di sini. Menu <b>Dispensasi Masa Tunggu</b> akan muncul di aplikasi anggota itu, lalu <b>anggota sendiri yang mengisi formulirnya</b>. Akses berlaku 7 hari.</p>
         <label>Anggota (ketik nama)</label><input type="search" id="dsCari" placeholder="🔍 Ketik nama anggota yang sedang masa tunggu..." autocomplete="off" oninput="dsCariIsi()"><div id="dsSaran"></div><div id="dsInfo" class="ok" style="display:none;margin:6px 0"></div>
-        <label>Alasan</label><select id="dsAlasan"><option value="musibah">Musibah / kedukaan keluarga</option><option value="sakit">Sakit / biaya pengobatan</option><option value="mendesak">Kebutuhan mendesak keluarga</option><option value="lain">Alasan lain</option></select>
-        <label>Uraian &amp; dasar keputusan (min. 30 huruf)</label><textarea id="dsUraian" rows="3" placeholder="Jelaskan kejadian dan alasan dispensasi, hasil musyawarah pengurus..."></textarea>
-        <label>Foto bukti pendukung</label><input type="file" accept="image/*" onchange="dsPilihFoto(this)"><p class="small" id="dsFotoInfo" style="margin:2px 0"></p>
-        <button class="btn" id="dsKirim" onclick="dsAjukan()">Kirim Usulan</button></div>
+        <button class="btn" id="dsKirim" onclick="dsBuka()">Buka Akses untuk Anggota</button></div>
     </div>
     <div class="pkv hidden" id="pkvSelesai">
       <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b>🕊️ Penyelesaian Khusus</b></div>
@@ -934,8 +950,8 @@ let currentPage='landing';
 // ROUTER RIWAYAT PERAMBAN: setiap layar = 1 entri riwayat, tombol back HP mundur 1 langkah
 // landing > anggota (Cek NIK) > anggota-menu > anggota-{kasbon|koperasi|approval|berjalan|bayar}
 // landing > pengurus (Login) > pengurus-dashboard
-const ROUTES=['landing','anggota','anggota-menu','anggota-kasbon','anggota-talangan','anggota-koperasi','anggota-approval','anggota-berjalan','anggota-bayar','anggota-keringanan','anggota-kontak','anggota-profil','anggota-profil-ubah','pengurus','pengurus-dashboard','pengurus-validasi','pengurus-cair','pengurus-berjalan','pengurus-anggota','pengurus-info','pengurus-perangkat','pengurus-budget','pengurus-kas','pengurus-kbp','pengurus-selesai','pengurus-dispensasi','pengurus-g1','pengurus-g2','pengurus-g3','pengurus-g4'];
-const ROUTE_LEVEL={'anggota':0,'anggota-menu':1,'anggota-kasbon':2,'anggota-talangan':2,'anggota-koperasi':2,'anggota-approval':2,'anggota-berjalan':2,'anggota-bayar':2,'anggota-keringanan':2,'anggota-kontak':2,'anggota-profil':2,'anggota-profil-ubah':2,'pengurus':0,'pengurus-dashboard':1,'pengurus-validasi':3,'pengurus-cair':3,'pengurus-berjalan':3,'pengurus-anggota':3,'pengurus-budget':3,'pengurus-kas':3,'pengurus-kbp':3,'pengurus-selesai':3,'pengurus-dispensasi':3,'pengurus-info':3,'pengurus-perangkat':3,'pengurus-g1':2,'pengurus-g2':2,'pengurus-g3':2,'pengurus-g4':2};
+const ROUTES=['landing','anggota','anggota-menu','anggota-kasbon','anggota-talangan','anggota-koperasi','anggota-approval','anggota-berjalan','anggota-bayar','anggota-keringanan','anggota-dispensasi','anggota-kontak','anggota-profil','anggota-profil-ubah','pengurus','pengurus-dashboard','pengurus-validasi','pengurus-cair','pengurus-berjalan','pengurus-anggota','pengurus-info','pengurus-perangkat','pengurus-budget','pengurus-kas','pengurus-kbp','pengurus-selesai','pengurus-dispensasi','pengurus-g1','pengurus-g2','pengurus-g3','pengurus-g4'];
+const ROUTE_LEVEL={'anggota':0,'anggota-menu':1,'anggota-kasbon':2,'anggota-talangan':2,'anggota-koperasi':2,'anggota-approval':2,'anggota-berjalan':2,'anggota-bayar':2,'anggota-keringanan':2,'anggota-dispensasi':2,'anggota-kontak':2,'anggota-profil':2,'anggota-profil-ubah':2,'pengurus':0,'pengurus-dashboard':1,'pengurus-validasi':3,'pengurus-cair':3,'pengurus-berjalan':3,'pengurus-anggota':3,'pengurus-budget':3,'pengurus-kas':3,'pengurus-kbp':3,'pengurus-selesai':3,'pengurus-dispensasi':3,'pengurus-info':3,'pengurus-perangkat':3,'pengurus-g1':2,'pengurus-g2':2,'pengurus-g3':2,'pengurus-g4':2};
 let currentRoute='landing';
 function renderRoute(name,fromPop){
   if(ROUTES.indexOf(name)<0) name='landing';

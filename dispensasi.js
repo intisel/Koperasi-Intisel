@@ -1,5 +1,5 @@
 /* Dispensasi Masa Tunggu (pengurus) + keterangan Disiplin Pembayaran (pengurus, pimpinan, dan anggota). */
-const DS_LABEL = {MENUNGGU:'⏳ Menunggu keputusan', DISETUJUI:'✅ Disetujui', DITOLAK:'❌ Ditolak'};
+const DS_LABEL = {MENUNGGU:'⏳ Menunggu keputusan', DISETUJUI:'✅ Disetujui', DITOLAK:'❌ Ditolak', DIBATALKAN:'🚫 Akses ditutup', DIBUKA:'⌛ Akses kedaluwarsa (tidak diisi)'};
 const DISIPLIN_UI = {BAIK:['#16a34a','✅ Disiplin baik'], CUKUP:['#d97706','⚠️ Cukup, perlu ditingkatkan'], KURANG:['#dc2626','❗ Perlu perhatian'], BELUM_DINILAI:['#6b7280','Belum ada angsuran yang dinilai'], BELUM_ADA:['#6b7280','Belum ada riwayat pinjaman']};
 function disiplinHtml(dp, anggota){
   if(!dp) return '';
@@ -10,7 +10,7 @@ function disiplinHtml(dp, anggota){
     ${anggota ? '<div class="small" style="margin-top:4px;color:#134e8a">Bayar angsuran tepat waktu agar koperasi tetap lancar dan anggota lain yang membutuhkan juga bisa terbantu. 🙏</div>' : ''}
   </div>`;
 }
-let dsFotoData = '', dsKandidat = [], dsPilihNik = '';
+let dsKandidat = [], dsPilihNik = '';
 async function dsMuat(){
   const box = $('dsDaftar'); if(!box) return;
   try{
@@ -19,7 +19,8 @@ async function dsMuat(){
     if(!r.ok){ box.innerHTML = `<div class="err">${esc(r.msg)}</div>`; return; }
     pkBadge2('pbDispensasi', r.menunggu.filter(k => k.bisaPutus).length);
     $('dsFormBox').classList.toggle('hidden', !r.bisaAjukan);
-    box.innerHTML = (r.menunggu.length ? r.menunggu.map(dsKartu).join('') : '<p class="small">Tidak ada usulan yang menunggu. ✅</p>') +
+    box.innerHTML = ((r.dibuka || []).length ? '<div style="font-weight:800;margin:4px 0 6px">🔓 Akses dibuka — menunggu anggota mengisi formulir</div>' + r.dibuka.map(dsAksesKartu).join('') : '') +
+      (r.menunggu.length ? '<div style="font-weight:800;margin:10px 0 6px">Menunggu keputusan</div>' + r.menunggu.map(dsKartu).join('') : '<p class="small">Tidak ada permohonan yang menunggu keputusan. ✅</p>') +
       (r.riwayat.length ? '<div style="font-weight:800;margin:14px 0 6px">Riwayat terakhir</div>' + r.riwayat.map(dsKartu).join('') : '');
     if(r.bisaAjukan){ dsKandidat = []; dsMuatKandidat(); }
   }catch(e){ box.innerHTML = '<div class="err">Gagal memuat data.</div>'; }
@@ -71,26 +72,35 @@ function dsPilih(nik){
   b.innerHTML = `<b>${esc(x.nama)}</b> (NIK ${esc(x.nik)})<br><span class="small">Pinjaman terakhir lunas ${tglf(x.lunas)} • masa tunggu berakhir ${tglf(x.boleh)}</span>
     <div style="margin-top:6px">Masa tunggu dilewati: <b>${x.bulan} bulan</b> × ${pkRp(500000)} = <b style="color:#b91c1c">potongan ${pkRp(x.potongan)}</b></div>
     <div style="font-size:16px;font-weight:800;margin-top:2px">Limit: ${pkRp(x.limitAsli)} → <span style="color:#16a34a">${pkRp(x.limitBaru)}</span> <span class="small">(tenor maks ${x.maxTenor} bln)</span></div>
-    ${disiplinHtml(x.disiplin)}<div class="small">Berlaku 14 hari sejak disetujui dan hanya sekali pakai. Angka bulan dihitung ulang saat disetujui.</div>`;
+    ${disiplinHtml(x.disiplin)}<div class="small">Setelah anggota mengisi dan ketiga pengurus setuju, dispensasi berlaku 14 hari dan hanya sekali pakai. Angka bulan dihitung ulang saat disetujui.</div>`;
 }
-function dsPilihFoto(inp){
-  const f = inp.files && inp.files[0]; dsFotoData = ''; if(!f) return;
-  const rd = new FileReader(); rd.onload = () => { const im = new Image(); im.onload = () => {
-    const m = 1400, s = Math.min(1, m / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = im.width * s; c.height = im.height * s;
-    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); dsFotoData = c.toDataURL('image/jpeg', 0.8); $('dsFotoInfo').innerText = '✔ Foto terpilih'; }; im.src = rd.result; }; rd.readAsDataURL(f);
+function dsAksesKartu(k){
+  const did = esc(k.did);
+  return `<div class="ok" style="background:#fff;margin-bottom:10px" id="dsa-${did}"><b>${esc(k.nama)}</b> <span class="small">(NIK ${esc(k.nik)})</span><br>
+    <span class="small">Dibuka oleh ${esc(k.pengaju)} • berlaku sampai <b>${tglf(k.berlaku)}</b> • bila disetujui limit dipotong ${pkRp(k.potongan)} (${k.bulan} bulan)</span>
+    <div style="margin-top:6px"><button class="btn" style="background:#6b7280;padding:8px 12px;font-size:13px" onclick="dsTutup('${did}')">Tutup akses</button></div></div>`;
 }
-async function dsAjukan(){
+async function dsBuka(){
   if(!dsPilihNik){ alert('Pilih anggota terlebih dahulu.'); return; }
   const x = dsKandidat.filter(p => p.nik === dsPilihNik)[0] || {};
-  if(!await dialogKonfirmasi('Usulkan dispensasi masa tunggu untuk ' + (x.nama || '') + '?\n\nLimit dipotong ' + pkRp(x.potongan) + '. Berlaku bila ketiga pengurus menyetujui.')) return;
+  if(!await dialogKonfirmasi('Buka menu Dispensasi Masa Tunggu untuk ' + (x.nama || '') + '?\n\nAnggota akan mengisi formulirnya sendiri. Bila nanti disetujui, limit dipotong ' + pkRp(x.potongan) + '.')) return;
   const b = $('dsKirim'); b.disabled = true;
   try{
-    const r = await pkApi({a:'ds_ajukan', token:pkToken, nik:dsPilihNik, alasan:$('dsAlasan').value, uraian:$('dsUraian').value, foto:dsFotoData});
+    const r = await pkApi({a:'ds_buka', token:pkToken, nik:dsPilihNik});
     if(r.expired){ pkExpired(); return; }
     alert(r.ok ? r.msg : '❌ ' + r.msg);
-    if(r.ok){ $('dsUraian').value = ''; $('dsCari').value = ''; dsPilihNik = ''; dsFotoData = ''; $('dsFotoInfo').innerText = ''; $('dsInfo').style.display = 'none'; }
+    if(r.ok){ $('dsCari').value = ''; dsPilihNik = ''; $('dsInfo').style.display = 'none'; }
   }catch(e){ alert('Gagal terhubung ke server.'); }
   b.disabled = false; dsMuat();
+}
+async function dsTutup(did){
+  if(!await dialogKonfirmasi('Tutup akses dispensasi ini? Anggota tidak bisa lagi mengisi formulirnya.')) return;
+  try{
+    const r = await pkApi({a:'ds_tutup', token:pkToken, did});
+    if(r.expired){ pkExpired(); return; }
+    alert(r.ok ? r.msg : '❌ ' + r.msg);
+  }catch(e){ alert('Gagal terhubung ke server.'); }
+  dsMuat();
 }
 async function dsPutus(did, v, nama){
   const kom = ($('dsK-' + did).value || '').trim();
@@ -106,9 +116,46 @@ async function dsPutus(did, v, nama){
 }
 /* --- sisi anggota --- */
 function renderDisiplinAnggota(){
+  const ak = dataSaya.dsAkses, tl = $('tlDispensasi');
+  if(tl){ tl.style.display = ak ? '' : 'none'; $('tlDispensasiSub').innerText = ak ? (ak.status === 'MENUNGGU' ? 'Menunggu keputusan pengurus' : 'Dibuka pengurus — isi formulir s.d. ' + tglf(ak.berlaku)) : ''; const pb = $('pbDispAng'); if(pb){ pb.innerText = ak && ak.status === 'DIBUKA' ? '1' : ''; pb.style.display = ak && ak.status === 'DIBUKA' ? 'block' : 'none'; } }
   const dp = dataSaya.disiplin, ds = dataSaya.dispensasi, b = $('mnDisiplin'), f = $('dispBox');
   const html = (dp && dp.pinjaman ? `<div style="font-weight:800;color:#134e8a">📊 Disiplin Pembayaran Anda</div>` + disiplinHtml(dp, true) : '');
   const info = ds ? `<div class="ok" style="margin:8px 0">🎟️ <b>Dispensasi masa tunggu aktif</b> sampai <b>${tglf(ds.berlaku)}</b> (sekali pakai). Limit Anda dipotong ${ds.bulan} bulan × Rp 500.000 = ${rpf(ds.potongan)} sehingga maksimal <b>${rpf(ds.maxNominal)}</b>.</div>` : '';
   if(b){ b.style.display = (info || html) ? 'block' : 'none'; b.innerHTML = info + html; }
   if(f) f.innerHTML = info + html;
+}
+
+let dsmFotoData = '';
+function renderDispensasiAng(){
+  const ak = dataSaya.dsAkses, info = $('dsmInfo'), form = $('dsmForm'); if(!info) return;
+  if(!ak){ info.innerHTML = 'Menu ini hanya tersedia bila pengurus telah membukanya untuk Anda.'; form.style.display = 'none'; return; }
+  if(ak.status === 'MENUNGGU'){
+    form.style.display = 'none';
+    info.innerHTML = `<div class="ok">⏳ <b>Permohonan Anda sedang menunggu keputusan</b> ketiga pengurus (Penasehat, Ketua, Bendahara).<br>Alasan: ${esc(ak.alasanTeks)}<br><i>${esc(ak.uraian)}</i></div><p class="small">Anda akan menerima pemberitahuan setelah diputuskan.</p>`;
+    return;
+  }
+  if(!ak.syarat){ form.style.display = 'none'; info.innerHTML = `<div class="err">${esc(ak.pesan || 'Syarat dispensasi tidak lagi terpenuhi. Hubungi pengurus.')}</div>`; return; }
+  const s = ak.syarat; form.style.display = 'block';
+  info.innerHTML = `<div class="ok">Pengurus (${esc(ak.dibukaOleh)}) telah membuka menu ini untuk Anda. Isi formulir sebelum <b>${tglf(ak.berlaku)}</b>.</div>
+    <p class="small" style="margin:8px 0">Pinjaman terakhir Anda lunas ${tglf(s.lunas)}; masa tunggu berakhir ${tglf(s.boleh)}. Dispensasi berarti Anda boleh mengajukan sebelum masa tunggu berakhir, dengan ketentuan:</p>
+    <ul class="small" style="margin:4px 0 8px 18px"><li>Limit pinjaman <b>dipotong Rp 500.000 untuk setiap bulan masa tunggu yang dilewati</b>: ${s.bulan} bulan × Rp 500.000 = <b>${rpf(s.potongan)}</b>. Limit Anda menjadi <b>${rpf(s.limitBaru)}</b> (dari ${rpf(s.limitAsli)}).</li><li>Harus disetujui <b>ketiga pengurus</b>. Bila disetujui, berlaku <b>14 hari</b> dan hanya sekali pakai.</li><li>Pengajuan pinjamannya tetap direview pengurus dan diputuskan pimpinan.</li><li>Riwayat disiplin pembayaran Anda menjadi bahan pertimbangan.</li></ul>`;
+}
+async function dsmPilihFoto(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  try{ dsmFotoData = await kompres(f); $('dsmPreview').src = dsmFotoData; $('dsmPreviewWrap').style.display = 'block'; }catch(e){ alert(e.message); }
+  input.value = '';
+}
+function dsmHapusFoto(){ dsmFotoData = ''; $('dsmPreviewWrap').style.display = 'none'; $('dsmPreview').removeAttribute('src'); }
+async function dsmKirim(){
+  const u = $('dsmUraian').value.trim();
+  if(u.length < 30){ alert('Tuliskan uraian dengan jelas (minimal 30 huruf).'); return; }
+  if(!dsmFotoData){ alert('Lampirkan foto bukti pendukung (ambil foto atau pilih dari galeri).'); return; }
+  if(!await dialogKonfirmasi('Kirim permohonan dispensasi masa tunggu?\nPermohonan harus disetujui ketiga pengurus.\n\nKeterangan yang Anda isi harus benar dan dapat dipertanggungjawabkan.')) return;
+  const btn = $('btnDsm'); btn.disabled = true; btn.innerText = 'Mengirim...';
+  try{
+    const r = await apiPost({a:'ds_saya_ajukan', nik:anggotaAktif.nik, atoken:anggotaAktif.atoken, alasan:$('dsmAlasan').value, uraian:u, foto:dsmFotoData});
+    if(r.ok){ alert('✅ ' + r.msg); dsmHapusFoto(); $('dsmUraian').value = ''; await muatData(); renderDispensasiAng(); }
+    else alert('❌ ' + r.msg);
+  }catch(e){ alert('Gagal mengirim. Periksa koneksi lalu coba lagi.'); }
+  btn.disabled = false; btn.innerText = 'Kirim Permohonan';
 }
