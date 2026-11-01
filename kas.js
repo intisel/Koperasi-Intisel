@@ -43,7 +43,7 @@ let korFotoData = '';
 function kasKorSiap(){
   const r = kasData, box = $('kasKorBox'), bb = r.bankBulan || [];
   box.classList.toggle('hidden', !r.bisaInput);
-  if(!bankPanelAktif) bankPanel('KOR'); tarifSiap();
+  tarifSiap();
   const kb = $('korBulan'); if(kb) kb.disabled = !bb.length;
   const lama = $('korBulan').value;
   $('korBulan').innerHTML = bb.map(b => `<option value="${esc(b.ym)}">${esc(b.label)}</option>`).join(''); if(bb.some(b => b.ym === lama)) $('korBulan').value = lama;
@@ -53,7 +53,7 @@ function korUbah(){
   const r = kasData; if(!r) return; const b = (r.bankBulan || []).find(x => x.ym === $('korBulan').value), k = $('korKomp').value;
   $('korInfo').innerHTML = b ? 'Perkiraan otomatis ' + esc(b.label) + ': <b>' + pkRp(b[k]) + '</b>' : '';
 }
-function korIsi(ym, komp){ bankPanel('KOR'); if(Array.from($('korBulan').options).some(o => o.value === ym)) $('korBulan').value = ym; $('korKomp').value = komp; korUbah(); $('kasKorBox').scrollIntoView({behavior:'smooth', block:'center'}); $('korJml').focus(); }
+function korIsi(ym, komp){ bankPanel('KOR', true); if(Array.from($('korBulan').options).some(o => o.value === ym)) $('korBulan').value = ym; $('korKomp').value = komp; korUbah(); $('kasKorBox').scrollIntoView({behavior:'smooth', block:'center'}); $('korJml').focus(); }
 function korFotoPilih(inp){ const f = inp.files && inp.files[0]; if(!f) return; pkKompres(f).then(d => { korFotoData = d; $('korFotoImg').src = d; $('korFotoPrev').style.display = 'block'; }).catch(e => alert(e.message)); inp.value = ''; }
 function korFotoHapus(){ korFotoData = ''; $('korFotoPrev').style.display = 'none'; $('korFotoImg').removeAttribute('src'); }
 async function korSimpan(){
@@ -69,7 +69,7 @@ async function korSimpan(){
     const r = await pkApi({a:'kas_koreksi', token:pkToken, bulan, komp, jumlah:jml, alasan, foto:korFotoData});
     if(r.expired){ pkExpired(); return; }
     if(!r.ok){ alert(r.msg); }
-    else { alert('✅ ' + r.msg); $('korJml').value = ''; $('korAlasan').value = ''; korFotoHapus();  $('kasBulan').value = bulan; await kasMuat(); }
+    else { alert('✅ ' + r.msg); $('korJml').value = ''; $('korAlasan').value = ''; korFotoHapus(); bankPanel('', true); $('kasBulan').value = bulan; await kasMuat(); }
   }catch(e){ alert('Gagal terhubung ke server. Coba lagi.'); }
   finally{ bt.disabled = false; bt.innerText = 'Simpan Koreksi'; }
 }
@@ -239,10 +239,11 @@ function mutRender(){
 
 /* ----- Kotak bawah menu Kas: Koreksi bunga bank (kiri) | Atur potongan bank (kanan) ----- */
 let bankPanelAktif = '';
-function bankPanel(p){
+function bankPanel(p, paksa){ // ketuk tombol = buka formulir; ketuk lagi = tutup (paksa: selalu buka)
+  if(!paksa && bankPanelAktif === p) p = '';
   bankPanelAktif = p;
   $('bankPanelKor').classList.toggle('hidden', p !== 'KOR'); $('bankPanelTarif').classList.toggle('hidden', p !== 'TARIF');
-  $('bankTabKor').style.background = p === 'KOR' ? '#134e8a' : '#94a3b8'; $('bankTabTarif').style.background = p === 'TARIF' ? '#134e8a' : '#94a3b8';
+  $('bankTabKor').style.background = p === 'KOR' ? '#134e8a' : '#5a7aa0'; $('bankTabTarif').style.background = p === 'TARIF' ? '#134e8a' : '#5a7aa0';
 }
 function tarifSiap(){
   const t = kasData && kasData.tarifBank; if(!t) return;
@@ -260,7 +261,7 @@ async function tarifSimpan(){
   try{
     const r = await pkApi({a:'kas_tarif', token:pkToken, rek, kartu, mulai});
     if(r.expired){ pkExpired(); return; }
-    alert((r.ok ? '✅ ' : '') + r.msg); if(r.ok){ $('tarifRek').value = ''; $('tarifKartu').value = ''; await kasMuat(); if(kasMut) mutMuat(); }
+    alert((r.ok ? '✅ ' : '') + r.msg); if(r.ok){ $('tarifRek').value = ''; $('tarifKartu').value = ''; bankPanel('', true); await kasMuat(); if(kasMut) mutMuat(); }
   }catch(e){ alert('Gagal terhubung ke server. Coba lagi.'); }
   finally{ b.disabled = false; b.innerText = 'Simpan Potongan'; }
 }
