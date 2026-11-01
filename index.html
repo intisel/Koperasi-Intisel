@@ -74,7 +74,7 @@ input:focus,select:focus,textarea:focus{border-color:#134e8a;outline:none;box-sh
 .kartu-aksi{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 20px}.kartu-aksi .btn{padding:12px;font-size:14px;flex:1 1 30%}
 body.kartu-open{overflow:hidden}
 @media print{#kartuZoomBox{zoom:1!important}body.kartu-open>*:not(#kartuModal){display:none!important}.kartu-modal{position:static;background:#fff;padding:0;overflow:visible}.kartu-aksi{display:none}.kartu-box{border-radius:0;font-size:12px}.kartu-tbl{font-size:11.5px}}
-.pktabs{display:flex;background:#fff;border:1.5px solid #d6e6f8;border-radius:99px;padding:4px;margin:0 0 12px}.pktabs button{flex:1;border:0;background:transparent;border-radius:99px;padding:11px 4px;font-weight:700;font-size:13px;white-space:nowrap;color:#5a7aa0;cursor:pointer;font-family:inherit}.pktabs button.on{background:#ffd400;color:#4a3b00}#kasTabBtnM.on,#kbpTabM.on{background:#16a34a;color:#fff}#kasTabBtnK.on,#kbpTabK.on{background:#dc2626;color:#fff}#kasTabBtnM:not(.on),#kbpTabM:not(.on){color:#166534}#kasTabBtnK:not(.on),#kbpTabK:not(.on){color:#b91c1c}.kas-m{background:#ecfdf3!important;border:1.5px solid #86efac!important}.kas-k{background:#fef2f2!important;border:1.5px solid #fca5a5!important}.pktabs button.notif{background:#dc2626;color:#fff}.pktabs button.notif.on{background:#dc2626;color:#fff;box-shadow:inset 0 0 0 3px #ffd400}
+.pktabs{display:flex;background:#fff;border:1.5px solid #d6e6f8;border-radius:99px;padding:4px;margin:0 0 12px}.pktabs button{flex:1;border:0;background:transparent;border-radius:99px;padding:11px 4px;font-weight:700;font-size:13px;white-space:nowrap;color:#5a7aa0;cursor:pointer;font-family:inherit}.pktabs button.on{background:#ffd400;color:#4a3b00}#kasTabBtnM.on,#kbpTabM.on{background:#16a34a;color:#fff}#kasTabBtnK.on,#kbpTabK.on{background:#dc2626;color:#fff}#kasTabBtnT.on{background:#134e8a;color:#fff}#kasTabBtnT:not(.on){color:#134e8a}#kasTabBtnM:not(.on),#kbpTabM:not(.on){color:#166534}#kasTabBtnK:not(.on),#kbpTabK:not(.on){color:#b91c1c}.kas-m{background:#ecfdf3!important;border:1.5px solid #86efac!important}.kas-k{background:#fef2f2!important;border:1.5px solid #fca5a5!important}.pktabs button.notif{background:#dc2626;color:#fff}.pktabs button.notif.on{background:#dc2626;color:#fff;box-shadow:inset 0 0 0 3px #ffd400}
 #pkvAnggota .pktabs button{flex:1 1 0;min-width:0;font-size:12px;padding:9px 3px;white-space:normal;line-height:1.2}
 .sesibar{display:flex;align-items:center;gap:10px;margin-top:6px}.sesiinfo{flex:1;min-width:0;line-height:1.3}.sesiinfo b{font-size:16px;overflow-wrap:anywhere}.sesiinfo .small{margin:1px 0 0}
 .sesibtn{flex:none;border:1.5px solid #b9d2f0;background:#eef5ff;color:#134e8a;border-radius:99px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;position:relative}.sesibtn.bell{width:42px;height:42px;font-size:20px;padding:0}.sesibtn.bell.big{width:54px;height:54px;font-size:27px}
@@ -819,7 +819,7 @@ body.kartu-open{overflow:hidden}
         <div class="stt" style="margin:8px 0 0"><div><b id="kasMasukBln" style="color:#166534">Rp 0</b><span class="small">Kas masuk bulan dipilih</span></div><div><b id="kasKeluarBln" style="color:#b91c1c">Rp 0</b><span class="small">Kas keluar bulan dipilih</span></div></div>
         <div id="kasBanner"></div><label style="margin-top:6px">Bulan</label><input type="month" id="kasBulan" onchange="kasMuat()">
       </div>
-      <div class="pktabs"><button id="kasTabBtnM" class="on" onclick="kasTab('MASUK')">⬇ Kas Masuk</button><button id="kasTabBtnK" onclick="kasTab('KELUAR')">⬆ Kas Keluar</button></div>
+      <div class="pktabs"><button id="kasTabBtnM" class="on" onclick="kasTab('MASUK')">⬇ Kas Masuk</button><button id="kasTabBtnK" onclick="kasTab('KELUAR')">⬆ Kas Keluar</button><button id="kasTabBtnT" onclick="kasTab('MUTASI')">🧾 Mutasi</button></div>
       <div class="card hidden kas-m" id="kasForm">
         <b id="kasFormJudul" style="display:block">Catat Kas Masuk</b>
         <label>Kategori</label><select id="kasKat" onchange="kasKatUbah()"></select>
@@ -833,6 +833,14 @@ body.kartu-open{overflow:hidden}
         <div id="kasPesan" style="margin-top:8px"></div>
       </div>
       <div class="card kas-m" id="kasDaftarCard"><b id="kasDaftarJudul">Daftar Kas Masuk</b><p class="small" id="kasCatatan" style="margin:2px 0 6px"></p><div id="kasDaftar"><p class="small">Memuat...</p></div></div>
+      <div class="card hidden" id="kasMutCard" style="border:1.5px solid #b9d2f0"><b>🧾 Mutasi Kas</b>
+        <div id="mutChip" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">
+          <button class="btn" data-m="T10" onclick="mutPilih('T10')" style="width:auto;padding:7px 12px;font-size:13px">10 Terakhir</button><button class="btn" data-m="HARI" onclick="mutPilih('HARI')" style="width:auto;padding:7px 12px;font-size:13px">Hari ini</button><button class="btn" data-m="MINGGU" onclick="mutPilih('MINGGU')" style="width:auto;padding:7px 12px;font-size:13px">Minggu ini</button><button class="btn" data-m="BULAN" onclick="mutPilih('BULAN')" style="width:auto;padding:7px 12px;font-size:13px">Bulan ini</button><button class="btn" data-m="TGL" onclick="mutPilih('TGL')" style="width:auto;padding:7px 12px;font-size:13px">📅 Pilih tanggal</button>
+        </div>
+        <div id="mutTglBox" class="hidden" style="margin-bottom:8px"><label>Dari tanggal</label><input type="date" id="mutDari"><label>Sampai tanggal</label><input type="date" id="mutSampai"><button class="btn" style="margin-top:8px;padding:10px;font-size:14px" onclick="mutMuat()">Tampilkan</button></div>
+        <div id="mutInfo" class="small" style="margin:4px 0 6px"></div>
+        <div id="mutList"><p class="small">Memuat...</p></div>
+      </div>
       <div class="card hidden" id="kasKorBox"><details><summary><b>🛠 Koreksi biaya &amp; bunga bank</b></summary>
         <p class="small" style="margin:6px 0">Biaya admin, bunga, dan pajak bank dihitung otomatis tiap akhir bulan (perkiraan). Bila berbeda dengan mutasi rekening, koreksi di sini sesuai angka dari bank.</p>
         <label>Bulan</label><select id="korBulan" onchange="korUbah()"></select>

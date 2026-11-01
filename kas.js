@@ -1,9 +1,16 @@
 /* ===== KAS KOPERASI (menu Keuangan Koperasi) + LAPORAN KAS ===== */
-let kasJenis = 'MASUK', kasData = null, kasFotoData = '', kasFormBuka = false, kasSemua = false;
+let kasJenis = 'MASUK', kasData = null, kasFotoData = '', kasFormBuka = false, kasSemua = false, kasMut = false, mutMode = 'T10', mutBanyak = 50, mutBaris = [];
 const kasBlnIni = () => (pkHariIni || isoLokal(new Date())).slice(0, 7);
 function kasRentang(ym){ const [y, m] = ym.split('-').map(Number); return {dari: ym + '-01', sampai: ym + '-' + String(new Date(y, m, 0).getDate()).padStart(2, '0')}; }
 function kasInit(){ if(!$('kasBulan').value) $('kasBulan').value = kasBlnIni(); kasMuat(); }
 function kasTab(j){
+  if(j === 'MUTASI'){ // tab Mutasi: daftar gabungan masuk+keluar ala mutasi rekening bank
+    kasMut = true; kasFormBuka = false;
+    $('kasTabBtnM').classList.remove('on'); $('kasTabBtnK').classList.remove('on'); $('kasTabBtnT').classList.add('on');
+    $('kasForm').classList.add('hidden'); $('kasDaftarCard').classList.add('hidden'); $('kasMutCard').classList.remove('hidden');
+    mutPilih(mutMode); return;
+  }
+  kasMut = false; $('kasTabBtnT').classList.remove('on'); $('kasMutCard').classList.add('hidden'); $('kasDaftarCard').classList.remove('hidden');
   const sama = kasJenis === j; kasFormBuka = sama ? !kasFormBuka : true; // ketuk tab = buka formulir catat; ketuk lagi = tutup
   kasJenis = j; kasSemua = false; $('kasTabBtnM').classList.toggle('on', j === 'MASUK'); $('kasTabBtnK').classList.toggle('on', j === 'KELUAR');
   ['kasForm', 'kasDaftarCard'].forEach(i => { $(i).classList.toggle('kas-m', j === 'MASUK'); $(i).classList.toggle('kas-k', j === 'KELUAR'); });
@@ -177,4 +184,50 @@ async function lkCetak(){
   document.body.classList.add('cetak');
   const bersih = () => { document.body.classList.remove('cetak'); $('cetakArea').innerHTML = ''; window.removeEventListener('afterprint', bersih); };
   window.addEventListener('afterprint', bersih); setTimeout(() => window.print(), 50);
+}
+
+/* ----- Tab Mutasi kas (seperti mutasi rekening): default 10 transaksi terakhir, bisa hari ini / minggu ini / bulan ini / tanggal tertentu ----- */
+function mutTglIso(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function mutRentang(m){
+  const hi = (kasData && kasData.hariIni) || pkHariIni || isoLokal(new Date()), [y, mo, d] = hi.split('-').map(Number), t = new Date(y, mo - 1, d);
+  if(m === 'HARI') return {dari: hi, sampai: hi};
+  if(m === 'MINGGU'){ const s = new Date(y, mo - 1, d - ((t.getDay() + 6) % 7)); return {dari: mutTglIso(s), sampai: hi}; } // minggu mulai Senin
+  if(m === 'BULAN') return {dari: hi.slice(0, 7) + '-01', sampai: hi};
+  if(m === 'TGL') return {dari: $('mutDari').value, sampai: $('mutSampai').value};
+  return {dari: '', sampai: ''};
+}
+function mutPilih(m){
+  mutMode = m; mutBanyak = 50;
+  document.querySelectorAll('#mutChip button').forEach(b => { const on = b.dataset.m === m; b.style.background = on ? '#134e8a' : '#e8f1fc'; b.style.color = on ? '#fff' : '#134e8a'; });
+  $('mutTglBox').classList.toggle('hidden', m !== 'TGL');
+  if(m === 'TGL'){ const hi = (kasData && kasData.hariIni) || pkHariIni || isoLokal(new Date()); if(!$('mutDari').value) $('mutDari').value = hi.slice(0, 7) + '-01'; if(!$('mutSampai').value) $('mutSampai').value = hi; $('mutSampai').max = hi; }
+  mutMuat();
+}
+async function mutMuat(){
+  const rg = mutRentang(mutMode);
+  if(mutMode === 'TGL' && (!rg.dari || !rg.sampai || rg.dari > rg.sampai)){ $('mutList').innerHTML = '<div class="err">Isi tanggal dengan benar (dari tidak boleh setelah sampai).</div>'; $('mutInfo').innerText = ''; return; }
+  $('mutList').innerHTML = '<p class="small" style="text-align:center;font-weight:700;color:#134e8a">⏳ Sedang membaca data mutasi... mohon tunggu</p>'; $('mutInfo').innerText = '';
+  try{
+    const r = await pkApi({a:'kas_daftar', token:pkToken, dari:rg.dari, sampai:rg.sampai});
+    if(r.expired){ pkExpired(); return; }
+    if(!r.ok){ $('mutList').innerHTML = `<div class="err">${esc(r.msg)}</div>`; return; }
+    // saldo akhir tiap baris = saldo akhir periode dikurangi mutasi yang lebih baru (daftar urut terbaru -> terlama)
+    let b = r.saldoAkhir; mutBaris = r.baris.map(x => { const o = Object.assign({}, x, {saldoSetelah: b}); b -= (x.jenis === 'MASUK' ? x.jumlah : -x.jumlah); return o; });
+    if(mutMode === 'T10') mutBaris = mutBaris.slice(0, 10);
+    mutKet = {saldoAwal: r.saldoAwal, saldoAkhir: r.saldoAkhir, masuk: r.masuk, keluar: r.keluar, saldo: r.saldo, dari: rg.dari, sampai: rg.sampai, n: r.baris.length, bisaInput: r.bisaInput};
+    mutRender();
+  }catch(e){ console.log('mut err', e); $('mutList').innerHTML = '<div class="err">Gagal terhubung ke server. Coba lagi.</div>'; }
+}
+let mutKet = null;
+function mutRender(){
+  const k = mutKet; if(!k) return;
+  const judul = {T10: '10 transaksi terakhir', HARI: 'Hari ini • ' + pkTgl(k.dari), MINGGU: 'Minggu ini • ' + pkTgl(k.dari) + ' – ' + pkTgl(k.sampai), BULAN: 'Bulan ini • ' + pkTgl(k.dari) + ' – ' + pkTgl(k.sampai), TGL: pkTgl(k.dari) + ' – ' + pkTgl(k.sampai)}[mutMode];
+  $('mutInfo').innerHTML = `<b>${judul}</b>` + (mutMode === 'T10' ? `<br>Saldo kas saat ini: <b>${pkRp(k.saldo)}</b>` : `<br>Saldo awal <b>${pkRp(k.saldoAwal)}</b> • Masuk <b style="color:#166534">${pkRp(k.masuk)}</b> • Keluar <b style="color:#b91c1c">${pkRp(k.keluar)}</b><br>Saldo akhir <b>${pkRp(k.saldoAkhir)}</b> • ${k.n} transaksi`);
+  const tampil = mutBaris.slice(0, mutBanyak);
+  $('mutList').innerHTML = (tampil.length ? tampil.map(x => { const m = x.jenis === 'MASUK';
+    return `<div style="border-bottom:1px solid #d6e6f8;padding:9px 0"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(x.kategori)}${x.nama ? ' • ' + esc(x.nama) : ''}${x.koreksi ? ' <span class="badge" style="background:#fef3c7;color:#92400e">dikoreksi</span>' : x.otomatis ? ' <span class="badge" style="background:#dcfce7;color:#166534">otomatis</span>' : ''}</b><b style="color:${m ? '#166534' : '#b91c1c'};white-space:nowrap">${m ? '+' : '−'}${pkRp(x.jumlah)}</b></div>
+      <div class="small">${x.ket ? esc(x.ket) + '<br>' : ''}${pkTgl(x.tgl)} • <b style="color:${m ? '#166534' : '#b91c1c'}">${m ? 'Masuk' : 'Keluar'}</b>${x.otomatis ? '' : ' • oleh ' + esc(x.oleh)}</div>
+      <div class="small" style="text-align:right">Saldo akhir: <b>${pkRp(x.saldoSetelah)}</b></div>
+      ${x.foto ? `<span class="back-link" style="margin:2px 0 0;display:inline-block" onclick="kasLihatFoto('${esc(x.id)}')">📷 Lihat foto bukti</span><div id="kf_${esc(x.id)}"></div>` : ''}</div>`; }).join('') : '<p class="small">Tidak ada transaksi pada periode ini.</p>') +
+    (mutBaris.length > mutBanyak ? `<button class="btn" style="margin-top:10px;padding:10px;font-size:14px;background:#64748b" onclick="mutBanyak+=50;mutRender()">Tampilkan lebih banyak (${mutBaris.length - mutBanyak} lagi)</button>` : '');
 }
