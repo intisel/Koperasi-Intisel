@@ -42,7 +42,9 @@ function kasPengisian(){ // form input (hanya Ketua & Bendahara)
 let korFotoData = '';
 function kasKorSiap(){
   const r = kasData, box = $('kasKorBox'), bb = r.bankBulan || [];
-  box.classList.toggle('hidden', !r.bisaInput || !bb.length);
+  box.classList.toggle('hidden', !r.bisaInput);
+  if(!bankPanelAktif) bankPanel('KOR'); tarifSiap();
+  const kb = $('korBulan'); if(kb) kb.disabled = !bb.length;
   const lama = $('korBulan').value;
   $('korBulan').innerHTML = bb.map(b => `<option value="${esc(b.ym)}">${esc(b.label)}</option>`).join(''); if(bb.some(b => b.ym === lama)) $('korBulan').value = lama;
   korUbah();
@@ -51,7 +53,7 @@ function korUbah(){
   const r = kasData; if(!r) return; const b = (r.bankBulan || []).find(x => x.ym === $('korBulan').value), k = $('korKomp').value;
   $('korInfo').innerHTML = b ? 'Perkiraan otomatis ' + esc(b.label) + ': <b>' + pkRp(b[k]) + '</b>' : '';
 }
-function korIsi(ym, komp){ $('kasKorBox').querySelector('details').open = true; if(Array.from($('korBulan').options).some(o => o.value === ym)) $('korBulan').value = ym; $('korKomp').value = komp; korUbah(); $('kasKorBox').scrollIntoView({behavior:'smooth', block:'center'}); $('korJml').focus(); }
+function korIsi(ym, komp){ bankPanel('KOR'); if(Array.from($('korBulan').options).some(o => o.value === ym)) $('korBulan').value = ym; $('korKomp').value = komp; korUbah(); $('kasKorBox').scrollIntoView({behavior:'smooth', block:'center'}); $('korJml').focus(); }
 function korFotoPilih(inp){ const f = inp.files && inp.files[0]; if(!f) return; pkKompres(f).then(d => { korFotoData = d; $('korFotoImg').src = d; $('korFotoPrev').style.display = 'block'; }).catch(e => alert(e.message)); inp.value = ''; }
 function korFotoHapus(){ korFotoData = ''; $('korFotoPrev').style.display = 'none'; $('korFotoImg').removeAttribute('src'); }
 async function korSimpan(){
@@ -67,7 +69,7 @@ async function korSimpan(){
     const r = await pkApi({a:'kas_koreksi', token:pkToken, bulan, komp, jumlah:jml, alasan, foto:korFotoData});
     if(r.expired){ pkExpired(); return; }
     if(!r.ok){ alert(r.msg); }
-    else { alert('✅ ' + r.msg); $('korJml').value = ''; $('korAlasan').value = ''; korFotoHapus(); $('kasKorBox').querySelector('details').open = false; $('kasBulan').value = bulan; await kasMuat(); }
+    else { alert('✅ ' + r.msg); $('korJml').value = ''; $('korAlasan').value = ''; korFotoHapus();  $('kasBulan').value = bulan; await kasMuat(); }
   }catch(e){ alert('Gagal terhubung ke server. Coba lagi.'); }
   finally{ bt.disabled = false; bt.innerText = 'Simpan Koreksi'; }
 }
@@ -233,4 +235,40 @@ function mutRender(){
       <div style="text-align:left"><span class="small">Saldo akhir:</span> <b style="color:#000">${pkRp(x.saldoSetelah)}</b></div>
       ${x.foto ? `<span class="back-link" style="margin:2px 0 0;display:inline-block" onclick="kasLihatFoto('${esc(x.id)}')">📷 Lihat foto bukti</span><div id="kf_${esc(x.id)}"></div>` : ''}</div>`; }).join('') : '<p class="small">Tidak ada transaksi pada periode ini.</p>') +
     (mutBaris.length > mutBanyak ? `<button class="btn" style="margin-top:10px;padding:10px;font-size:14px;background:#64748b" onclick="mutBanyak+=50;mutRender()">Tampilkan lebih banyak (${mutBaris.length - mutBanyak} lagi)</button>` : '');
+}
+
+/* ----- Kotak bawah menu Kas: Koreksi bunga bank (kiri) | Atur potongan bank (kanan) ----- */
+let bankPanelAktif = '';
+function bankPanel(p){
+  bankPanelAktif = p;
+  $('bankPanelKor').classList.toggle('hidden', p !== 'KOR'); $('bankPanelTarif').classList.toggle('hidden', p !== 'TARIF');
+  $('bankTabKor').style.background = p === 'KOR' ? '#134e8a' : '#94a3b8'; $('bankTabTarif').style.background = p === 'TARIF' ? '#134e8a' : '#94a3b8';
+}
+function tarifSiap(){
+  const t = kasData && kasData.tarifBank; if(!t) return;
+  const s = t.sekarang; $('tarifSekarang').innerHTML = `Potongan saat ini: admin rekening <b>${pkRp(s.rek)}</b> + kartu <b>${pkRp(s.kartu)}</b> = <b>${pkRp(s.rek + s.kartu)}</b> per bulan`;
+  if(!$('tarifMulai').value) $('tarifMulai').value = ((kasData.hariIni || '').slice(0, 7));
+  if(!$('tarifRek').value && !$('tarifKartu').value){ $('tarifRek').value = fmtMoney(s.rek); $('tarifKartu').value = fmtMoney(s.kartu); }
+  $('tarifRiwayat').innerHTML = t.daftar.length ? '<b class="small">Pengaturan yang pernah dibuat</b>' + t.daftar.slice().reverse().map(x => `<div class="small" style="border-bottom:1px solid #d6e6f8;padding:6px 0;display:flex;justify-content:space-between;gap:8px"><span>Mulai <b>${esc(x.mulai.split('-').reverse().join('/'))}</b>: ${pkRp(x.rek)} + ${pkRp(x.kartu)} = <b>${pkRp(x.rek + x.kartu)}</b><br>oleh ${esc(x.oleh || '-')}</span><a href="#" style="color:#c0392b;white-space:nowrap" onclick="tarifHapus('${esc(x.mulai)}');return false">Hapus</a></div>`).join('') : '';
+}
+async function tarifSimpan(){
+  const rek = moneyVal('tarifRek'), kartu = moneyVal('tarifKartu'), mulai = $('tarifMulai').value;
+  if(!mulai){ alert('Pilih bulan mulai berlaku.'); return; }
+  if(!($('tarifRek').value.trim() !== '' && $('tarifKartu').value.trim() !== '' && rek >= 0 && kartu >= 0)){ alert('Isi biaya admin rekening dan biaya kartu (boleh 0).'); return; }
+  if(!await dialogKonfirmasi('Atur potongan bank mulai ' + mulai.split('-').reverse().join('/') + ':\nadmin rekening ' + pkRp(rek) + ' + kartu ' + pkRp(kartu) + ' = ' + pkRp(rek + kartu) + ' per bulan?\n\nSaldo kas bulan itu dan sesudahnya akan disesuaikan.')) return;
+  const b = $('tarifBtn'); b.disabled = true; b.innerText = 'Menyimpan...';
+  try{
+    const r = await pkApi({a:'kas_tarif', token:pkToken, rek, kartu, mulai});
+    if(r.expired){ pkExpired(); return; }
+    alert((r.ok ? '✅ ' : '') + r.msg); if(r.ok){ $('tarifRek').value = ''; $('tarifKartu').value = ''; await kasMuat(); if(kasMut) mutMuat(); }
+  }catch(e){ alert('Gagal terhubung ke server. Coba lagi.'); }
+  finally{ b.disabled = false; b.innerText = 'Simpan Potongan'; }
+}
+async function tarifHapus(mulai){
+  if(!await dialogKonfirmasi('Hapus pengaturan potongan yang berlaku mulai ' + mulai.split('-').reverse().join('/') + '?')) return;
+  try{
+    const r = await pkApi({a:'kas_tarif', token:pkToken, hapus:true, mulai});
+    if(r.expired){ pkExpired(); return; }
+    alert((r.ok ? '✅ ' : '') + r.msg); if(r.ok){ $('tarifRek').value = ''; $('tarifKartu').value = ''; await kasMuat(); if(kasMut) mutMuat(); }
+  }catch(e){ alert('Gagal terhubung ke server. Coba lagi.'); }
 }

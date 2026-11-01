@@ -839,7 +839,9 @@ body.kartu-open{overflow:hidden}
         <div id="mutInfo" class="small" style="margin:4px 0 6px"></div>
         <div id="mutList"><p class="small">Memuat...</p></div>
       </div>
-      <div class="card hidden" id="kasKorBox"><details><summary><b>🛠 Koreksi biaya &amp; bunga bank</b></summary>
+      <div class="card hidden" id="kasKorBox">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn" id="bankTabKor" onclick="bankPanel('KOR')" style="padding:11px 6px;font-size:13px">🛠 Koreksi bunga bank</button><button class="btn" id="bankTabTarif" onclick="bankPanel('TARIF')" style="padding:11px 6px;font-size:13px">⚙️ Atur potongan bank</button></div>
+        <div id="bankPanelKor" class="hidden" style="margin-top:10px">
         <p class="small" style="margin:6px 0">Biaya admin, bunga, dan pajak bank dihitung otomatis tiap akhir bulan (perkiraan). Bila berbeda dengan mutasi rekening, koreksi di sini sesuai angka dari bank.</p>
         <label>Bulan</label><select id="korBulan" onchange="korUbah()"></select>
         <label>Komponen</label><select id="korKomp" onchange="korUbah()"><option value="ADMIN">Biaya admin bank (rekening + kartu)</option><option value="BUNGA">Bunga bank</option><option value="PAJAK">Pajak bunga</option></select>
@@ -848,7 +850,18 @@ body.kartu-open{overflow:hidden}
         <label>Alasan koreksi</label><input id="korAlasan" maxlength="200" placeholder="Contoh: sesuai mutasi rekening tgl 30">
         <label>Foto bukti mutasi bank <span class="small" style="font-weight:400">(wajib)</span></label><input type="file" accept="image/*" onchange="korFotoPilih(this)">
         <div id="korFotoPrev" style="display:none;margin:6px 0;text-align:center"><img id="korFotoImg" alt="Pratinjau" style="max-width:100%;max-height:200px;border-radius:10px;border:1px solid #b9d2f0"><br><a href="#" class="small" style="color:#c0392b" onclick="korFotoHapus();return false">Hapus foto</a></div>
-        <button class="btn" id="korBtn" onclick="korSimpan()" style="margin-top:8px">Simpan Koreksi</button></details></div>
+        <button class="btn" id="korBtn" onclick="korSimpan()" style="margin-top:8px">Simpan Koreksi</button></div>
+        <div id="bankPanelTarif" class="hidden" style="margin-top:10px">
+          <p class="small" style="margin:0 0 6px">Potongan admin bank dihitung otomatis tiap akhir bulan. Bila bank mengubah biayanya, atur di sini supaya potongan otomatis sama dengan mutasi rekening.</p>
+          <div id="tarifSekarang" style="background:#f1f6fd;border-radius:10px;padding:8px 10px;margin-bottom:8px"></div>
+          <label>Biaya admin rekening per bulan (Rp)</label><input id="tarifRek" type="text" inputmode="numeric" data-fmt="money" placeholder="Contoh: 15.000">
+          <label>Biaya kartu per bulan (Rp)</label><input id="tarifKartu" type="text" inputmode="numeric" data-fmt="money" placeholder="Contoh: 5.000">
+          <label>Berlaku mulai bulan</label><input type="month" id="tarifMulai">
+          <p class="small" style="margin:4px 0">Bulan sebelumnya tidak berubah. Bulan yang dipilih dan sesudahnya memakai angka baru.</p>
+          <button class="btn" id="tarifBtn" onclick="tarifSimpan()" style="margin-top:6px">Simpan Potongan</button>
+          <div id="tarifRiwayat" style="margin-top:10px"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="hero hero-small">
