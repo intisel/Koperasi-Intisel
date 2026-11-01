@@ -10,7 +10,7 @@ function disiplinHtml(dp, anggota){
     ${anggota ? '<div class="small" style="margin-top:4px;color:#134e8a">Bayar angsuran tepat waktu agar koperasi tetap lancar dan anggota lain yang membutuhkan juga bisa terbantu. 🙏</div>' : ''}
   </div>`;
 }
-let dsKandidat = [], dsPilihNik = '', dsTabAktif = 'MASA_TUNGGU', dsData = null;
+let dsKandidat = [], dsTidak = [], dsPilihNik = '', dsTabAktif = 'MASA_TUNGGU', dsData = null;
 const DS_TEKS = {
   MASA_TUNGGU: {judul:'⏳ Dispensasi Masa Tunggu', ph:'🔍 Ketik nama anggota yang sedang masa tunggu...',
     intro:'Untuk anggota yang baru lunas tetapi sangat mendesak membutuhkan pinjaman (misalnya musibah). <b>Alur:</b> anggota meminta ke pengurus → salah satu pengurus membuka menu ini untuk anggota → anggota mengisi formulirnya sendiri di aplikasi → wajib disetujui <b>Penasehat, Ketua, dan Bendahara</b>; satu penolakan berarti ditolak. Pimpinan diberi tahu setelah disetujui. Limit dipotong Rp 500.000 untuk setiap bulan masa tunggu yang dilewati. Berlaku 14 hari, sekali pakai.',
@@ -49,7 +49,7 @@ function dsRender(){
     (riwayat.length ? '<div style="font-weight:800;margin:14px 0 6px">Riwayat terakhir</div>' + riwayat.map(dsKartu).join('') : '');
 }
 async function dsMuatKandidat(){
-  try{ const r = await pkApi({a:'ds_kandidat', token:pkToken, jenis:dsTabAktif}); if(r.ok && r.jenis === dsTabAktif) dsKandidat = r.list; }catch(e){}
+  try{ const r = await pkApi({a:'ds_kandidat', token:pkToken, jenis:dsTabAktif}); if(r.ok && r.jenis === dsTabAktif){ dsKandidat = r.list; dsTidak = r.tidak || []; } }catch(e){}
 }
 function dsKartu(k){
   const did = esc(k.did), nm = esc(k.nama).replace(/'/g, '');
@@ -86,7 +86,8 @@ function dsCariIsi(){
   const q = ($('dsCari').value || '').trim().toLowerCase(), box = $('dsSaran');
   if(!q){ box.innerHTML = ''; return; }
   const hit = dsKandidat.filter(p => String(p.nama).toLowerCase().indexOf(q) >= 0 || String(p.nik).indexOf(q) >= 0).slice(0, 8);
-  box.innerHTML = hit.length ? hit.map(p => `<div class="small" style="padding:10px;border:1px solid #b9d2f0;border-radius:8px;margin:4px 0;background:#fff;cursor:pointer" onclick="dsPilih('${esc(p.nik)}')"><b>${esc(p.nama)}</b> • NIK ${esc(p.nik)}<br>${dsTabAktif === 'LIMIT' ? 'Limit ' + pkRp(p.limitAsli) + ' → ' + pkRp(p.limitBaru) + ' • tenor ' + p.tenorAsli + ' → ' + p.tenorBaru + ' bln' : 'Lunas ' + tglf(p.lunas) + ' • masa tunggu s.d. ' + tglf(p.boleh)}</div>`).join('') : '<p class="small">Tidak ada anggota dalam masa tunggu yang memenuhi syarat dengan nama itu.</p>';
+  const tdk = hit.length ? [] : dsTidak.filter(p => String(p.nama).toLowerCase().indexOf(q) >= 0 || String(p.nik).indexOf(q) >= 0).slice(0, 5);
+  box.innerHTML = hit.length ? hit.map(p => `<div class="small" style="padding:10px;border:1px solid #b9d2f0;border-radius:8px;margin:4px 0;background:#fff;cursor:pointer" onclick="dsPilih('${esc(p.nik)}')"><b>${esc(p.nama)}</b> • NIK ${esc(p.nik)}<br>${dsTabAktif === 'LIMIT' ? 'Limit ' + pkRp(p.limitAsli) + ' → ' + pkRp(p.limitBaru) + ' • tenor ' + p.tenorAsli + ' → ' + p.tenorBaru + ' bln' : 'Lunas ' + tglf(p.lunas) + ' • masa tunggu s.d. ' + tglf(p.boleh)}</div>`).join('') : (tdk.length ? tdk.map(p => `<div class="small" style="padding:10px;border:1px solid #f5c2c2;border-radius:8px;margin:4px 0;background:#fff5f5"><b>${esc(p.nama)}</b> • NIK ${esc(p.nik)}<br>❌ Belum bisa dibuka: ${esc(p.msg)}</div>`).join('') : '<p class="small">Tidak ada anggota yang memenuhi syarat dengan nama itu.</p>');
 }
 function dsPilih(nik){
   const x = dsKandidat.filter(p => p.nik === nik)[0]; if(!x) return;
