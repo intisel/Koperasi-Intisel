@@ -1,15 +1,16 @@
 /* ===== KAS KOPERASI (menu Keuangan Koperasi) + LAPORAN KAS ===== */
-let kasJenis = 'MASUK', kasData = null, kasFotoData = '', kasFormBuka = false;
+let kasJenis = 'MASUK', kasData = null, kasFotoData = '', kasFormBuka = false, kasSemua = false;
 const kasBlnIni = () => (pkHariIni || isoLokal(new Date())).slice(0, 7);
 function kasRentang(ym){ const [y, m] = ym.split('-').map(Number); return {dari: ym + '-01', sampai: ym + '-' + String(new Date(y, m, 0).getDate()).padStart(2, '0')}; }
 function kasInit(){ if(!$('kasBulan').value) $('kasBulan').value = kasBlnIni(); kasMuat(); }
 function kasTab(j){
-  kasJenis = j; $('kasTabBtnM').classList.toggle('on', j === 'MASUK'); $('kasTabBtnK').classList.toggle('on', j === 'KELUAR');
+  kasJenis = j; kasSemua = false; $('kasTabBtnM').classList.toggle('on', j === 'MASUK'); $('kasTabBtnK').classList.toggle('on', j === 'KELUAR');
   ['kasForm', 'kasDaftarCard'].forEach(i => { $(i).classList.toggle('kas-m', j === 'MASUK'); $(i).classList.toggle('kas-k', j === 'KELUAR'); });
   $('kasBtn').style.background = j === 'MASUK' ? '#16a34a' : '#dc2626';
   kasPengisian(); kasRender();
 }
 async function kasMuat(){
+  kasSemua = false;
   const ym = $('kasBulan').value || kasBlnIni(), rg = kasRentang(ym);
   try{
     const r = await pkApi({a:'kas_daftar', token:pkToken, dari:rg.dari, sampai:rg.sampai});
@@ -75,9 +76,9 @@ function kasRender(){
   const r = kasData; if(!r) return;
   $('kasSaldo').innerText = pkRp(r.saldo); $('kasSaldo').style.color = r.saldo < 0 ? '#b91c1c' : '#134e8a';
   $('kasMasukBln').innerText = pkRp(r.masuk); $('kasKeluarBln').innerText = pkRp(r.keluar);
-  const m = kasJenis === 'MASUK', daftar = r.baris.filter(x => x.jenis === kasJenis), tot = daftar.reduce((t, x) => t + x.jumlah, 0), ym = $('kasBulan').value;
+  const m = kasJenis === 'MASUK', semuaD = r.baris.map((x, i) => [x, i]).filter(q => q[0].jenis === kasJenis).sort((p, q) => String(q[0].tgl).localeCompare(String(p[0].tgl)) || q[1] - p[1]).map(q => q[0]), tot = semuaD.reduce((t, x) => t + x.jumlah, 0), daftar = kasSemua ? semuaD : semuaD.slice(0, 10), ym = $('kasBulan').value;
   $('kasDaftarJudul').innerText = (m ? 'Daftar Kas Masuk' : 'Daftar Kas Keluar') + ' • ' + ym.split('-').reverse().join('/');
-  $('kasCatatan').innerHTML = (m ? '<b>Otomatis:</b> infaq dan angsuran yang diterima, serta bunga bank (bila saldo di atas Rp 50 juta; dapat dikoreksi). <b>Manual</b> (Ketua/Bendahara): tambahan dana, asuransi mobil, titipan, dan lainnya. ' : '<b>Otomatis:</b> pencairan pinjaman dan kasbon anggota yang ditandai sudah dicairkan, serta biaya admin &amp; pajak bank tiap akhir bulan (dapat dikoreksi). <b>Manual</b> (Ketua/Bendahara): sumbangan, biaya bank lainnya, operasional, dan lainnya. ') + 'Total bulan ini: <b>' + pkRp(tot) + '</b>';
+  $('kasCatatan').innerHTML = (m ? '<b>Otomatis:</b> infaq dan angsuran yang diterima, serta bunga bank (bila saldo di atas Rp 50 juta; dapat dikoreksi). <b>Manual</b> (Ketua/Bendahara): tambahan dana, asuransi mobil, titipan, dan lainnya. ' : '<b>Otomatis:</b> pencairan pinjaman dan kasbon anggota yang ditandai sudah dicairkan, serta biaya admin &amp; pajak bank tiap akhir bulan (dapat dikoreksi). <b>Manual</b> (Ketua/Bendahara): sumbangan, biaya bank lainnya, operasional, dan lainnya. ') + 'Total bulan ini: <b>' + pkRp(tot) + '</b>' + (semuaD.length > 10 ? ' • ' + (kasSemua ? 'menampilkan semua ' : 'menampilkan 10 terbaru dari ') + semuaD.length + ' catatan' : '');
   const kartu = x => `<div style="border-bottom:1px solid #d6e6f8;padding:9px 0"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(x.kategori)}${x.nama ? ' • ' + esc(x.nama) : ''}${x.koreksi ? ' <span class="badge" style="background:#fef3c7;color:#92400e">dikoreksi</span>' : x.otomatis ? ' <span class="badge" style="background:#dcfce7;color:#166534">otomatis</span>' : ''}</b><b style="color:${m ? '#166534' : '#b91c1c'}">${m ? '+' : '−'}${pkRp(x.jumlah)}</b></div>
     <div class="small">${pkTgl(x.tgl)}${x.ket ? ' • ' + esc(x.ket) : ''}${x.otomatis ? '' : ' • oleh ' + esc(x.oleh)}</div>
     ${r.bisaInput && x.otomatis && x.komp && !x.koreksi ? `<span class="back-link" style="margin:4px 8px 0 0;display:inline-block" onclick="korIsi('${esc(x.bulan)}','${esc(x.komp)}')">✏️ Koreksi sesuai mutasi bank</span>` : ''}
@@ -86,6 +87,7 @@ function kasRender(){
     ${x.bisaBatal ? `<span class="back-link" style="margin:4px 0 0" onclick="kasBatalBuka('${esc(x.id)}')">${x.koreksi ? '↩ Batalkan koreksi' : '✖ Batalkan'}</span><div id="kb_${esc(x.id)}" class="hidden" style="margin-top:6px"><input id="kba_${esc(x.id)}" maxlength="200" placeholder="Alasan pembatalan (wajib)"><button class="btn" style="margin-top:6px;padding:10px;font-size:14px;background:#b91c1c" onclick="kasBatal('${esc(x.id)}')">${x.koreksi ? 'Batalkan Koreksi' : 'Batalkan Catatan'}</button></div>` : ''}</div>`;
   const bt = r.dibatalkan.filter(x => x.jenis === kasJenis);
   $('kasDaftar').innerHTML = (daftar.length ? daftar.map(kartu).join('') : '<p class="small">Belum ada catatan pada bulan ini.</p>') +
+    (semuaD.length > 10 ? `<button class="btn" style="margin-top:10px;padding:10px;font-size:14px;background:#64748b" onclick="kasSemua=!kasSemua;kasRender()">${kasSemua ? 'Tampilkan 10 terbaru saja' : 'Tampilkan semua (' + semuaD.length + ')'}</button>` : '') +
     (bt.length ? `<details style="margin-top:10px"><summary class="small"><b>${bt.length} catatan dibatalkan</b></summary>${bt.map(x => `<div class="small" style="padding:6px 0;border-bottom:1px dashed #d6e6f8;color:#6b7f99"><s>${esc(x.kategori)} ${pkRp(x.jumlah)} • ${pkTgl(x.tgl)}</s><br>Dibatalkan oleh ${esc(x.batalOleh)}: “${esc(x.batalAlasan)}”</div>`).join('')}</details>` : '');
 }
 async function kasSimpan(){
