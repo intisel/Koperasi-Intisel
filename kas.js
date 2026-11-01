@@ -217,6 +217,11 @@ async function mutMuat(){
   }catch(e){ console.log('mut err', e); $('mutList').innerHTML = '<div class="err">Gagal terhubung ke server. Coba lagi.</div>'; }
 }
 let mutKet = null;
+function mutKetFmt(t){ // keterangan mutasi: buang nomor pengajuan "(KP0143)" / "(KOP-...)" dan tebalkan nama karyawan (bagian setelah " • ")
+  let s = String(t).replace(/\s*\((?:KP|KOP|KB|KS)[-\w]*\)/g, '');
+  const i = s.lastIndexOf(' • ');
+  return i >= 0 ? esc(s.slice(0, i)) + ' • <b>' + esc(s.slice(i + 3)) + '</b>' : esc(s);
+}
 function mutRender(){
   const k = mutKet; if(!k) return;
   const judul = {T10: '10 transaksi terakhir', HARI: 'Hari ini • ' + pkTgl(k.dari), MINGGU: 'Minggu ini • ' + pkTgl(k.dari) + ' – ' + pkTgl(k.sampai), BULAN: 'Bulan ini • ' + pkTgl(k.dari) + ' – ' + pkTgl(k.sampai), TGL: pkTgl(k.dari) + ' – ' + pkTgl(k.sampai)}[mutMode];
@@ -224,8 +229,8 @@ function mutRender(){
   const tampil = mutBaris.slice(0, mutBanyak);
   $('mutList').innerHTML = (tampil.length ? tampil.map(x => { const m = x.jenis === 'MASUK';
     return `<div style="background:${m ? '#ecfdf3' : '#fef2f2'};border:1px solid ${m ? '#bbf7d0' : '#fecaca'};border-left:5px solid ${m ? '#16a34a' : '#dc2626'};border-radius:12px;padding:9px 10px;margin:0 0 8px"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(x.kategori)}${x.nama ? ' • ' + esc(x.nama) : ''}${x.koreksi ? ' <span class="badge" style="background:#fef3c7;color:#92400e">dikoreksi</span>' : x.otomatis ? ' <span class="badge" style="background:#dcfce7;color:#166534">otomatis</span>' : ' <span class="badge" style="background:#dbeafe;color:#1e40af">manual</span>'}</b><b style="color:${m ? '#166534' : '#b91c1c'};white-space:nowrap">${m ? '+' : '−'}${pkRp(x.jumlah)}</b></div>
-      <div class="small">${x.ket ? esc(x.ket) + '<br>' : ''}${pkTgl(x.tgl)} • <b style="color:${m ? '#166534' : '#b91c1c'}">${m ? 'Masuk' : 'Keluar'}</b>${x.otomatis ? '' : ' • oleh ' + esc(x.oleh)}</div>
-      <div class="small" style="text-align:right">Saldo akhir: <b>${pkRp(x.saldoSetelah)}</b></div>
+      <div class="small">${x.ket ? mutKetFmt(x.ket) + '<br>' : ''}${pkTgl(x.tgl)} • <b style="color:${m ? '#166534' : '#b91c1c'}">${m ? 'Masuk' : 'Keluar'}</b>${x.otomatis ? '' : ' • oleh ' + esc(x.oleh)}</div>
+      <div style="text-align:right"><span class="small">Saldo akhir:</span> <b>${pkRp(x.saldoSetelah)}</b></div>
       ${x.foto ? `<span class="back-link" style="margin:2px 0 0;display:inline-block" onclick="kasLihatFoto('${esc(x.id)}')">📷 Lihat foto bukti</span><div id="kf_${esc(x.id)}"></div>` : ''}</div>`; }).join('') : '<p class="small">Tidak ada transaksi pada periode ini.</p>') +
     (mutBaris.length > mutBanyak ? `<button class="btn" style="margin-top:10px;padding:10px;font-size:14px;background:#64748b" onclick="mutBanyak+=50;mutRender()">Tampilkan lebih banyak (${mutBaris.length - mutBanyak} lagi)</button>` : '');
 }
