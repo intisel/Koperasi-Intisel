@@ -714,7 +714,7 @@ body.kartu-open{overflow:hidden}
         <p class="small" style="margin:2px 0 8px">Untuk anggota yang keluar dari perusahaan atau meninggal dunia dan masih punya sisa pinjaman. Usulan wajib disetujui Penasehat, Ketua, dan Bendahara. Bila sisa tagihan <b>di atas Rp 1.000.000</b>, Pimpinan juga wajib menyetujui. Satu penolakan berarti ditolak. Setelah disetujui, pinjaman ditutup dan sisa yang tidak terbayar dicatat sebagai dihapuskan.</p>
         <div id="skDaftar"><p class="small">Memuat...</p></div></div>
       <div class="card hidden" id="skFormBox"><b>➕ Usulkan Penyelesaian</b>
-        <label>Pinjaman</label><select id="skPinjaman" onchange="skInfoPinjaman()"><option value="">Memuat...</option></select><p class="small" id="skInfo" style="margin:2px 0"></p>
+        <label>Pinjaman (ketik nama peminjam)</label><input type="search" id="skCari" placeholder="🔍 Ketik nama peminjam..." autocomplete="off" oninput="skCariIsi()"><input type="hidden" id="skPinjaman"><div id="skSaran"></div><div id="skInfo" class="ok" style="display:none;margin:6px 0"></div>
         <label>Jenis</label><select id="skJenis"><option value="MENINGGAL">Anggota meninggal dunia</option><option value="KELUAR">Anggota keluar / berhenti dari perusahaan</option><option value="LAIN">Alasan khusus lain</option></select>
         <label>Tanggal kejadian</label><input type="date" id="skTgl">
         <label>Jumlah yang diterima koperasi (Rp, isi 0 bila tidak ada)</label><input type="text" inputmode="numeric" id="skDibayar" placeholder="0" oninput="this.value=fmtMoney(onlyDigits(this.value))">

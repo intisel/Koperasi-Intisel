@@ -11,15 +11,29 @@ async function skMuat(){
     $('skFormBox').classList.toggle('hidden', !r.bisaAjukan);
     box.innerHTML = (r.menunggu.length ? r.menunggu.map(skKartu).join('') : '<p class="small">Tidak ada usulan yang menunggu. ✅</p>') +
       (r.riwayat.length ? '<div style="font-weight:800;margin:14px 0 6px">Riwayat terakhir</div>' + r.riwayat.map(skKartu).join('') : '');
-    if(r.bisaAjukan) skMuatPinjaman();
+    if(r.bisaAjukan){ skPinjaman = []; skMuatPinjaman(); }
   }catch(e){ box.innerHTML = '<div class="err">Gagal memuat data.</div>'; }
 }
 async function skMuatPinjaman(){
-  const sel = $('skPinjaman'); if(!sel || skPinjaman.length) return;
+  if(skPinjaman.length) return;
   try{
     const r = await pkApi({a:'daftar_status', token:pkToken, status:'DISETUJUI'});
-    if(r.ok){ skPinjaman = r.list; sel.innerHTML = '<option value="">— pilih pinjaman berjalan —</option>' + skPinjaman.map(x => `<option value="${esc(x.id)}">${esc(x.nama)} — ${esc(x.id)} (${pkRp(x.nominal)})</option>`).join(''); }
+    if(r.ok) skPinjaman = r.list;
   }catch(e){}
+}
+function skCariIsi(){
+  $('skPinjaman').value = ''; $('skInfo').style.display = 'none';
+  const q = ($('skCari').value || '').trim().toLowerCase(), box = $('skSaran');
+  if(!q){ box.innerHTML = ''; return; }
+  const hit = skPinjaman.filter(p => String(p.nama).toLowerCase().indexOf(q) >= 0 || String(p.id).toLowerCase().indexOf(q) >= 0).slice(0, 8);
+  box.innerHTML = hit.length ? hit.map(p => `<div class="small" style="padding:10px;border:1px solid #b9d2f0;border-radius:8px;margin:4px 0;background:#fff;cursor:pointer" onclick="skPilih('${esc(p.id)}')"><b>${esc(p.nama)}</b> • ${esc(p.id)}<br>Sisa belum terbayar <b>${pkRp(p.sisa)}</b></div>`).join('') : '<p class="small">Tidak ada pinjaman berjalan dengan nama itu.</p>';
+}
+function skPilih(id){
+  const x = skPinjaman.filter(p => p.id === id)[0]; if(!x) return;
+  $('skPinjaman').value = id; $('skCari').value = x.nama; $('skSaran').innerHTML = '';
+  const b = $('skInfo'); b.style.display = 'block';
+  b.innerHTML = `<b>${esc(x.nama)}</b> (${esc(x.id)})<br><span class="small">Pinjaman ${pkRp(x.nominal)} • ${x.jenis === 'KASBON' ? 'kasbon' : x.tenor + ' bulan'} • ${x.lunasKe || 0}/${x.total || 0} angsuran lunas</span><div style="font-size:18px;font-weight:800;color:#b91c1c;margin-top:4px">Sisa belum terbayar ${pkRp(x.sisa)}</div>` +
+    (x.sisa > 1000000 ? '<div class="small" style="margin-top:4px">⚠ Di atas Rp 1.000.000 — Pimpinan juga wajib menyetujui.</div>' : '');
 }
 function skKartu(k){
   const sid = esc(k.sid);
@@ -54,10 +68,6 @@ function skPilihFoto(inp){
     const m = 1400, s = Math.min(1, m / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = im.width * s; c.height = im.height * s;
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); skFoto = c.toDataURL('image/jpeg', 0.8); $('skFotoInfo').innerText = '✔ Dokumen terpilih'; }; im.src = rd.result; }; rd.readAsDataURL(f);
 }
-function skInfoPinjaman(){
-  const x = skPinjaman.filter(p => p.id === $('skPinjaman').value)[0];
-  $('skInfo').innerText = x ? 'Pinjaman ' + pkRp(x.nominal) + ' • ' + (x.jenis === 'KASBON' ? 'kasbon' : x.tenor + ' bulan') + '. Sisa tagihan dihitung otomatis oleh sistem.' : '';
-}
 async function skAjukan(){
   const id = $('skPinjaman').value, nama = (skPinjaman.filter(p => p.id === id)[0] || {}).nama || '';
   const o = {a:'sk_ajukan', token:pkToken, id, jenis:$('skJenis').value, tgl:$('skTgl').value, dibayar:moneyVal($('skDibayar').value), uraian:$('skUraian').value, foto:skFoto};
@@ -67,7 +77,7 @@ async function skAjukan(){
   try{
     const r = await pkApi(o); if(r.expired){ pkExpired(); return; }
     alert(r.ok ? r.msg : '❌ ' + r.msg);
-    if(r.ok){ ['skUraian', 'skDibayar'].forEach(i => $(i).value = ''); $('skPinjaman').value = ''; skFoto = ''; $('skFotoInfo').innerText = ''; $('skInfo').innerText = ''; }
+    if(r.ok){ ['skUraian', 'skDibayar'].forEach(i => $(i).value = ''); $('skPinjaman').value = ''; $('skCari').value = ''; skPinjaman = []; skFoto = ''; $('skFotoInfo').innerText = ''; $('skInfo').style.display = 'none'; }
   }catch(e){ alert('Gagal terhubung ke server.'); }
   b.disabled = false; skMuat();
 }
