@@ -300,6 +300,7 @@ body.kartu-open{overflow:hidden}
   <div class="card" id="menuCard" style="display:none">
     <div style="font-weight:800;margin:14px 0 0">Pilih Layanan</div>
     <div class="warn" id="mnStatus" style="display:none;margin-top:8px"></div>
+    <div id="mnDisiplin" style="display:none;margin-top:8px"></div>
     <div class="mgrid">
       <button class="mtile" id="tlKasbon" onclick="bukaMenu('vKasbon')"><span class="ic">💸</span><b>Pengajuan Kasbon</b><span class="sub" id="tlKasbonSub"></span></button>
       <button class="mtile" id="tlTalangan" style="display:none" onclick="bukaMenu('vTalangan')"><span class="ic">🤝</span><b>Dana Talangan Operasional</b><span class="sub">Kasbon pengelola</span></button>
@@ -472,6 +473,7 @@ body.kartu-open{overflow:hidden}
       <div><span>TENOR MAKS</span><b id="tenorMaxTxt">-</b></div>
     </div>
     <div id="limitInfo" class="warn"></div>
+    <div id="dispBox"></div>
 
     <label style="margin-top:12px">Nominal Pinjaman (boleh di bawah limit maks)</label>
     <input type="range" id="nomRange" min="500000" max="5000000" step="100000" value="3000000" oninput="updateNominal()">
@@ -618,6 +620,7 @@ body.kartu-open{overflow:hidden}
           <button class="mtile" onclick="go('pengurus-validasi')"><span class="pbadge" id="pbValidasi"></span><span class="ic">✅</span><b>Validasi Pinjaman</b><span class="sub">Tinjau, setujui, atau tolak pengajuan</span></button>
           <button class="mtile" onclick="go('pengurus-cair')"><span class="pbadge" id="pbCair"></span><span class="ic">💸</span><b>Pencairan Dana</b><span class="sub">Pinjaman disetujui, siap dicairkan</span></button>
           <button class="mtile wide" onclick="go('pengurus-berjalan')"><span class="pbadge" id="pbBerjalan"></span><span class="ic">🧾</span><b>Pembayaran Angsuran</b><span class="sub">Pembayaran • Pinjaman • Keringanan</span></button>
+          <button class="mtile wide" onclick="go('pengurus-dispensasi')"><span class="pbadge" id="pbDispensasi"></span><span class="ic">⏳</span><b>Dispensasi Masa Tunggu</b><span class="sub">Pinjaman mendesak sebelum masa tunggu selesai</span></button>
           <button class="mtile wide gelap" onclick="go('pengurus-selesai')"><span class="pbadge" id="pbSelesai"></span><span class="ic">🕊️</span><b>Penyelesaian Khusus</b><span class="sub">Anggota keluar / meninggal dunia</span></button>
         </div></div>
     </div>
@@ -709,6 +712,17 @@ body.kartu-open{overflow:hidden}
     </div>
     <div class="pkv hidden" id="pkvCair">
       <div class="card"><b>💸 Pencairan Dana</b><p class="small" style="margin:2px 0 8px">Pinjaman yang sudah disetujui pimpinan. Setelah transfer, tandai sudah dicairkan.</p><div id="pkPencairan"></div></div>
+    </div>
+    <div class="pkv hidden" id="pkvDispensasi">
+      <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b>⏳ Dispensasi Masa Tunggu</b></div>
+        <p class="small" style="margin:2px 0 8px">Untuk anggota yang baru lunas tetapi sangat mendesak membutuhkan pinjaman (misalnya musibah). Wajib disetujui <b>Penasehat, Ketua, dan Bendahara</b>; satu penolakan berarti ditolak. Pimpinan diberi tahu setelah disetujui dan tetap memutuskan pengajuan pinjamannya. Limit <b>dipotong Rp 500.000 untuk setiap bulan masa tunggu yang dilewati</b>. Berlaku 14 hari, sekali pakai.</p>
+        <div id="dsDaftar"><p class="small">Memuat...</p></div></div>
+      <div class="card hidden" id="dsFormBox" style="background:#e5e7eb;border-color:#cbd5e1"><b>➕ Usulkan Dispensasi</b>
+        <label>Anggota (ketik nama)</label><input type="search" id="dsCari" placeholder="🔍 Ketik nama anggota yang sedang masa tunggu..." autocomplete="off" oninput="dsCariIsi()"><div id="dsSaran"></div><div id="dsInfo" class="ok" style="display:none;margin:6px 0"></div>
+        <label>Alasan</label><select id="dsAlasan"><option value="musibah">Musibah / kedukaan keluarga</option><option value="sakit">Sakit / biaya pengobatan</option><option value="mendesak">Kebutuhan mendesak keluarga</option><option value="lain">Alasan lain</option></select>
+        <label>Uraian &amp; dasar keputusan (min. 30 huruf)</label><textarea id="dsUraian" rows="3" placeholder="Jelaskan kejadian dan alasan dispensasi, hasil musyawarah pengurus..."></textarea>
+        <label>Foto bukti pendukung</label><input type="file" accept="image/*" onchange="dsPilihFoto(this)"><p class="small" id="dsFotoInfo" style="margin:2px 0"></p>
+        <button class="btn" id="dsKirim" onclick="dsAjukan()">Kirim Usulan</button></div>
     </div>
     <div class="pkv hidden" id="pkvSelesai">
       <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b>🕊️ Penyelesaian Khusus</b></div>
@@ -920,8 +934,8 @@ let currentPage='landing';
 // ROUTER RIWAYAT PERAMBAN: setiap layar = 1 entri riwayat, tombol back HP mundur 1 langkah
 // landing > anggota (Cek NIK) > anggota-menu > anggota-{kasbon|koperasi|approval|berjalan|bayar}
 // landing > pengurus (Login) > pengurus-dashboard
-const ROUTES=['landing','anggota','anggota-menu','anggota-kasbon','anggota-talangan','anggota-koperasi','anggota-approval','anggota-berjalan','anggota-bayar','anggota-keringanan','anggota-kontak','anggota-profil','anggota-profil-ubah','pengurus','pengurus-dashboard','pengurus-validasi','pengurus-cair','pengurus-berjalan','pengurus-anggota','pengurus-info','pengurus-perangkat','pengurus-budget','pengurus-kas','pengurus-kbp','pengurus-selesai','pengurus-g1','pengurus-g2','pengurus-g3','pengurus-g4'];
-const ROUTE_LEVEL={'anggota':0,'anggota-menu':1,'anggota-kasbon':2,'anggota-talangan':2,'anggota-koperasi':2,'anggota-approval':2,'anggota-berjalan':2,'anggota-bayar':2,'anggota-keringanan':2,'anggota-kontak':2,'anggota-profil':2,'anggota-profil-ubah':2,'pengurus':0,'pengurus-dashboard':1,'pengurus-validasi':3,'pengurus-cair':3,'pengurus-berjalan':3,'pengurus-anggota':3,'pengurus-budget':3,'pengurus-kas':3,'pengurus-kbp':3,'pengurus-selesai':3,'pengurus-info':3,'pengurus-perangkat':3,'pengurus-g1':2,'pengurus-g2':2,'pengurus-g3':2,'pengurus-g4':2};
+const ROUTES=['landing','anggota','anggota-menu','anggota-kasbon','anggota-talangan','anggota-koperasi','anggota-approval','anggota-berjalan','anggota-bayar','anggota-keringanan','anggota-kontak','anggota-profil','anggota-profil-ubah','pengurus','pengurus-dashboard','pengurus-validasi','pengurus-cair','pengurus-berjalan','pengurus-anggota','pengurus-info','pengurus-perangkat','pengurus-budget','pengurus-kas','pengurus-kbp','pengurus-selesai','pengurus-dispensasi','pengurus-g1','pengurus-g2','pengurus-g3','pengurus-g4'];
+const ROUTE_LEVEL={'anggota':0,'anggota-menu':1,'anggota-kasbon':2,'anggota-talangan':2,'anggota-koperasi':2,'anggota-approval':2,'anggota-berjalan':2,'anggota-bayar':2,'anggota-keringanan':2,'anggota-kontak':2,'anggota-profil':2,'anggota-profil-ubah':2,'pengurus':0,'pengurus-dashboard':1,'pengurus-validasi':3,'pengurus-cair':3,'pengurus-berjalan':3,'pengurus-anggota':3,'pengurus-budget':3,'pengurus-kas':3,'pengurus-kbp':3,'pengurus-selesai':3,'pengurus-dispensasi':3,'pengurus-info':3,'pengurus-perangkat':3,'pengurus-g1':2,'pengurus-g2':2,'pengurus-g3':2,'pengurus-g4':2};
 let currentRoute='landing';
 function renderRoute(name,fromPop){
   if(ROUTES.indexOf(name)<0) name='landing';
@@ -969,7 +983,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(typeof pkToken!=='undefined' && pkToken){ // sisipkan Menu di bawah layar yang dibuka (di atas halaman depan), tanpa menghapus sesi
       anggotaSesiHapus();
       go('pengurus-dashboard');
-      const GR={'pengurus-validasi':'g1','pengurus-cair':'g1','pengurus-berjalan':'g1','pengurus-selesai':'g1','pengurus-kas':'g2','pengurus-kbp':'g2','pengurus-budget':'g2','pengurus-anggota':'g4','pengurus-perangkat':'g4','pengurus-info':'g4'};
+      const GR={'pengurus-validasi':'g1','pengurus-cair':'g1','pengurus-berjalan':'g1','pengurus-selesai':'g1','pengurus-dispensasi':'g1','pengurus-kas':'g2','pengurus-kbp':'g2','pengurus-budget':'g2','pengurus-anggota':'g4','pengurus-perangkat':'g4','pengurus-info':'g4'};
       if(start!=='pengurus-dashboard' && ROUTES.indexOf(start)>=0){ if(GR[start]) go('pengurus-'+GR[start]); go(start); } // sisipkan Menu dan submenu di bawah layar yang dibuka
     } else go('pengurus');
   }
@@ -1006,7 +1020,7 @@ async function masukDenganToken(v,atoken){ // setelah PIN / OTP benar: ambil dat
      hasil.innerHTML='<div class="err">❌ '+esc(r.msg||'Silakan masuk lagi')+'</div>';
      return;
    }
-   anggotaAktif={nik:v,atoken:atoken,nama:r.nama,jabatan:r.jabatan,tglMasuk:r.tglMasuk,masaKerja:r.masaKerja,masaKerjaTahun:r.masaKerjaTahun,pengelola:!!r.pengelola,base:r.base||'',bagian:r.bagian||'',rekAkhir:r.rekAkhir||''};
+   anggotaAktif={nik:v,atoken:atoken,nama:r.nama,jabatan:r.jabatan,tglMasuk:r.tglMasuk,masaKerja:r.masaKerja,masaKerjaTahun:r.masaKerjaTahun,pengelola:!!r.pengelola,base:r.base||'',bagian:r.bagian||'',rekAkhir:r.rekAkhir||'',dispensasi:r.dispensasi||null};
    sesiSimpan(v,atoken,r.nama); // sesi bertahan saat refresh + NIK diingat
    if(typeof aksesLapor==='function') aksesLapor();
    let mk=r.masaKerja, mkBulat=r.masaKerjaTahun;
@@ -1026,6 +1040,7 @@ async function masukDenganToken(v,atoken){ // setelah PIN / OTP benar: ambil dat
      masukMenu();
      return;
    }
+   if(r.dispensasi){ setTimeout(()=>{ const li=document.getElementById('limitInfo'); if(li) li.innerHTML+=`<br>🎟️ <b>Dispensasi masa tunggu aktif</b>: limit dipotong Rp ${Number(r.dispensasi.potongan).toLocaleString('id-ID')} (${r.dispensasi.bulan} bulan). Berlaku sampai ${r.dispensasi.berlaku.split('-').reverse().join('/')}.`; },0); }
    document.getElementById('btnKirim').disabled=false;
    document.getElementById('btnKirim').innerText='Kirim Pengajuan';
    document.getElementById('limitInfo').innerHTML=`Masa kerja <b>${mk.toFixed(1)} tahun</b> (bracket <b>${limitAktif.bracket}</b>) → <b>Limit Maks ${rp(limitAktif.maxNominal)} tenor maks ${limitAktif.maxTenor} bulan</b>. Kamu boleh pinjam di bawah itu dan tenor lebih cepat. Contoh: kerja 5 tahun → limit 3,5jt/7 bln, boleh ambil 3jt/6 bln.`;
@@ -1120,6 +1135,7 @@ function hitungAngsuran(){
 <script src="layanan.js"></script>
 <script src="keringanan.js"></script>
 <script src="selesai.js"></script>
+<script src="dispensasi.js"></script>
 <script src="budget.js"></script>
 <script src="rencana.js"></script>
 <script src="pinpad.js"></script>

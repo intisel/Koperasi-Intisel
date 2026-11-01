@@ -31,10 +31,11 @@ function pengurusRender(name){
     else if(name === 'pengurus-kas') kasInit();
     else if(name === 'pengurus-kbp') kbpMuat();
     else if(name === 'pengurus-selesai') skMuat();
+    else if(name === 'pengurus-dispensasi') dsMuat();
     else pkMuat();
   }
 }
-const PK_VIEW = {'pengurus-dashboard':'pkvMenu', 'pengurus-validasi':'pkvValidasi', 'pengurus-cair':'pkvCair', 'pengurus-berjalan':'pkvBerjalan', 'pengurus-anggota':'pkvAnggota', 'pengurus-info':'pkvInfo', 'pengurus-perangkat':'pkvPL',  'pengurus-budget':'pkvBudget', 'pengurus-kas':'pkvKas', 'pengurus-kbp':'pkvKbp', 'pengurus-selesai':'pkvSelesai', 'pengurus-g1':'pkvG1', 'pengurus-g2':'pkvG2', 'pengurus-g3':'pkvG3', 'pengurus-g4':'pkvG4'};
+const PK_VIEW = {'pengurus-dashboard':'pkvMenu', 'pengurus-validasi':'pkvValidasi', 'pengurus-cair':'pkvCair', 'pengurus-berjalan':'pkvBerjalan', 'pengurus-anggota':'pkvAnggota', 'pengurus-info':'pkvInfo', 'pengurus-perangkat':'pkvPL',  'pengurus-budget':'pkvBudget', 'pengurus-kas':'pkvKas', 'pengurus-kbp':'pkvKbp', 'pengurus-selesai':'pkvSelesai', 'pengurus-dispensasi':'pkvDispensasi', 'pengurus-g1':'pkvG1', 'pengurus-g2':'pkvG2', 'pengurus-g3':'pkvG3', 'pengurus-g4':'pkvG4'};
 function pkTab(t){
   $('pkBoxKode').classList.toggle('hidden', t !== 'kode'); $('pkBoxPw').classList.toggle('hidden', t !== 'pw'); $('pkBoxAtur').classList.toggle('hidden', t !== 'atur');
   $('pkTabKode').classList.toggle('on', t === 'kode'); $('pkTabPw').classList.toggle('on', t === 'pw');
@@ -168,9 +169,9 @@ async function pkMuat(){
 let pkBayarTabSet = false, pkLapBase = 0;
 function pkTabNotif(k, n){ const b = $('byTabBtn' + k); if(b) b.classList.toggle('notif', n > 0); } // tab bermerah bila ada yang perlu ditindak
 function pkBayarTab(t){ ['V','P','K'].forEach(k => { $('byTab' + k).classList.toggle('hidden', t !== k); $('byTabBtn' + k).classList.toggle('on', t === k); }); }
-function pkBadge2(id, n){ const e = $(id); e.innerText = n; e.style.display = n > 0 ? 'block' : 'none'; if(id === 'pbValidasi' || id === 'pbCair' || id === 'pbBerjalan' || id === 'pbSelesai') pkBadgeGrup(); }
+function pkBadge2(id, n){ const e = $(id); e.innerText = n; e.style.display = n > 0 ? 'block' : 'none'; if(id === 'pbValidasi' || id === 'pbCair' || id === 'pbBerjalan' || id === 'pbSelesai' || id === 'pbDispensasi') pkBadgeGrup(); }
 function pkBadgeGrup(){ // angka merah di tile Administrasi Pinjaman = jumlah angka di submenunya
-  const t = ['pbValidasi', 'pbCair', 'pbBerjalan', 'pbSelesai'].reduce((s, i) => s + (parseInt($(i).innerText, 10) || 0), 0), g = $('pbG1'); g.innerText = t; g.style.display = t > 0 ? 'block' : 'none';
+  const t = ['pbValidasi', 'pbCair', 'pbBerjalan', 'pbSelesai', 'pbDispensasi'].reduce((s, i) => s + (parseInt($(i).innerText, 10) || 0), 0), g = $('pbG1'); g.innerText = t; g.style.display = t > 0 ? 'block' : 'none';
 }
 function pkVotes(p){
   const k = x => `<div>${pkIc(x.v)} ${esc(x.nama)}${x.jabatan ? ' <span class="small">(' + esc(x.jabatan) + ')</span>' : ''}</div>` + (x.a ? `<div style="margin:0 0 4px 22px"><i>“${esc(x.a)}”</i></div>` : '');
@@ -190,6 +191,8 @@ function pkKartu(p){
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span class="av sm" data-nik="${esc(p.nik)}" data-nama="${esc(p.nama)}">${esc(fotoInisial(p.nama))}</span><div>${pkBadge(p.jenis)}<b>${esc(p.nama)}</b> <span class="small">(${esc(p.id)} • ${esc(p.waktu)})</span></div></div>
     <table class="small" style="margin:6px 0;border-collapse:collapse">${rows}</table>
     <div class="small" style="margin-bottom:6px">${pkVotes(p)}</div>
+    ${d.dispensasi ? `<div class="small" style="background:#fff7ed;border:1px solid #fdba74;border-radius:8px;padding:6px 8px;margin:6px 0">🎟️ <b>Dispensasi masa tunggu</b>: limit dipotong ${d.dispensasi.bulan} bulan × Rp 500.000 = ${pkRp(d.dispensasi.potongan)} (limit normal ${pkRp(d.dispensasi.limitAsli)}).</div>` : ''}
+    ${typeof disiplinHtml === 'function' ? disiplinHtml(d.disiplin) : ''}
     ${pkRencana(p)}
     ${pilihanCair(p)}
     <textarea id="pkA-${esc(p.id)}" rows="2" placeholder="Komentar (wajib bila menolak). Komentar tampil di status anggota."></textarea>

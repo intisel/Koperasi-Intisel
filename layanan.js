@@ -1,5 +1,5 @@
 // Layanan anggota: menu, kasbon, status approval, pinjaman berjalan, laporan pembayaran + foto bukti
-let dataSaya = {list: [], laporan: [], bolehKoperasi: '', loaded: false}, fotoData = '';
+let dataSaya = {list: [], laporan: [], bolehKoperasi: '', dispensasi: null, disiplin: null, loaded: false}, fotoData = '';
 const VIEW2ROUTE = {vKasbon:'anggota-kasbon', vTalangan:'anggota-talangan', formPinjam:'anggota-koperasi', vApproval:'anggota-approval', vBerjalan:'anggota-berjalan', vBayar:'anggota-bayar', vKeringanan:'anggota-keringanan', vKontak:'anggota-kontak', vProfil:'anggota-profil', vProfilUbah:'anggota-profil-ubah'};
 const ROUTE2VIEW = {'anggota-menu':'menuCard', 'anggota-kasbon':'vKasbon', 'anggota-talangan':'vTalangan', 'anggota-koperasi':'formPinjam', 'anggota-approval':'vApproval', 'anggota-berjalan':'vBerjalan', 'anggota-bayar':'vBayar', 'anggota-keringanan':'vKeringanan', 'anggota-kontak':'vKontak', 'anggota-profil':'vProfil', 'anggota-profil-ubah':'vProfilUbah'};
 const VIEWS = ['menuCard', 'formPinjam', 'vKasbon', 'vTalangan', 'vApproval', 'vBerjalan', 'vBayar', 'vKeringanan', 'vKontak', 'vProfil', 'vProfilUbah'];
@@ -235,9 +235,9 @@ async function muatData(){
   try{
     const r = await apiPost({a:'status', nik:anggotaAktif.nik, atoken:anggotaAktif.atoken});
     if(!r.ok){ $('apBox').innerHTML = `<div class="err">${esc(r.msg)}</div>`; return; }
-    dataSaya = {list: r.list || [], laporan: r.laporan || [], keringanan: r.keringanan || [], krTerpakai: r.krTerpakai || {}, krMaks: r.krMaks || 3, bolehKoperasi: r.bolehKoperasi || '', loaded: true};
+    dataSaya = {list: r.list || [], laporan: r.laporan || [], keringanan: r.keringanan || [], krTerpakai: r.krTerpakai || {}, krMaks: r.krMaks || 3, bolehKoperasi: r.bolehKoperasi || '', dispensasi: r.dispensasi || null, disiplin: r.disiplin || null, loaded: true};
   }catch(e){ $('apBox').innerHTML = '<div class="err">Gagal memuat data. Periksa koneksi internet.</div>'; return; }
-  renderApproval(); renderBerjalan(); renderBayar(); renderKeringanan(); renderSub(); terapkanBlokir();
+  renderApproval(); renderBerjalan(); renderBayar(); renderKeringanan(); renderSub(); terapkanBlokir(); if(typeof renderDisiplinAnggota === 'function') renderDisiplinAnggota();
 }
 function renderSub(){
   const proses = dataSaya.list.filter(p => p.status === 'REVIEW_PENGURUS' || p.status === 'MENUNGGU_PIMPINAN').length;
