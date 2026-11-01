@@ -509,6 +509,7 @@ function kartuBuka(id, pLuar, namaLuar){ // pLuar/namaLuar: dipakai pengurus unt
       ${info('Tanggal Pencairan', esc(kTgl(k.tglCair) || '-'))}${info('Sisa Pinjaman', 'Rp ' + kAngka(a.sisa), 1)}
       ${info('Infaq', infaqTxt, 1)}
     </div>
+    ${k.penyelesaian ? `<div style="margin:6px 0;padding:6px 8px;border:1px solid #999;font-size:12px"><b>PENYELESAIAN KHUSUS</b> — ${esc(k.penyelesaian.jenisTeks)} (${esc(kTgl(k.penyelesaian.tgl))}). Sisa tagihan Rp ${kAngka(k.penyelesaian.sisaTagihan)}, diterima Rp ${kAngka(k.penyelesaian.dibayar)}, dihapuskan Rp ${kAngka(k.penyelesaian.dihapus)}. Disetujui: ${esc(k.penyelesaian.disetujui)}.</div>` : ''}
     <div style="overflow-x:auto"><table class="kartu-tbl"><thead><tr><th>NO</th><th>${kDua('Keterangan', 'Ket.')}</th><th>${kDua('Jatuh Tempo', 'Jatuh Tempo')}</th><th>${kDua('Tanggal Pembayaran', 'Tgl Bayar')}</th><th>${kDua('Jumlah Pembayaran', 'Jumlah')}</th><th>${kDua('Keterlambatan', 'Telat')}</th><th>${kDua('Keterangan', 'Status')}</th></tr></thead><tbody>${baris}</tbody></table></div>
     <div class="kartu-ttd">${esc(kTglPanjang(new Date()))}<img src="logo-intisel.png" alt="Koperasi Intisel"><div style="height:34px"></div>Pengurus Koperasi</div>
   </div>`;

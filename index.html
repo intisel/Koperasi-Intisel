@@ -617,6 +617,7 @@ body.kartu-open{overflow:hidden}
           <button class="mtile" onclick="go('pengurus-validasi')"><span class="pbadge" id="pbValidasi"></span><span class="ic">✅</span><b>Validasi Pinjaman</b><span class="sub">Tinjau, setujui, atau tolak pengajuan</span></button>
           <button class="mtile" onclick="go('pengurus-cair')"><span class="pbadge" id="pbCair"></span><span class="ic">💸</span><b>Pencairan Dana</b><span class="sub">Pinjaman disetujui, siap dicairkan</span></button>
           <button class="mtile wide" onclick="go('pengurus-berjalan')"><span class="pbadge" id="pbBerjalan"></span><span class="ic">🧾</span><b>Pembayaran Angsuran</b><span class="sub">Pembayaran • Pinjaman • Keringanan</span></button>
+          <button class="mtile wide" onclick="go('pengurus-selesai')"><span class="pbadge" id="pbSelesai"></span><span class="ic">🕊️</span><b>Penyelesaian Khusus</b><span class="sub">Anggota keluar / meninggal dunia</span></button>
         </div></div>
     </div>
     <div class="pkv hidden" id="pkvG2">
@@ -707,6 +708,19 @@ body.kartu-open{overflow:hidden}
     </div>
     <div class="pkv hidden" id="pkvCair">
       <div class="card"><b>💸 Pencairan Dana</b><p class="small" style="margin:2px 0 8px">Pinjaman yang sudah disetujui pimpinan. Setelah transfer, tandai sudah dicairkan.</p><div id="pkPencairan"></div></div>
+    </div>
+    <div class="pkv hidden" id="pkvSelesai">
+      <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b>🕊️ Penyelesaian Khusus</b></div>
+        <p class="small" style="margin:2px 0 8px">Untuk anggota yang keluar dari perusahaan atau meninggal dunia dan masih punya sisa pinjaman. Usulan wajib disetujui Penasehat, Ketua, dan Bendahara; satu penolakan berarti ditolak. Setelah disetujui, pinjaman ditutup dan sisa yang tidak terbayar dicatat sebagai dihapuskan.</p>
+        <div id="skDaftar"><p class="small">Memuat...</p></div></div>
+      <div class="card hidden" id="skFormBox"><b>➕ Usulkan Penyelesaian</b>
+        <label>Pinjaman</label><select id="skPinjaman" onchange="skInfoPinjaman()"><option value="">Memuat...</option></select><p class="small" id="skInfo" style="margin:2px 0"></p>
+        <label>Jenis</label><select id="skJenis"><option value="MENINGGAL">Anggota meninggal dunia</option><option value="KELUAR">Anggota keluar / berhenti dari perusahaan</option><option value="LAIN">Alasan khusus lain</option></select>
+        <label>Tanggal kejadian</label><input type="date" id="skTgl">
+        <label>Jumlah yang diterima koperasi (Rp, isi 0 bila tidak ada)</label><input type="text" inputmode="numeric" id="skDibayar" placeholder="0" oninput="this.value=fmtMoney(onlyDigits(this.value))">
+        <label>Uraian &amp; dasar keputusan (min. 30 huruf)</label><textarea id="skUraian" rows="3" placeholder="Contoh: hasil musyawarah pengurus, kondisi keluarga, penyelesaian dengan ahli waris..."></textarea>
+        <label>Dokumen pendukung (surat kematian / pengunduran diri)</label><input type="file" accept="image/*" onchange="skPilihFoto(this)"><p class="small" id="skFotoInfo" style="margin:2px 0"></p>
+        <button class="btn" id="skKirim" onclick="skAjukan()">Kirim Usulan</button></div>
     </div>
     <div class="pkv hidden" id="pkvBerjalan">
       <div class="pktabs"><button id="byTabBtnV" class="on" onclick="pkBayarTab('V')">🧾 Pembayaran <span id="byTabNV"></span></button><button id="byTabBtnP" onclick="pkBayarTab('P')">📊 Pinjaman <span id="byTabNP"></span></button><button id="byTabBtnK" onclick="pkBayarTab('K')">🤝 Keringanan <span id="byTabNK"></span></button></div>
@@ -905,8 +919,8 @@ let currentPage='landing';
 // ROUTER RIWAYAT PERAMBAN: setiap layar = 1 entri riwayat, tombol back HP mundur 1 langkah
 // landing > anggota (Cek NIK) > anggota-menu > anggota-{kasbon|koperasi|approval|berjalan|bayar}
 // landing > pengurus (Login) > pengurus-dashboard
-const ROUTES=['landing','anggota','anggota-menu','anggota-kasbon','anggota-talangan','anggota-koperasi','anggota-approval','anggota-berjalan','anggota-bayar','anggota-keringanan','anggota-kontak','anggota-profil','anggota-profil-ubah','pengurus','pengurus-dashboard','pengurus-validasi','pengurus-cair','pengurus-berjalan','pengurus-anggota','pengurus-info','pengurus-perangkat','pengurus-budget','pengurus-kas','pengurus-kbp','pengurus-g1','pengurus-g2','pengurus-g3','pengurus-g4'];
-const ROUTE_LEVEL={'anggota':0,'anggota-menu':1,'anggota-kasbon':2,'anggota-talangan':2,'anggota-koperasi':2,'anggota-approval':2,'anggota-berjalan':2,'anggota-bayar':2,'anggota-keringanan':2,'anggota-kontak':2,'anggota-profil':2,'anggota-profil-ubah':2,'pengurus':0,'pengurus-dashboard':1,'pengurus-validasi':3,'pengurus-cair':3,'pengurus-berjalan':3,'pengurus-anggota':3,'pengurus-budget':3,'pengurus-kas':3,'pengurus-kbp':3,'pengurus-info':3,'pengurus-perangkat':3,'pengurus-g1':2,'pengurus-g2':2,'pengurus-g3':2,'pengurus-g4':2};
+const ROUTES=['landing','anggota','anggota-menu','anggota-kasbon','anggota-talangan','anggota-koperasi','anggota-approval','anggota-berjalan','anggota-bayar','anggota-keringanan','anggota-kontak','anggota-profil','anggota-profil-ubah','pengurus','pengurus-dashboard','pengurus-validasi','pengurus-cair','pengurus-berjalan','pengurus-anggota','pengurus-info','pengurus-perangkat','pengurus-budget','pengurus-kas','pengurus-kbp','pengurus-selesai','pengurus-g1','pengurus-g2','pengurus-g3','pengurus-g4'];
+const ROUTE_LEVEL={'anggota':0,'anggota-menu':1,'anggota-kasbon':2,'anggota-talangan':2,'anggota-koperasi':2,'anggota-approval':2,'anggota-berjalan':2,'anggota-bayar':2,'anggota-keringanan':2,'anggota-kontak':2,'anggota-profil':2,'anggota-profil-ubah':2,'pengurus':0,'pengurus-dashboard':1,'pengurus-validasi':3,'pengurus-cair':3,'pengurus-berjalan':3,'pengurus-anggota':3,'pengurus-budget':3,'pengurus-kas':3,'pengurus-kbp':3,'pengurus-selesai':3,'pengurus-info':3,'pengurus-perangkat':3,'pengurus-g1':2,'pengurus-g2':2,'pengurus-g3':2,'pengurus-g4':2};
 let currentRoute='landing';
 function renderRoute(name,fromPop){
   if(ROUTES.indexOf(name)<0) name='landing';
@@ -954,7 +968,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(typeof pkToken!=='undefined' && pkToken){ // sisipkan Menu di bawah layar yang dibuka (di atas halaman depan), tanpa menghapus sesi
       anggotaSesiHapus();
       go('pengurus-dashboard');
-      const GR={'pengurus-validasi':'g1','pengurus-cair':'g1','pengurus-berjalan':'g1','pengurus-kas':'g2','pengurus-kbp':'g2','pengurus-budget':'g2','pengurus-anggota':'g4','pengurus-perangkat':'g4','pengurus-info':'g4'};
+      const GR={'pengurus-validasi':'g1','pengurus-cair':'g1','pengurus-berjalan':'g1','pengurus-selesai':'g1','pengurus-kas':'g2','pengurus-kbp':'g2','pengurus-budget':'g2','pengurus-anggota':'g4','pengurus-perangkat':'g4','pengurus-info':'g4'};
       if(start!=='pengurus-dashboard' && ROUTES.indexOf(start)>=0){ if(GR[start]) go('pengurus-'+GR[start]); go(start); } // sisipkan Menu dan submenu di bawah layar yang dibuka
     } else go('pengurus');
   }
@@ -1104,6 +1118,7 @@ function hitungAngsuran(){
 <script src="ttd.js"></script>
 <script src="layanan.js"></script>
 <script src="keringanan.js"></script>
+<script src="selesai.js"></script>
 <script src="budget.js"></script>
 <script src="rencana.js"></script>
 <script src="pinpad.js"></script>
