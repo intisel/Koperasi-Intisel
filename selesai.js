@@ -1,4 +1,4 @@
-/* Penyelesaian Khusus: anggota keluar / meninggal dunia. Diusulkan pengurus, wajib disetujui Penasehat + Ketua + Bendahara. Pimpinan hanya melihat. */
+/* Penyelesaian Khusus: anggota keluar / meninggal dunia. Diusulkan pengurus, wajib disetujui Penasehat + Ketua + Bendahara. Sisa tagihan di atas Rp 1.000.000: Pimpinan wajib ikut menyetujui. */
 const SK_LABEL = {MENUNGGU:'⏳ Menunggu keputusan', DISETUJUI:'✅ Disetujui — pinjaman ditutup', DITOLAK:'❌ Ditolak'};
 let skFoto = '', skPinjaman = [];
 async function skMuat(){
@@ -25,7 +25,7 @@ function skKartu(k){
   const sid = esc(k.sid);
   return `<div class="ok" style="background:#fff;margin-bottom:12px" id="sk-${sid}">
     <b>${esc(k.nama)}</b> <span class="small">(${esc(k.id)} • diusulkan ${esc(k.pengaju)} • ${esc(k.waktu)})</span><br>
-    <span class="small">${esc(k.jenisTeks)} • tgl kejadian ${esc(k.tgl)}</span><br>
+    <span class="small">${esc(k.jenisTeks)} • tgl kejadian ${esc(k.tgl)}${k.perluPimpinan ? ' • <b>perlu persetujuan Pimpinan</b>' : ''}</span><br>
     <span class="small">Sisa tagihan <b>${pkRp(k.sisa)}</b> • diterima <b>${pkRp(k.dibayar)}</b> • dihapuskan <b style="color:#b91c1c">${pkRp(k.dihapus)}</b></span>
     <div class="small" style="white-space:pre-wrap;margin:6px 0;padding:8px;background:#f4f9ff;border-radius:8px">${esc(k.uraian)}</div>
     <a href="#" class="small" onclick="skBukti('${sid}');return false">📎 Lihat dokumen pendukung</a><div id="skb-${sid}"></div>
@@ -33,7 +33,7 @@ function skKartu(k){
     ${k.status === 'MENUNGGU' ? (k.bisaPutus ? `
       <textarea id="skK-${sid}" rows="2" placeholder="Komentar (wajib bila menolak)" style="margin-top:8px"></textarea>
       <div style="display:flex;gap:8px"><button class="btn" style="background:#16a34a;padding:12px;font-size:14px" onclick="skPutus('${sid}','Y','${esc(k.nama).replace(/'/g, '')}')">✔ Setujui</button><button class="btn" style="background:#dc2626;padding:12px;font-size:14px" onclick="skPutus('${sid}','N','${esc(k.nama).replace(/'/g, '')}')">✖ Tolak</button></div>`
-      : '<p class="small">Menunggu suara pengurus lain. Keputusan hanya oleh Penasehat, Ketua, dan Bendahara (ketiganya harus setuju). Pimpinan dapat melihat.</p>')
+      : '<p class="small">Menunggu suara pengurus lain. Keputusan oleh Penasehat, Ketua, dan Bendahara' + (k.perluPimpinan ? ', ditambah Pimpinan' : '') + ' (semuanya harus setuju).</p>')
       : `<div class="small" style="margin-top:6px"><b>${SK_LABEL[k.status] || esc(k.status)}</b> • ${esc(k.oleh)} • ${esc(k.waktuPutus)}${k.komentar ? '<br><i>“' + esc(k.komentar) + '”</i>' : ''}</div>`}
   </div>`;
 }
@@ -62,7 +62,7 @@ async function skAjukan(){
   const id = $('skPinjaman').value, nama = (skPinjaman.filter(p => p.id === id)[0] || {}).nama || '';
   const o = {a:'sk_ajukan', token:pkToken, id, jenis:$('skJenis').value, tgl:$('skTgl').value, dibayar:moneyVal($('skDibayar').value), uraian:$('skUraian').value, foto:skFoto};
   if(!id){ alert('Pilih pinjaman terlebih dahulu.'); return; }
-  if(!await dialogKonfirmasi('Usulkan penyelesaian khusus untuk ' + nama + '?\n\nPinjaman baru ditutup bila ketiga pengurus menyetujui.')) return;
+  if(!await dialogKonfirmasi('Usulkan penyelesaian khusus untuk ' + nama + '?\n\nPinjaman baru ditutup bila ketiga pengurus (dan Pimpinan bila sisa di atas Rp 1.000.000) menyetujui.')) return;
   const b = $('skKirim'); b.disabled = true;
   try{
     const r = await pkApi(o); if(r.expired){ pkExpired(); return; }
@@ -74,7 +74,7 @@ async function skAjukan(){
 async function skPutus(sid, v, nama){
   const kom = ($('skK-' + sid).value || '').trim();
   if(v === 'N' && !kom){ alert('Alasan penolakan wajib diisi.'); return; }
-  if(!await dialogKonfirmasi((v === 'Y' ? 'Setujui penyelesaian khusus untuk ' + nama + '? Pinjaman ditutup bila ketiga pengurus menyetujui.' : 'Tolak usulan penyelesaian khusus untuk ' + nama + '?') + '\n\nLanjutkan?')) return;
+  if(!await dialogKonfirmasi((v === 'Y' ? 'Setujui penyelesaian khusus untuk ' + nama + '? Pinjaman ditutup bila semua pihak yang diwajibkan menyetujui.' : 'Tolak usulan penyelesaian khusus untuk ' + nama + '?') + '\n\nLanjutkan?')) return;
   document.querySelectorAll('#sk-' + sid + ' button').forEach(b => b.disabled = true);
   try{
     const r = await pkApi({a:'sk_putus', token:pkToken, sid, v, komentar:kom});
