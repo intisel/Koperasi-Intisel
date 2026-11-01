@@ -339,8 +339,8 @@ function pkPinjamanKartu(p){
       ${belum.map(j => { const lewat = j.due < pkHariIni;
         return `<label style="display:flex;gap:8px;align-items:center;margin:6px 0;font-size:14px"><input type="checkbox" class="pkK-${id}" value="${j.ke}" data-nom="${j.jumlah}" onchange="pkHitung('${id}')" style="width:auto">
         <span>Ke-${j.ke} • ${pkTgl(j.due)} • ${j.status === 'SEBAGIAN' ? 'kurang ' : ''}<b>${pkRp(j.jumlah)}</b>${lewat ? ' <span style="color:#c0392b">⚠️</span>' : ''}</span></label>`; }).join('')}
-      ${ik.sisa > 0 ? `<label style="display:flex;gap:8px;align-items:center;margin:6px 0;font-size:14px"><input type="checkbox" id="pkIQ-${id}" data-sisa="${ik.sisa}" onchange="pkInfaqToggle('${id}')" style="width:auto">
-        <span>Infaq • sisa <b>${pkRp(ik.sisa)}</b> <span class="small">(perjanjian ${pkRp(ik.target)}, terbayar ${pkRp(ik.terbayar)})</span></span></label>
+      ${ik.target > 0 ? `<label style="display:flex;gap:8px;align-items:center;margin:6px 0;font-size:14px"><input type="checkbox" id="pkIQ-${id}" data-sisa="${ik.sisa}" onchange="pkInfaqToggle('${id}')" style="width:auto">
+        <span>${ik.sisa > 0 ? 'Infaq • sisa <b>' + pkRp(ik.sisa) + '</b>' : 'Infaq / sedekah tambahan <b>(infaq perjanjian sudah lunas)</b>'} <span class="small">(perjanjian ${pkRp(ik.target)}, terbayar ${pkRp(ik.terbayar)})</span></span></label>
         <div id="pkIW-${id}" style="display:none;margin:0 0 6px 26px"><label class="small" style="margin:0">Jumlah infaq dibayar (Rp) — boleh dicicil, boleh lebih, total akhir tidak boleh kurang</label>
         <input type="text" inputmode="numeric" id="pkIJ-${id}" oninput="this.value=fmtMoney(this.value);pkHitung('${id}')"></div>` : ''}
       <label class="small" style="margin:8px 0 0">Tanggal pembayaran</label>
@@ -389,7 +389,7 @@ const pkPanelBuka = {}, pkBayarFoto = {};
 function pkPanel(id){ const e = $('pkP-' + id); if(!e) return; const b = e.style.display === 'none'; e.style.display = b ? 'block' : 'none'; pkPanelBuka[id] = b; }
 function pkHitung(id){ // isi otomatis jumlah = angsuran terpilih + infaq (selama belum diubah manual)
   const all = Array.from(document.querySelectorAll('.pkK-' + id)), pil = all.filter(c => c.checked), iq = $('pkIQ-' + id);
-  if(iq && all.length && pil.length === all.length && !iq.checked){ iq.checked = true; pkInfaqToggle(id, true); } // angsuran terakhir: infaq harus lunas
+  if(iq && all.length && pil.length === all.length && !iq.checked && +iq.dataset.sisa > 0){ iq.checked = true; pkInfaqToggle(id, true); } // angsuran terakhir: infaq harus lunas
   const j = $('pkJ-' + id); if(j.dataset.manual) return;
   const inf = iq && iq.checked ? parseInt(onlyDigits($('pkIJ-' + id).value) || '0', 10) : 0;
   const t = pil.reduce((a, c) => a + (+c.dataset.nom || 0), 0) + inf;
@@ -398,7 +398,7 @@ function pkHitung(id){ // isi otomatis jumlah = angsuran terpilih + infaq (selam
 function pkInfaqToggle(id, tanpaHitung){
   const iq = $('pkIQ-' + id), w = $('pkIW-' + id), f = $('pkIJ-' + id);
   w.style.display = iq.checked ? 'block' : 'none';
-  if(iq.checked && !f.value) f.value = fmtMoney(iq.dataset.sisa); // bawaan: sisa infaq (bisa diubah)
+  if(iq.checked && !f.value && +iq.dataset.sisa > 0) f.value = fmtMoney(iq.dataset.sisa); // bawaan: sisa infaq (bisa diubah)
   if(!iq.checked) f.value = '';
   if(!tanpaHitung) pkHitung(id);
 }

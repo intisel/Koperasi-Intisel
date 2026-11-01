@@ -403,8 +403,8 @@ function renderBayar(){
       $('byForm').style.display = 'block';
       $('byList').innerHTML = opsi.map(j => `<label class="byck"><input type="checkbox" value="${j.ke}" onchange="byToggle(this)"><span><b>Angsuran ke-${j.ke}</b> • ${rpf(j.jumlah)}${j.status === 'SEBAGIAN' ? ' <i>(kurang)</i>' : ''}<br><span class="small">jatuh tempo ${tglf(j.due)}</span></span></label>`).join('');
       document.querySelectorAll('#byList input').forEach((c, i) => { c.checked = ada ? sebelum.indexOf(c.value) >= 0 : (i === 0 && opsi.length > 0); }); // angsuran terdekat tercentang bawaan
-      $('byInfaqWrap').style.display = ik.sisa ? 'block' : 'none';
-      $('byInfaqLbl').innerText = ik.sisa ? 'Infaq (sisa ' + rpf(ik.sisa) + ' dari ' + rpf(ik.target) + ') — boleh dicicil atau lebih; wajib lunas bersama angsuran terakhir' : '';
+      $('byInfaqWrap').style.display = ik.target ? 'block' : 'none';
+      $('byInfaqLbl').innerText = ik.sisa ? 'Infaq (sisa ' + rpf(ik.sisa) + ' dari ' + rpf(ik.target) + ') — boleh dicicil atau lebih; wajib lunas bersama angsuran terakhir' : (ik.target ? 'Infaq / sedekah tambahan (opsional) — infaq perjanjian sudah lunas; isi bila transfer Anda lebih dari angsuran' : '');
       if(!$('byTgl').value) $('byTgl').value = hariIniStr(); $('byTgl').max = hariIniStr();
       if(!$('byJumlah').value) byIsiJumlah(); else { document.querySelectorAll('#byList .byck').forEach(l => l.classList.toggle('on', l.querySelector('input').checked)); byCekSebagian(); }
     }
@@ -443,7 +443,7 @@ function hapusFoto(){ fotoData = ''; $('byPreviewWrap').style.display = 'none'; 
 async function kirimLaporan(){
   const p = byPinjaman(); if(!p){ alert('Tidak ada pinjaman berjalan.'); return; }
   const kesP = byKes(), infaqP = $('byInfaqWrap').style.display === 'none' ? 0 : (moneyVal('byInfaq') || 0), ikP = p.angsuran.infaq || {sisa:0};
-  if(!kesP.length && !infaqP){ alert(ikP.sisa ? 'Centang angsuran yang dibayar, atau isi jumlah infaq bila hanya membayar infaq.' : 'Centang angsuran yang dibayar.'); return; }
+  if(!kesP.length && !infaqP){ alert(ikP.target ? 'Centang angsuran yang dibayar, atau isi jumlah infaq bila hanya membayar infaq.' : 'Centang angsuran yang dibayar.'); return; }
   const belumP = p.angsuran.jadwal.filter(j => j.status !== 'LUNAS'), jP = belumP.filter(j => kesP.indexOf(j.ke) >= 0), sisaP = jP.reduce((t, j) => t + j.jumlah, 0), uangP = moneyVal('byJumlah') - infaqP;
   if(kesP.length){
     if(!(uangP > 0)){ alert('Jumlah untuk angsuran harus lebih dari Rp 0 (jumlah dibayar dikurangi infaq).'); return; }
