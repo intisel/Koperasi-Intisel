@@ -175,7 +175,9 @@ function pkVotes(p){
   const k = x => `<div>${pkIc(x.v)} ${esc(x.nama)}${x.jabatan ? ' <span class="small">(' + esc(x.jabatan) + ')</span>' : ''}</div>` + (x.a ? `<div style="margin:0 0 4px 22px"><i>“${esc(x.a)}”</i></div>` : '');
   return p.pengurus.map(k).join('') + (p.status !== 'REVIEW_PENGURUS' ? k(p.pimpinan) : '');
 }
+const pkNm = {}; const pkNama = id => pkNm[id] || id; // nama karyawan per id (untuk teks konfirmasi)
 function pkKartu(p){
+  pkNm[p.id] = p.nama + ' (' + pkRp(p.nominal) + (p.jenis === 'KASBON' ? ', kasbon' : ' / ' + p.tenor + ' bln') + ')';
   const d = p.detail, kas = p.jenis === 'KASBON', row = (a, b) => `<tr><td style="padding:2px 10px 2px 0;color:#5a7aa0;vertical-align:top">${a}</td><td><b>${esc(b)}</b></td></tr>`;
   const rows = kas
     ? row('Jenis', 'KASBON (30 hari)') + row('Jabatan', d.posisi) + row('Masa kerja', d.masaKerja) + row('Kasbon', pkRp(p.nominal)) + row('Alasan', d.alasan) +
@@ -261,6 +263,7 @@ async function pkCairPilih(id, input){
 }
 function pkCairHapusFoto(id){ delete pkCairFoto[id]; $('pkCPW-' + id).style.display = 'none'; $('pkCP-' + id).removeAttribute('src'); }
 function pkCairKartu(p){
+  pkNm[p.id] = p.nama;
   const jenis = p.pencairanJenis === 'REGULER' ? 'Reguler (tgl 6)' : 'Urgen (maks 2 hari kerja)';
   const aksi = pkBisaCatat ? `<label class="small" style="margin:6px 0 0">Tanggal dana ditransfer</label>
     <input type="date" id="pkC-${esc(p.id)}" value="${esc(pkHariIni)}" min="${esc(p.setujuTgl)}" max="${esc(pkHariIni)}" style="margin-bottom:8px">
@@ -279,7 +282,7 @@ function pkCairKartu(p){
 async function pkCairkan(id){
   const tgl = $('pkC-' + id).value, foto = pkCairFoto[id] || '';
   if(!foto){ alert('Lampirkan foto bukti transfer dulu (ambil foto atau pilih dari galeri).'); return; }
-  if(!await dialogKonfirmasi('Tandai pinjaman ' + id + ' sudah dicairkan pada ' + pkTgl(tgl) + '? Bukti transfer akan disimpan. Jadwal angsuran akan dibuat sejak tanggal ini.')) return;
+  if(!await dialogKonfirmasi('Tandai pinjaman ' + pkNama(id) + ' sudah dicairkan pada ' + pkTgl(tgl) + '? Bukti transfer akan disimpan. Jadwal angsuran akan dibuat sejak tanggal ini.')) return;
   document.querySelectorAll('#pc-' + id + ' button').forEach(b => b.disabled = true);
   try{
     const r = await pkApi({a:'cairkan', token:pkToken, id, tgl, foto});
@@ -308,7 +311,7 @@ function pkBaris(p){
 async function pkVote(id, v){
   const a = $('pkA-' + id).value.trim(), rd = document.querySelector(`input[name="pc-${id}"]:checked`), pencairan = rd ? rd.value : '';
   if(v === 'N' && !a){ alert('Alasan penolakan wajib diisi.'); $('pkA-' + id).focus(); return; }
-  if(!await dialogKonfirmasi((v === 'Y' ? 'SETUJU' : 'TOLAK') + ' pengajuan ' + id + '?')) return;
+  if(!await dialogKonfirmasi((v === 'Y' ? 'SETUJU' : 'TOLAK') + ' pengajuan ' + pkNama(id) + '?')) return;
   document.querySelectorAll('#pk-' + id + ' button').forEach(b => b.disabled = true);
   try{
     const r = await pkApi({a:'vote', token:pkToken, id, v, komentar:a, pencairan});
@@ -320,6 +323,7 @@ async function pkVote(id, v){
 
 /* --- pinjaman berjalan: catat angsuran / pelunasan --- */
 function pkPinjamanKartu(p){
+  pkNm[p.id] = p.nama;
   if(!p.total) return `<div class="ok" style="background:#fff;margin-bottom:12px"><b>${esc(p.nama)}</b> <span class="small">(${esc(p.id)})</span><br><span class="small">Jadwal angsuran belum dibuat. Hubungi admin sistem.</span></div>`;
   const persen = Math.round(p.lunas / p.total * 100), telat = p.terlambat > 0;
   const baris = p.jadwal.map(j => {
@@ -423,7 +427,7 @@ async function pkSimpanBayar(id){
   const jumlah = parseInt(onlyDigits($('pkJ-' + id).value) || '0', 10); if(!jumlah){ alert('Isi jumlah uang yang diterima.'); return; }
   const catatan = $('pkN-' + id).value.trim(), foto = pkBayarFoto[id] || '';
   if(!foto){ alert('Foto bukti pembayaran wajib dilampirkan (ambil foto atau pilih dari galeri).'); return; }
-  if(!await dialogKonfirmasi('Catat pembayaran pengajuan ' + id + (kes.length ? (sebagian ? '\nPEMBAYARAN SEBAGIAN angsuran ke-' + kes.join(', ') + ' (kurang ' + pkRp(nomPil - uangJ) + ')' : '\nTandai LUNAS angsuran ke-' + kes.join(', ')) : '') + (infaq ? '\nInfaq: ' + pkRp(infaq) : '') + '\nTanggal: ' + pkTgl(tgl) + '\nJumlah diterima: ' + pkRp(jumlah) + '\n\nLanjutkan?')) return;
+  if(!await dialogKonfirmasi('Catat pembayaran ' + pkNama(id) + (kes.length ? (sebagian ? '\nPEMBAYARAN SEBAGIAN angsuran ke-' + kes.join(', ') + ' (kurang ' + pkRp(nomPil - uangJ) + ')' : '\nTandai LUNAS angsuran ke-' + kes.join(', ')) : '') + (infaq ? '\nInfaq: ' + pkRp(infaq) : '') + '\nTanggal: ' + pkTgl(tgl) + '\nJumlah diterima: ' + pkRp(jumlah) + '\n\nLanjutkan?')) return;
   document.querySelectorAll('#pj-' + id + ' button').forEach(b => b.disabled = true);
   try{
     const r = await pkApi({a:'bayar', token:pkToken, id, kes, infaq, tgl, jumlah, catatan, foto});
@@ -457,6 +461,7 @@ function pkBatalBayar(id){ pkKirimAng({a:'batal_bayar', id}, 'Batalkan pencatata
 
 /* --- laporan pembayaran dari anggota: lihat bukti, verifikasi --- */
 function pkLaporanKartu(l){
+  pkNm[l.lid] = l.nama;
   const aksi = pkBisaVerif ? `
     <textarea id="pkLA-${esc(l.lid)}" rows="2" placeholder="Komentar (wajib bila menolak)"></textarea>
     <div style="display:flex;gap:8px">
@@ -483,7 +488,7 @@ async function pkBukti(lid){
 async function pkVerif(lid, v){
   const k = $('pkLA-' + lid).value.trim();
   if(v === 'N' && !k){ alert('Alasan penolakan wajib diisi.'); $('pkLA-' + lid).focus(); return; }
-  if(!await dialogKonfirmasi((v === 'Y' ? 'VERIFIKASI & catat pembayaran' : 'TOLAK laporan') + ' ' + lid + '?')) return;
+  if(!await dialogKonfirmasi((v === 'Y' ? 'VERIFIKASI & catat pembayaran' : 'TOLAK laporan') + ' ' + pkNama(lid) + '?')) return;
   document.querySelectorAll('#lp-' + lid + ' button').forEach(b => b.disabled = true);
   try{
     const r = await pkApi({a:'verif_lapor', token:pkToken, lid, v, komentar:k});
