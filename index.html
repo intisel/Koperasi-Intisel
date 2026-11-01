@@ -819,7 +819,7 @@ body.kartu-open{overflow:hidden}
         <div class="stt" style="margin:8px 0 0"><div><b id="kasMasukBln" style="color:#166534">Rp 0</b><span class="small">Kas masuk bulan dipilih</span></div><div><b id="kasKeluarBln" style="color:#b91c1c">Rp 0</b><span class="small">Kas keluar bulan dipilih</span></div></div>
         <div id="kasBanner"></div><label style="margin-top:6px">Bulan</label><input type="month" id="kasBulan" onchange="kasMuat()">
       </div>
-      <div class="pktabs"><button id="kasTabBtnM" class="on" onclick="kasTab('MASUK')">⬇ Kas Masuk</button><button id="kasTabBtnK" onclick="kasTab('KELUAR')">⬆ Kas Keluar</button><button id="kasTabBtnT" onclick="kasTab('MUTASI')">🧾 Mutasi</button></div>
+      <div class="pktabs"><button id="kasTabBtnT" class="on" onclick="kasTab('MUTASI')">🧾 Mutasi</button><button id="kasTabBtnM" onclick="kasTab('MASUK')">⬇ Kas Masuk</button><button id="kasTabBtnK" onclick="kasTab('KELUAR')">⬆ Kas Keluar</button></div>
       <div class="card hidden kas-m" id="kasForm">
         <b id="kasFormJudul" style="display:block">Catat Kas Masuk</b>
         <label>Kategori</label><select id="kasKat" onchange="kasKatUbah()"></select>
@@ -832,8 +832,8 @@ body.kartu-open{overflow:hidden}
         <button class="btn" id="kasBtn" onclick="kasSimpan()" style="margin-top:10px">Simpan</button>
         <div id="kasPesan" style="margin-top:8px"></div>
       </div>
-      <div class="card kas-m" id="kasDaftarCard"><b id="kasDaftarJudul">Daftar Kas Masuk</b><p class="small" id="kasCatatan" style="margin:2px 0 6px"></p><div id="kasDaftar"><p class="small">Memuat...</p></div></div>
-      <div class="card hidden" id="kasMutCard" style="border:1.5px solid #b9d2f0"><b>🧾 Mutasi Kas</b>
+      <div class="card kas-m hidden" id="kasDaftarCard"><b id="kasDaftarJudul">Daftar Kas Masuk</b><p class="small" id="kasCatatan" style="margin:2px 0 6px"></p><div id="kasDaftar"><p class="small">Memuat...</p></div></div>
+      <div class="card" id="kasMutCard" style="border:1.5px solid #b9d2f0"><b>🧾 Mutasi Kas</b>
         <div id="mutChip" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">
           <button class="btn" data-m="T10" onclick="mutPilih('T10')" style="width:auto;padding:7px 12px;font-size:13px">10 Terakhir</button><button class="btn" data-m="HARI" onclick="mutPilih('HARI')" style="width:auto;padding:7px 12px;font-size:13px">Hari ini</button><button class="btn" data-m="MINGGU" onclick="mutPilih('MINGGU')" style="width:auto;padding:7px 12px;font-size:13px">Minggu ini</button><button class="btn" data-m="BULAN" onclick="mutPilih('BULAN')" style="width:auto;padding:7px 12px;font-size:13px">Bulan ini</button><button class="btn" data-m="TGL" onclick="mutPilih('TGL')" style="width:auto;padding:7px 12px;font-size:13px">📅 Pilih tanggal</button>
         </div>

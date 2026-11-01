@@ -1,22 +1,20 @@
 /* ===== KAS KOPERASI (menu Keuangan Koperasi) + LAPORAN KAS ===== */
-let kasJenis = 'MASUK', kasData = null, kasFotoData = '', kasFormBuka = false, kasSemua = false, kasMut = false, mutMode = 'T10', mutBanyak = 50, mutBaris = [];
+let kasJenis = 'MASUK', kasData = null, kasFotoData = '', kasFormBuka = false, kasSemua = false, kasMut = true, mutMode = 'T10', mutBanyak = 50, mutBaris = [];
 const kasBlnIni = () => (pkHariIni || isoLokal(new Date())).slice(0, 7);
 function kasRentang(ym){ const [y, m] = ym.split('-').map(Number); return {dari: ym + '-01', sampai: ym + '-' + String(new Date(y, m, 0).getDate()).padStart(2, '0')}; }
-function kasInit(){ if(!$('kasBulan').value) $('kasBulan').value = kasBlnIni(); kasMuat(); }
+function kasInit(){ if(!$('kasBulan').value) $('kasBulan').value = kasBlnIni(); mutMode = 'T10'; kasMuat(); kasTab('MUTASI'); } // tab Mutasi = tampilan awal
 function kasTab(j){
   if(j === 'MUTASI'){ // tab Mutasi: daftar gabungan masuk+keluar ala mutasi rekening bank
-    kasMut = true; kasFormBuka = false;
+    kasMut = true;
     $('kasTabBtnM').classList.remove('on'); $('kasTabBtnK').classList.remove('on'); $('kasTabBtnT').classList.add('on');
     $('kasForm').classList.add('hidden'); $('kasDaftarCard').classList.add('hidden'); $('kasMutCard').classList.remove('hidden');
     mutPilih(mutMode); return;
   }
   kasMut = false; $('kasTabBtnT').classList.remove('on'); $('kasMutCard').classList.add('hidden'); $('kasDaftarCard').classList.remove('hidden');
-  const sama = kasJenis === j; kasFormBuka = sama ? !kasFormBuka : true; // ketuk tab = buka formulir catat; ketuk lagi = tutup
   kasJenis = j; kasSemua = false; $('kasTabBtnM').classList.toggle('on', j === 'MASUK'); $('kasTabBtnK').classList.toggle('on', j === 'KELUAR');
   ['kasForm', 'kasDaftarCard'].forEach(i => { $(i).classList.toggle('kas-m', j === 'MASUK'); $(i).classList.toggle('kas-k', j === 'KELUAR'); });
   $('kasBtn').style.background = j === 'MASUK' ? '#16a34a' : '#dc2626';
   kasPengisian(); kasRender();
-  if(kasFormBuka && kasData && kasData.bisaInput) $('kasForm').scrollIntoView({behavior:'smooth', block:'start'});
 }
 async function kasMuat(){
   kasSemua = false;
@@ -31,7 +29,7 @@ async function kasMuat(){
 function kasPengisian(){ // form input (hanya Ketua & Bendahara)
   const r = kasData; if(!r) return;
   $('kasBanner').innerHTML = r.saldoAwalAda ? '' : `<div class="err" style="margin-top:8px">⚠️ <b>Saldo awal belum dicatat.</b> Sebelum itu saldo kas belum akurat dan transaksi otomatis (infaq, angsuran, pencairan) belum dihitung.${r.bisaInput ? ' Catat lewat <b>Kas Masuk → kategori Saldo awal</b> sesuai saldo rekening koperasi.' : ' Mohon Ketua/Bendahara mencatatnya.'}</div>`;
-  $('kasForm').classList.toggle('hidden', !(r.bisaInput && kasFormBuka));
+  $('kasForm').classList.toggle('hidden', !(r.bisaInput && !kasMut));
   const m = kasJenis === 'MASUK', kat = m ? r.katMasuk : r.katKeluar, lama = $('kasKat').value;
   $('kasFormJudul').innerText = m ? '⬇ Catat Kas Masuk' : '⬆ Catat Kas Keluar';
   $('kasKat').innerHTML = kat.filter(x => !(m && x === 'Saldo awal' && r.saldoAwalAda)).map(k => `<option>${esc(k)}</option>`).join(''); if(kat.indexOf(lama) >= 0) $('kasKat').value = lama;
@@ -106,7 +104,7 @@ async function kasSimpan(){
     const r = await pkApi({a:'kas_simpan', token:pkToken, jenis:kasJenis, kategori:kat, tgl:$('kasTgl').value, jumlah, ket, nama, foto: kat === 'Saldo awal' ? '' : kasFotoData});
     if(r.expired){ pkExpired(); return; }
     if(!r.ok){ alert(r.msg); }
-    else { alert('✅ ' + r.msg); $('kasJml').value = ''; $('kasKet').value = ''; kasFotoHapus(); kasFormBuka = false; await kasMuat(); }
+    else { alert('✅ ' + r.msg); $('kasJml').value = ''; $('kasKet').value = ''; kasFotoHapus(); await kasMuat(); }
   }catch(e){ alert('Gagal terhubung ke server. Coba lagi.'); }
   finally{ b.disabled = false; b.innerText = 'Simpan'; }
 }
