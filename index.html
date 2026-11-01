@@ -714,9 +714,9 @@ body.kartu-open{overflow:hidden}
       <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b>🕊️ Penyelesaian Khusus</b></div>
         <p class="small" style="margin:2px 0 8px">Untuk anggota yang keluar dari perusahaan atau meninggal dunia dan masih punya sisa pinjaman. Usulan wajib disetujui Penasehat, Ketua, dan Bendahara. Bila sisa tagihan <b>di atas Rp 1.000.000</b>, Pimpinan juga wajib menyetujui. Satu penolakan berarti ditolak. Setelah disetujui, pinjaman ditutup dan sisa yang tidak terbayar dicatat sebagai dihapuskan.</p>
         <div id="skDaftar"><p class="small">Memuat...</p></div></div>
-      <div class="card hidden" id="skFormBox"><b>➕ Usulkan Penyelesaian</b>
+      <div class="card hidden" id="skFormBox" style="background:#e5e7eb;border-color:#cbd5e1"><b>➕ Usulkan Penyelesaian</b>
         <label>Pinjaman (ketik nama peminjam)</label><input type="search" id="skCari" placeholder="🔍 Ketik nama peminjam..." autocomplete="off" oninput="skCariIsi()"><input type="hidden" id="skPinjaman"><div id="skSaran"></div><div id="skInfo" class="ok" style="display:none;margin:6px 0"></div>
-        <label>Jenis</label><select id="skJenis"><option value="MENINGGAL">Anggota meninggal dunia</option><option value="KELUAR">Anggota keluar / berhenti dari perusahaan</option><option value="LAIN">Alasan khusus lain</option></select>
+        <label>Jenis</label><select id="skJenis"><option value="KELUAR">Anggota keluar / berhenti dari perusahaan</option><option value="MENINGGAL">Anggota meninggal dunia</option><option value="LAIN">Alasan khusus lain</option></select>
         <label>Tanggal kejadian</label><input type="date" id="skTgl">
         <label>Jumlah yang diterima koperasi (Rp, isi 0 bila tidak ada)</label><input type="text" inputmode="numeric" id="skDibayar" placeholder="0" oninput="this.value=fmtMoney(onlyDigits(this.value))">
         <label>Uraian &amp; dasar keputusan (min. 30 huruf)</label><textarea id="skUraian" rows="3" placeholder="Contoh: hasil musyawarah pengurus, kondisi keluarga, penyelesaian dengan ahli waris..."></textarea>
