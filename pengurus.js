@@ -472,8 +472,18 @@ function pkLaporanKartu(l){
     <b>${esc(l.nama)}</b> <span class="small">(${esc(l.id)})</span><br>
     <span class="small">${(l.kes && l.kes.length) || l.ke ? 'Angsuran ke-' + ((l.kes && l.kes.length) ? l.kes.join(', ') : l.ke) : 'Infaq saja'}${l.infaq ? (l.ke || (l.kes && l.kes.length) ? ' + infaq ' : ' ') + pkRp(l.infaq) : ''} • <b>${pkRp(l.jumlah)}</b> • dibayar ${pkTgl(l.tgl)} • dilaporkan ${esc(l.waktu)}${l.catatan ? '<br>Catatan: ' + esc(l.catatan) : ''}</span>
     <div style="margin:8px 0"><button class="btn" style="padding:10px;font-size:13px;background:#6b7f99" onclick="pkBukti('${esc(l.lid)}')">🖼️ Lihat foto bukti</button><div id="bk-${esc(l.lid)}"></div></div>
-    ${aksi}</div>`;
+    ${pkBisaVerif ? pkKoreksiBlok(l) : ''}${aksi}</div>`;
 }
+function pkKoreksiBlok(l){ // koreksi jumlah sesuai foto bukti (opsional) sebelum memverifikasi
+  const s = esc(l.lid), ada = (l.kes && l.kes.length) || l.ke;
+  return `<div style="margin:0 0 8px"><a href="#" class="small" style="color:#134e8a;font-weight:700" onclick="pkKorBuka('${s}');return false">✏️ Koreksi jumlah sesuai bukti transfer</a>
+    <div id="pkKR-${s}" style="display:none;margin-top:6px;padding:8px;border:1px dashed #b9d2f0;border-radius:10px;background:#f8fbff">
+      <div class="small">Bila angka di foto bukti berbeda dari laporan anggota, ubah di sini lalu tekan Verifikasi. Alasan wajib diisi di kolom komentar.</div>
+      <label class="small" style="margin:6px 0 0">${ada ? 'Total uang yang ditransfer (Rp)' : 'Jumlah infaq yang ditransfer (Rp)'}</label><input type="text" inputmode="numeric" id="pkKJ-${s}" value="${fmtMoney(String(l.jumlah || 0))}" oninput="this.value=fmtMoney(this.value)" data-awal="${+l.jumlah || 0}">
+      ${ada ? `<label class="small" style="margin:6px 0 0">Bagian infaq di dalamnya (Rp, boleh 0)</label><input type="text" inputmode="numeric" id="pkKI-${s}" value="${fmtMoney(String(l.infaq || 0))}" oninput="this.value=fmtMoney(this.value)" data-awal="${+l.infaq || 0}">` : ''}
+    </div></div>`;
+}
+function pkKorBuka(lid){ const e = $('pkKR-' + lid); if(e) e.style.display = e.style.display === 'none' ? 'block' : 'none'; }
 async function pkBukti(lid){
   const box = $('bk-' + lid); box.innerHTML = '<span class="small">Memuat foto...</span>';
   try{
@@ -488,10 +498,21 @@ async function pkBukti(lid){
 async function pkVerif(lid, v){
   const k = $('pkLA-' + lid).value.trim();
   if(v === 'N' && !k){ alert('Alasan penolakan wajib diisi.'); $('pkLA-' + lid).focus(); return; }
-  if(!await dialogKonfirmasi((v === 'Y' ? 'VERIFIKASI & catat pembayaran' : 'TOLAK laporan') + ' ' + pkNama(lid) + '?')) return;
+  let kor = {}, ketKor = '';
+  const kr = $('pkKR-' + lid);
+  if(v === 'Y' && kr && kr.style.display !== 'none'){ // koreksi jumlah dibuka: kirim bila ada yang berubah
+    const kj = $('pkKJ-' + lid), ki = $('pkKI-' + lid), j = parseInt(onlyDigits(kj.value) || '0', 10), i = ki ? parseInt(onlyDigits(ki.value) || '0', 10) : j;
+    if(!(j > 0)){ alert('Isi jumlah yang ditransfer.'); kj.focus(); return; }
+    if(i > j){ alert('Infaq tidak boleh lebih besar dari total transfer.'); return; }
+    if(j !== +kj.dataset.awal || (ki && i !== +ki.dataset.awal)){
+      if(k.length < 3){ alert('Isi alasan koreksi di kolom komentar (misalnya: "sesuai bukti transfer").'); $('pkLA-' + lid).focus(); return; }
+      kor = {jumlah: j, infaq: i}; ketKor = '\n\nJUMLAH DIKOREKSI: total ' + pkRp(j) + (ki ? ' (infaq ' + pkRp(i) + ')' : '') + ' (laporan anggota: ' + pkRp(+kj.dataset.awal) + ').';
+    }
+  }
+  if(!await dialogKonfirmasi((v === 'Y' ? 'VERIFIKASI & catat pembayaran' : 'TOLAK laporan') + ' ' + pkNama(lid) + '?' + ketKor)) return;
   document.querySelectorAll('#lp-' + lid + ' button').forEach(b => b.disabled = true);
   try{
-    const r = await pkApi({a:'verif_lapor', token:pkToken, lid, v, komentar:k});
+    const r = await pkApi(Object.assign({a:'verif_lapor', token:pkToken, lid, v, komentar:k}, kor));
     if(r.expired){ pkExpired(); return; }
     alert(r.ok ? r.msg : '❌ ' + r.msg);
   }catch(e){ alert('Gagal terhubung ke server.'); }
