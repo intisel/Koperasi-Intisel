@@ -5,6 +5,7 @@ function rcTunda(){ clearTimeout(rcTimer); rcTimer = setTimeout(rcMuat, 500); } 
 function rcJenis(){ const r = document.querySelector('input[name="rcJenis"]:checked'); return r ? r.value : 'REGULER'; }
 function rcUbahJenis(){ $('rcUrgenBox').style.display = rcJenis() === 'URGEN' ? 'block' : 'none'; rcRender(); }
 async function rcMuat(){
+  { const n = document.getElementById('rcDispNote'); if(n) n.style.display = (typeof anggotaAktif !== 'undefined' && anggotaAktif && anggotaAktif.dispensasi) ? 'block' : 'none'; }
   const box = $('rcBox'); if(!box || !anggotaAktif) return;
   try{
     const nom = parseInt($('nomRange').value, 10) || 0, ya = $('pernahPinjam') && $('pernahPinjam').value === 'Ya';

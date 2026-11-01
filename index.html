@@ -531,6 +531,7 @@ body.kartu-open{overflow:hidden}
     <div class="ok" id="rcBox" style="margin-top:14px;background:#fffdf0;border-color:#e6c700;color:#4a3b00">
       <b>📅 Rencana Pencairan</b>
       <p class="small" style="margin:4px 0 8px">Pilih kapan Anda ingin dana dicairkan, boleh direncanakan sampai 6 bulan ke depan (mis. untuk biaya sekolah). Keputusan akhir tetap di pimpinan.</p>
+      <p class="small" id="rcDispNote" style="display:none;margin:0 0 8px;font-weight:700;color:#1d4ed8">🎟️ Dispensasi masa tunggu aktif: jadwal pencairan Anda tidak terkunci masa tunggu, dan limit pinjaman Anda sudah dipotong.</p>
       <label class="small" style="margin:0">Bulan pencairan</label>
       <select id="rcBulan" onchange="rcRender()"><option>Memuat...</option></select>
       <label style="display:flex;gap:8px;align-items:flex-start;margin:4px 0"><input type="radio" name="rcJenis" value="REGULER" checked onchange="rcUbahJenis()" style="width:auto;margin-top:3px"><span><b>Reguler</b> — dicairkan tanggal 6</span></label>
