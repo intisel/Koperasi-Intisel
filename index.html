@@ -307,7 +307,7 @@ body.kartu-open{overflow:hidden}
       <button class="mtile" id="tlKoperasi" onclick="bukaMenu('formPinjam')"><span class="ic">🏦</span><b>Pengajuan Koperasi</b><span class="sub" id="tlKoperasiSub"></span></button>
       <button class="mtile" onclick="bukaMenu('vApproval')"><span class="ic">📋</span><b>Status Approval</b><span class="sub" id="tlApprovalSub">Koperasi / Kasbon</span></button>
       <button class="mtile" onclick="bukaMenu('vBerjalan')"><span class="ic">📊</span><b>Pinjaman Berjalan</b><span class="sub" id="tlBerjalanSub"></span></button>
-      <button class="mtile wide" id="tlDispensasi" style="display:none" onclick="bukaMenu('vDispensasi')"><span class="pbadge" id="pbDispAng"></span><span class="ic">🎟️</span><b>Dispensasi Masa Tunggu</b><span class="sub" id="tlDispensasiSub"></span></button>
+      <button class="mtile wide" id="tlDispensasi" style="display:none" onclick="bukaMenu('vDispensasi')"><span class="pbadge" id="pbDispAng"></span><span class="ic">🎟️</span><b id="tlDispensasiNama">Dispensasi Masa Tunggu</b><span class="sub" id="tlDispensasiSub"></span></button>
       <button class="mtile wide" onclick="bukaMenu('vBayar')"><span class="ic">🧾</span><b>Laporan Pembayaran Angsuran</b><span class="sub" id="tlBayarSub">Upload foto bukti transaksi</span></button>
       <button class="mtile" onclick="window.open('panduan-anggota.html','_blank')"><span class="ic">📖</span><b>Panduan Penggunaan</b><span class="sub">Cara memakai setiap menu</span></button>
       <button class="mtile" onclick="bukaMenu('vKontak')"><span class="ic">📞</span><b>Kontak &amp; Bantuan</b><span class="sub">Hubungi pengurus lewat WhatsApp</span></button>
@@ -434,11 +434,11 @@ body.kartu-open{overflow:hidden}
 
   <!-- DISPENSASI MASA TUNGGU (dibuka pengurus) -->
   <div class="card view" id="vDispensasi" style="display:none">
-    <b style="font-size:16px">🎟️ Dispensasi Masa Tunggu</b>
+    <b style="font-size:16px" id="dsmJudul">🎟️ Dispensasi Masa Tunggu</b>
     <div id="dsmInfo" class="small" style="margin:6px 0"></div>
     <div id="dsmForm">
       <label>Alasan</label>
-      <select id="dsmAlasan"><option value="musibah">Musibah / kedukaan keluarga</option><option value="sakit">Sakit / biaya pengobatan</option><option value="mendesak">Kebutuhan mendesak keluarga</option><option value="lain">Alasan lain</option></select>
+      <select id="dsmAlasan"><option value="musibah">Musibah / kedukaan keluarga</option><option value="sakit">Sakit / biaya pengobatan</option><option value="mendesak">Kebutuhan mendesak keluarga</option><option value="pendidikan">Biaya pendidikan / sekolah</option><option value="rumah">Perbaikan rumah</option><option value="lain">Alasan lain</option></select>
       <label>Uraian (jelaskan keadaan Anda, minimal 30 huruf)</label>
       <textarea id="dsmUraian" rows="5" maxlength="800" placeholder="Ceritakan kejadian dan mengapa Anda sangat membutuhkan pinjaman sekarang..."></textarea>
       <label>Foto bukti pendukung (wajib)</label>
@@ -639,7 +639,7 @@ body.kartu-open{overflow:hidden}
           <button class="mtile" onclick="go('pengurus-validasi')"><span class="pbadge" id="pbValidasi"></span><span class="ic">✅</span><b>Validasi Pinjaman</b><span class="sub">Tinjau, setujui, atau tolak pengajuan</span></button>
           <button class="mtile" onclick="go('pengurus-cair')"><span class="pbadge" id="pbCair"></span><span class="ic">💸</span><b>Pencairan Dana</b><span class="sub">Pinjaman disetujui, siap dicairkan</span></button>
           <button class="mtile" onclick="go('pengurus-berjalan')"><span class="pbadge" id="pbBerjalan"></span><span class="ic">🧾</span><b>Pembayaran Angsuran</b><span class="sub">Pembayaran • Pinjaman • Keringanan</span></button>
-          <button class="mtile" onclick="go('pengurus-dispensasi')"><span class="pbadge" id="pbDispensasi"></span><span class="ic">⏳</span><b>Dispensasi Masa Tunggu</b><span class="sub">Pinjaman mendesak saat masa tunggu</span></button>
+          <button class="mtile" onclick="go('pengurus-dispensasi')"><span class="pbadge" id="pbDispensasi"></span><span class="ic">⏳</span><b>Dispensasi Pinjaman</b><span class="sub">Masa tunggu • Limit pinjaman</span></button>
           <button class="mtile wide gelap" onclick="go('pengurus-selesai')"><span class="pbadge" id="pbSelesai"></span><span class="ic">🕊️</span><b>Penyelesaian Khusus</b><span class="sub">Anggota keluar / meninggal dunia</span></button>
         </div></div>
     </div>
@@ -733,12 +733,13 @@ body.kartu-open{overflow:hidden}
       <div class="card"><b>💸 Pencairan Dana</b><p class="small" style="margin:2px 0 8px">Pinjaman yang sudah disetujui pimpinan. Setelah transfer, tandai sudah dicairkan.</p><div id="pkPencairan"></div></div>
     </div>
     <div class="pkv hidden" id="pkvDispensasi">
-      <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b>⏳ Dispensasi Masa Tunggu</b></div>
-        <p class="small" style="margin:2px 0 8px">Untuk anggota yang baru lunas tetapi sangat mendesak membutuhkan pinjaman (misalnya musibah). <b>Alur:</b> anggota meminta ke pengurus → salah satu pengurus membuka menu ini untuk anggota → anggota mengisi formulirnya sendiri di aplikasi → wajib disetujui <b>Penasehat, Ketua, dan Bendahara</b>; satu penolakan berarti ditolak. Pimpinan diberi tahu setelah disetujui dan tetap memutuskan pengajuan pinjamannya. Limit <b>dipotong Rp 500.000 untuk setiap bulan masa tunggu yang dilewati</b>. Berlaku 14 hari, sekali pakai.</p>
+      <div class="pktabs"><button id="dsTabBtnM" class="on" onclick="dsTab('MASA_TUNGGU')">⏳ Masa Tunggu <span id="dsTabNM"></span></button><button id="dsTabBtnL" onclick="dsTab('LIMIT')">📈 Limit <span id="dsTabNL"></span></button></div>
+      <div class="card"><div class="grupHead"><span class="back-link" onclick="history.back()">← Administrasi</span><b id="dsJudul">⏳ Dispensasi Masa Tunggu</b></div>
+        <p class="small" id="dsIntro" style="margin:2px 0 8px"></p>
         <div id="dsDaftar"><p class="small">Memuat...</p></div></div>
-      <div class="card hidden" id="dsFormBox" style="background:#e5e7eb;border-color:#cbd5e1"><b>🔓 Buka Menu Dispensasi untuk Anggota</b>
-        <p class="small" style="margin:2px 0 6px">Setelah anggota meminta langsung (telepon, WA, atau bertemu), buka aksesnya di sini. Menu <b>Dispensasi Masa Tunggu</b> akan muncul di aplikasi anggota itu, lalu <b>anggota sendiri yang mengisi formulirnya</b>. Akses berlaku 7 hari.</p>
-        <label>Anggota (ketik nama)</label><input type="search" id="dsCari" placeholder="🔍 Ketik nama anggota yang sedang masa tunggu..." autocomplete="off" oninput="dsCariIsi()"><div id="dsSaran"></div><div id="dsInfo" class="ok" style="display:none;margin:6px 0"></div>
+      <div class="card hidden" id="dsFormBox" style="background:#e5e7eb;border-color:#cbd5e1"><b id="dsFormJudul">🔓 Buka Menu Dispensasi untuk Anggota</b>
+        <p class="small" id="dsFormTeks" style="margin:2px 0 6px"></p>
+        <label>Anggota (ketik nama)</label><input type="search" id="dsCari" placeholder="🔍 Ketik nama anggota..." autocomplete="off" oninput="dsCariIsi()"><div id="dsSaran"></div><div id="dsInfo" class="ok" style="display:none;margin:6px 0"></div>
         <button class="btn" id="dsKirim" onclick="dsBuka()">Buka Akses untuk Anggota</button></div>
     </div>
     <div class="pkv hidden" id="pkvSelesai">
@@ -1057,7 +1058,7 @@ async function masukDenganToken(v,atoken){ // setelah PIN / OTP benar: ambil dat
      masukMenu();
      return;
    }
-   if(r.dispensasi){ setTimeout(()=>{ const li=document.getElementById('limitInfo'); if(li) li.innerHTML+=`<br>🎟️ <b>Dispensasi masa tunggu aktif</b>: limit dipotong Rp ${Number(r.dispensasi.potongan).toLocaleString('id-ID')} (${r.dispensasi.bulan} bulan). Berlaku sampai ${r.dispensasi.berlaku.split('-').reverse().join('/')}.`; },0); }
+   if(r.dispensasi){ setTimeout(()=>{ const li=document.getElementById('limitInfo'); if(!li) return; const ds=r.dispensasi, brl=ds.berlaku.split('-').reverse().join('/'); li.innerHTML += ds.jenis==='LIMIT' ? `<br>🎟️ <b>Dispensasi limit pinjaman aktif</b>: limit Anda naik satu tingkat menjadi Rp ${Number(ds.maxNominal).toLocaleString('id-ID')} (tenor maks ${ds.maxTenor} bulan). Berlaku sampai ${brl}.` : `<br>🎟️ <b>Dispensasi masa tunggu aktif</b>: limit dipotong Rp ${Number(ds.potongan).toLocaleString('id-ID')} (${ds.bulan} bulan). Berlaku sampai ${brl}.`; },0); }
    document.getElementById('btnKirim').disabled=false;
    document.getElementById('btnKirim').innerText='Kirim Pengajuan';
    document.getElementById('limitInfo').innerHTML=`Masa kerja <b>${mk.toFixed(1)} tahun</b> (bracket <b>${limitAktif.bracket}</b>) → <b>Limit Maks ${rp(limitAktif.maxNominal)} tenor maks ${limitAktif.maxTenor} bulan</b>. Kamu boleh pinjam di bawah itu dan tenor lebih cepat. Contoh: kerja 5 tahun → limit 3,5jt/7 bln, boleh ambil 3jt/6 bln.`;

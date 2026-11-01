@@ -191,7 +191,7 @@ function pkKartu(p){
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span class="av sm" data-nik="${esc(p.nik)}" data-nama="${esc(p.nama)}">${esc(fotoInisial(p.nama))}</span><div>${pkBadge(p.jenis)}<b>${esc(p.nama)}</b> <span class="small">(${esc(p.id)} • ${esc(p.waktu)})</span></div></div>
     <table class="small" style="margin:6px 0;border-collapse:collapse">${rows}</table>
     <div class="small" style="margin-bottom:6px">${pkVotes(p)}</div>
-    ${d.dispensasi ? `<div class="small" style="background:#fff7ed;border:1px solid #fdba74;border-radius:8px;padding:6px 8px;margin:6px 0">🎟️ <b>Dispensasi masa tunggu</b>: limit dipotong ${d.dispensasi.bulan} bulan × Rp 500.000 = ${pkRp(d.dispensasi.potongan)} (limit normal ${pkRp(d.dispensasi.limitAsli)}).</div>` : ''}
+    ${d.dispensasi ? `<div class="small" style="background:#fff7ed;border:1px solid #fdba74;border-radius:8px;padding:6px 8px;margin:6px 0">${d.dispensasi.jenis === 'LIMIT' ? `🎟️ <b>Dispensasi limit pinjaman</b>: limit naik satu tingkat ${pkRp(d.dispensasi.limitAsli)} → ${pkRp(d.dispensasi.limitBaru)} (tenor maks ${d.dispensasi.tenorAsli} → ${d.dispensasi.tenorBaru} bulan).` : `🎟️ <b>Dispensasi masa tunggu</b>: limit dipotong ${d.dispensasi.bulan} bulan × Rp 500.000 = ${pkRp(d.dispensasi.potongan)} (limit normal ${pkRp(d.dispensasi.limitAsli)}).`}</div>` : ''}
     ${typeof disiplinHtml === 'function' ? disiplinHtml(d.disiplin) : ''}
     ${pkRencana(p)}
     ${pilihanCair(p)}
