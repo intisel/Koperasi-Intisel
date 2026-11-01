@@ -819,6 +819,7 @@ body.kartu-open{overflow:hidden}
         <div id="kasBanner"></div><label style="margin-top:6px">Bulan</label><input type="month" id="kasBulan" onchange="kasMuat()">
       </div>
       <div class="pktabs"><button id="kasTabBtnM" class="on" onclick="kasTab('MASUK')">⬇ Kas Masuk</button><button id="kasTabBtnK" onclick="kasTab('KELUAR')">⬆ Kas Keluar</button></div>
+      <button class="btn hidden" id="kasBukaBtn" onclick="kasFormToggle()" style="margin:0 0 10px"></button>
       <div class="card hidden kas-m" id="kasForm">
         <b id="kasFormJudul" style="display:block">Catat Kas Masuk</b>
         <label>Kategori</label><select id="kasKat" onchange="kasKatUbah()"></select>

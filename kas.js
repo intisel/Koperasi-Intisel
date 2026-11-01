@@ -1,5 +1,5 @@
 /* ===== KAS KOPERASI (menu Keuangan Koperasi) + LAPORAN KAS ===== */
-let kasJenis = 'MASUK', kasData = null, kasFotoData = '';
+let kasJenis = 'MASUK', kasData = null, kasFotoData = '', kasFormBuka = false;
 const kasBlnIni = () => (pkHariIni || isoLokal(new Date())).slice(0, 7);
 function kasRentang(ym){ const [y, m] = ym.split('-').map(Number); return {dari: ym + '-01', sampai: ym + '-' + String(new Date(y, m, 0).getDate()).padStart(2, '0')}; }
 function kasInit(){ if(!$('kasBulan').value) $('kasBulan').value = kasBlnIni(); kasMuat(); }
@@ -18,10 +18,14 @@ async function kasMuat(){
     kasData = r; kasPengisian(); kasRender();
   }catch(e){ $('kasDaftar').innerHTML = '<div class="err">Gagal terhubung ke server. Coba muat ulang.</div>'; }
 }
+function kasFormToggle(){ kasFormBuka = !kasFormBuka; kasPengisian(); if(kasFormBuka) $('kasForm').scrollIntoView({behavior:'smooth', block:'start'}); }
 function kasPengisian(){ // form input (hanya Ketua & Bendahara)
   const r = kasData; if(!r) return;
   $('kasBanner').innerHTML = r.saldoAwalAda ? '' : `<div class="err" style="margin-top:8px">⚠️ <b>Saldo awal belum dicatat.</b> Sebelum itu saldo kas belum akurat dan transaksi otomatis (infaq, angsuran, pencairan) belum dihitung.${r.bisaInput ? ' Catat lewat <b>Kas Masuk → kategori Saldo awal</b> sesuai saldo rekening koperasi.' : ' Mohon Ketua/Bendahara mencatatnya.'}</div>`;
-  $('kasForm').classList.toggle('hidden', !r.bisaInput);
+  $('kasForm').classList.toggle('hidden', !(r.bisaInput && kasFormBuka));
+  $('kasBukaBtn').classList.toggle('hidden', !r.bisaInput);
+  $('kasBukaBtn').innerText = kasFormBuka ? '✖ Tutup formulir' : (kasJenis === 'MASUK' ? '➕ Catat Kas Masuk' : '➕ Catat Kas Keluar');
+  $('kasBukaBtn').style.background = kasFormBuka ? '#64748b' : (kasJenis === 'MASUK' ? '#16a34a' : '#dc2626');
   const m = kasJenis === 'MASUK', kat = m ? r.katMasuk : r.katKeluar, lama = $('kasKat').value;
   $('kasFormJudul').innerText = m ? '⬇ Catat Kas Masuk' : '⬆ Catat Kas Keluar';
   $('kasKat').innerHTML = kat.filter(x => !(m && x === 'Saldo awal' && r.saldoAwalAda)).map(k => `<option>${esc(k)}</option>`).join(''); if(kat.indexOf(lama) >= 0) $('kasKat').value = lama;
@@ -95,7 +99,7 @@ async function kasSimpan(){
     const r = await pkApi({a:'kas_simpan', token:pkToken, jenis:kasJenis, kategori:kat, tgl:$('kasTgl').value, jumlah, ket, nama, foto: kat === 'Saldo awal' ? '' : kasFotoData});
     if(r.expired){ pkExpired(); return; }
     if(!r.ok){ alert(r.msg); }
-    else { alert('✅ ' + r.msg); $('kasJml').value = ''; $('kasKet').value = ''; kasFotoHapus(); await kasMuat(); }
+    else { alert('✅ ' + r.msg); $('kasJml').value = ''; $('kasKet').value = ''; kasFotoHapus(); kasFormBuka = false; await kasMuat(); }
   }catch(e){ alert('Gagal terhubung ke server. Coba lagi.'); }
   finally{ b.disabled = false; b.innerText = 'Simpan'; }
 }
