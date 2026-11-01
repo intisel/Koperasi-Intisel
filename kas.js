@@ -196,7 +196,7 @@ function mutRentang(m){
 }
 function mutPilih(m){
   mutMode = m; mutBanyak = 50;
-  document.querySelectorAll('#mutChip button').forEach(b => { const on = b.dataset.m === m; b.style.background = on ? '#134e8a' : '#e8f1fc'; b.style.color = on ? '#fff' : '#134e8a'; });
+  $('mutPeriode').value = m;
   $('mutTglBox').classList.toggle('hidden', m !== 'TGL');
   if(m === 'TGL'){ const hi = (kasData && kasData.hariIni) || pkHariIni || isoLokal(new Date()); if(!$('mutDari').value) $('mutDari').value = hi.slice(0, 7) + '-01'; if(!$('mutSampai').value) $('mutSampai').value = hi; $('mutSampai').max = hi; }
   mutMuat();
