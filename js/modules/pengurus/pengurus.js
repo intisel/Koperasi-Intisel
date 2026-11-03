@@ -52,7 +52,8 @@ function pkSesiHapus(){ // dipanggil saat berpindah ke Anggota: sesi pengurus di
 }
 function pengurusBuka(){ // tombol Pengurus di halaman depan: sesi aktif -> langsung ke dasbor; sesi anggota dihapus
   if(typeof anggotaSesiHapus === 'function') anggotaSesiHapus();
-  if(pkToken) go('pengurus-dashboard'); else go('pengurus');
+  if(pkToken) go('pengurus-dashboard');
+  else{ go('pengurus'); if(typeof bioPkBaca === 'function' && bioPkBaca() && bioDidukung()) bioPkMasuk(); } // sidik jari pengurus aktif: langsung minta sidik jari (gagal -> tetap di layar login)
 }
 
 /* --- login kode email --- */
@@ -145,12 +146,21 @@ async function pkKeluar(){
 function pkExpired(){ if(typeof pkAsliToken !== 'undefined' && pkAsliToken){ pkLihatKeluar(true); return; } pkToken = ''; sessionStorage.removeItem('pk_token'); goReplace('pengurus'); pkPesan('Sesi berakhir. Silakan masuk lagi.', true); }
 
 /* --- dasbor --- */
+/* Pemuatan data pengurus: animasi tower tampil pada pemuatan pertama setiap login (tidak untuk 'Muat ulang' / pindah menu berikutnya) dan hilang setelah data terbaca */
+let pkDataToken = '';
 async function pkMuat(){
+  const pertama = !!pkToken && pkDataToken !== pkToken;
+  if(pertama && typeof muatLayar === 'function') muatLayar(true, 'Memuat data pengurus...');
+  try{ await pkMuatIsi(); }
+  finally{ if(pertama){ pkDataToken = pkToken; if(typeof muatLayar === 'function') muatLayar(false); if(typeof bioPkTawarkan === 'function') setTimeout(bioPkTawarkan, 400); } }
+}
+async function pkMuatIsi(){
   $('pkMenunggu').innerHTML = '<p class="small">Memuat...</p>';
   try{
     const r = await pkApi({a:'dasbor', token:pkToken});
     if(!r.ok){ if(r.expired) pkExpired(); else $('pkMenunggu').innerHTML = `<div class="err">${esc(r.msg)}</div>`; return; }
     pkBisaCatat = r.bisaCatat; pkKetua = !!r.ketua; if($('pkLihatBtn')) $('pkLihatBtn').classList.toggle('hidden', !pkKetua || !!pkAsliToken); if($('agTabBtnT')) $('agTabBtnT').classList.toggle('hidden', !r.bisaCatat); pkBisaVerif = !!r.bisaVerif; pkHariIni = r.hariIni; plLokasiBoleh = !!(r.lokasi !== undefined ? r.lokasi : r.ketua); $('plTabBtnL').classList.toggle('hidden', !plLokasiBoleh);
+    if(!(typeof pkAsliToken !== 'undefined' && pkAsliToken)){ try{ localStorage.setItem('pk_terakhir', JSON.stringify({nama: r.nama, jabatan: r.jabatan || r.peran || ''})); }catch(e){} } // diingat untuk beranda (bukan saat Ketua 'lihat sebagai pengurus lain')
     $('pkNama').innerText = r.nama; $('pkPeran').innerText = r.jabatan || r.peran; jbHeader(r); profilBarPk(r); if(!$('avPk').dataset.foto) fotoTerapkan($('avPk'), fotoCache.pk, r.nama); fotoMuatPk();
     const bj = r.rekap.berjalan;
     r.menunggu.sort((x, y) => ((y.disiplin && y.disiplin.tingkat === 'A+') ? 1 : 0) - ((x.disiplin && x.disiplin.tingkat === 'A+') ? 1 : 0)); // anggota teladan (A+) didahulukan, urutan lain tetap
