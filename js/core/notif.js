@@ -1,4 +1,4 @@
-// Notifikasi push (Firebase Cloud Messaging) untuk anggota & pengurus. Aktif hanya bila firebase-config.js sudah diisi.
+// Notifikasi push (Firebase Cloud Messaging) untuk anggota & pengurus. Aktif hanya bila js/config/firebase-config.js sudah diisi.
 // Service worker (juga dibutuhkan agar PWA/APK terdeteksi dan untuk menerima push)
 if('serviceWorker' in navigator) window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 const FB_VER = '10.12.2', NOTIF_KEY = 'intisel_notif_token';
@@ -16,7 +16,7 @@ async function notifMessaging(){
 async function notifAmbilToken(){
   const reg = await navigator.serviceWorker.ready, m = await notifMessaging();
   const tok = await m.getToken({vapidKey: window.FCM_CFG.vapidKey, serviceWorkerRegistration: reg});
-  try{ m.onMessage(p => { const d = (p && p.data) || {}; if(d.judul && document.visibilityState === 'visible') reg.showNotification(d.judul, {body: d.isi || '', icon: 'icon-192.png', badge: 'icon-192.png', data: {url: d.url || './'}}); }); }catch(e){}
+  try{ m.onMessage(p => { const d = (p && p.data) || {}; if(d.judul && document.visibilityState === 'visible') reg.showNotification(d.judul, {body: d.isi || '', icon: 'assets/img/icon-192.png', badge: 'assets/img/icon-192.png', data: {url: d.url || './'}}); }); }catch(e){}
   return tok;
 }
 async function notifDaftarServer(tok, cabut){

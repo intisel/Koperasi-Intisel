@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>KOPERASI INTISEL LAMPUNG</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="assets/img/logo.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#134e8a">
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
@@ -148,7 +148,7 @@ body.kartu-open{overflow:hidden}
 
 <div class="topfix">
 <div class="header">
-  <img src="logo-intisel.png" alt="Logo Koperasi Intisel" role="button" tabindex="0" title="Ke menu utama" style="cursor:pointer" onclick="keMenuUtama()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();keMenuUtama()}">
+  <img src="assets/img/logo-intisel.png" alt="Logo Koperasi Intisel" role="button" tabindex="0" title="Ke menu utama" style="cursor:pointer" onclick="keMenuUtama()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();keMenuUtama()}">
   <div class="header-text">
     <b class="title-justify">KOPERASI INTISEL LAMPUNG</b>
     <span class="subtitle-justify">
@@ -175,9 +175,9 @@ body.kartu-open{overflow:hidden}
 <div id="landing">
   <div class="hero">
     <div class="slideshow">
-      <img class="slide active" src="hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
-      <img class="slide" src="slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
-      <img class="slide" src="slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
+      <img class="slide active" src="assets/img/hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
+      <img class="slide" src="assets/img/slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
+      <img class="slide" src="assets/img/slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
       <div class="slide-dots"></div>
     </div>
     <div class="hero-overlay">
@@ -206,7 +206,7 @@ body.kartu-open{overflow:hidden}
     </div>
   </div>
   <div style="margin:12px 14px 0">
-    <a href="panduan-anggota.html" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:#fff;border:1.5px solid #134e8a;color:#134e8a;border-radius:12px;padding:12px 6px;font-weight:800;font-size:14px">📖 Panduan Penggunaan Aplikasi</a>
+    <a href="docs/panduan-anggota.html" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:#fff;border:1.5px solid #134e8a;color:#134e8a;border-radius:12px;padding:12px 6px;font-weight:800;font-size:14px">📖 Panduan Penggunaan Aplikasi</a>
   </div>
 
   <div class="card hidden" id="apkBox" style="text-align:center;border-color:#b8d96b;background:#f4fbe6">
@@ -315,7 +315,7 @@ body.kartu-open{overflow:hidden}
       <button class="mtile" onclick="bukaMenu('vBerjalan')"><span class="ic">📊</span><b>Pinjaman Berjalan</b><span class="sub" id="tlBerjalanSub"></span></button>
       <button class="mtile wide" id="tlDispensasi" style="display:none" onclick="bukaMenu('vDispensasi')"><span class="pbadge" id="pbDispAng"></span><span class="ic">🎟️</span><b id="tlDispensasiNama">Dispensasi Masa Tunggu</b><span class="sub" id="tlDispensasiSub"></span></button>
       <button class="mtile wide" onclick="bukaMenu('vBayar')"><span class="ic">🧾</span><b>Laporan Pembayaran Angsuran</b><span class="sub" id="tlBayarSub">Upload foto bukti transaksi</span></button>
-      <button class="mtile" onclick="window.open('panduan-anggota.html','_blank')"><span class="ic">📖</span><b>Panduan Penggunaan</b><span class="sub">Cara memakai setiap menu</span></button>
+      <button class="mtile" onclick="window.open('docs/panduan-anggota.html','_blank')"><span class="ic">📖</span><b>Panduan Penggunaan</b><span class="sub">Cara memakai setiap menu</span></button>
       <button class="mtile" onclick="bukaMenu('vKontak')"><span class="ic">📞</span><b>Kontak &amp; Bantuan</b><span class="sub">Hubungi pengurus lewat WhatsApp</span></button>
     </div>
     <details id="bioKartu" style="margin-top:14px;display:none" ontoggle="if(this.open)bioSegarkan()"><summary class="small" style="cursor:pointer;color:#134e8a;font-weight:700">👆 Login Sidik Jari</summary>
@@ -567,9 +567,9 @@ body.kartu-open{overflow:hidden}
 
   <div class="hero hero-small" style="margin:0 14px 14px">
     <div class="slideshow">
-      <img class="slide active" src="hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
-      <img class="slide" src="slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
-      <img class="slide" src="slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
+      <img class="slide active" src="assets/img/hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
+      <img class="slide" src="assets/img/slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
+      <img class="slide" src="assets/img/slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
       <div class="slide-dots"></div>
     </div>
     <div class="hero-overlay" style="padding:12px">
@@ -735,7 +735,7 @@ body.kartu-open{overflow:hidden}
           <button class="mtile" onclick="go('pengurus-anggota')"><span class="pbadge" id="pbAnggota"></span><span class="ic">👥</span><b>Database Anggota</b><span class="sub">Cari anggota &amp; riwayat pinjaman</span></button>
           <button class="mtile" onclick="go('pengurus-perangkat')"><span class="ic">📱</span><b>Informasi Perangkat &amp; Lokasi</b><span class="sub">Siapa sudah pasang aplikasi &amp; lokasi</span></button>
           <button class="mtile" onclick="go('pengurus-info')"><span class="ic">📢</span><b>Pengumuman</b><span class="sub">Tulis running text untuk anggota</span></button>
-          <button class="mtile" onclick="window.open('panduan-pengurus.html','_blank')"><span class="ic">📖</span><b>Panduan</b><span class="sub">Cara memakai setiap menu</span></button>
+          <button class="mtile" onclick="window.open('docs/panduan-pengurus.html','_blank')"><span class="ic">📖</span><b>Panduan</b><span class="sub">Cara memakai setiap menu</span></button>
         </div></div>
     </div>
     <div class="pkv hidden" id="pkvValidasi">
@@ -937,9 +937,9 @@ body.kartu-open{overflow:hidden}
   </div>
   <div class="hero hero-small">
     <div class="slideshow">
-      <img class="slide active" src="hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
-      <img class="slide" src="slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
-      <img class="slide" src="slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
+      <img class="slide active" src="assets/img/hero-tower.png" alt="Tower Intisel - Pulau" style="object-position:50% 12%">
+      <img class="slide" src="assets/img/slide-pantai.jpg" alt="Kebersamaan karyawan Intisel di pantai" loading="lazy" style="object-position:50% 60%">
+      <img class="slide" src="assets/img/slide-kantor.jpg" alt="Kebersamaan karyawan Intisel di kantor" loading="lazy" style="object-position:50% 40%">
       <div class="slide-dots"></div>
     </div>
     <div class="hero-overlay" style="padding:12px">
@@ -969,7 +969,7 @@ body.kartu-open{overflow:hidden}
 
 <script>
 let anggotaAktif=null;
-let ttdOpen=false, ttdNext=null; // jendela tanda tangan (diatur di ttd.js)
+let ttdOpen=false, ttdNext=null; // jendela tanda tangan (diatur di js/core/ttd.js)
 let limitAktif={maxNominal:0,maxTenor:0};
 let currentPage='landing';
 
@@ -1159,9 +1159,9 @@ function hitungAngsuran(){
   document.addEventListener('visibilitychange',function(){shows.forEach(function(x){document.hidden?x.stop():x.start();});});
 })();
 </script>
-<script src="apk-config.js"></script>
+<script src="js/config/apk-config.js"></script>
 <script>
-// Kartu APK (hanya Android): di browser -> "Download Aplikasi"; di dalam aplikasi terpasang -> disembunyikan, atau "Update Aplikasi" bila versi di apk-config.js lebih baru
+// Kartu APK (hanya Android): di browser -> "Download Aplikasi"; di dalam aplikasi terpasang -> disembunyikan, atau "Update Aplikasi" bila versi di js/config/apk-config.js lebih baru
 (function(){
   try{
     if(!/Android/i.test(navigator.userAgent) || typeof APK_CFG === 'undefined') return;
@@ -1183,33 +1183,33 @@ function hitungAngsuran(){
   }catch(e){}
 })();
 </script>
-<script src="dialog.js"></script>
-<script src="pengajuan.js"></script>
-<script src="ttd.js"></script>
-<script src="layanan.js"></script>
-<script src="keringanan.js"></script>
-<script src="selesai.js"></script>
-<script src="dispensasi.js"></script>
-<script src="pengampunan.js"></script>
-<script src="bio.js"></script>
-<script src="budget.js"></script>
-<script src="rencana.js"></script>
-<script src="pinpad.js"></script>
-<script src="kas.js"></script>
-<script src="kbp.js"></script>
-<script src="perangkat.js"></script>
-<script src="profil.js"></script>
-<script src="ubahdata.js"></script>
-<script src="talangan.js"></script>
-<script src="pengurus.js"></script>
-<script src="pengurus2.js"></script>
-<script src="pengumuman.js"></script>
-<script src="banner.js"></script>
-<script src="lokasi.js"></script>
-<script src="foto.js"></script>
-<script src="jabatan.js"></script>
-<script src="firebase-config.js"></script>
-<script src="notif.js"></script>
-<script src="profilbar.js"></script>
+<script src="js/core/dialog.js"></script>
+<script src="js/modules/anggota/pengajuan.js"></script>
+<script src="js/core/ttd.js"></script>
+<script src="js/modules/anggota/layanan.js"></script>
+<script src="js/modules/anggota/keringanan.js"></script>
+<script src="js/modules/anggota/selesai.js"></script>
+<script src="js/modules/anggota/dispensasi.js"></script>
+<script src="js/modules/anggota/pengampunan.js"></script>
+<script src="js/core/bio.js"></script>
+<script src="js/modules/pengurus/budget.js"></script>
+<script src="js/modules/pengurus/rencana.js"></script>
+<script src="js/core/pinpad.js"></script>
+<script src="js/modules/pengurus/kas.js"></script>
+<script src="js/modules/pengurus/kbp.js"></script>
+<script src="js/modules/pengurus/perangkat.js"></script>
+<script src="js/modules/anggota/profil.js"></script>
+<script src="js/modules/anggota/ubahdata.js"></script>
+<script src="js/modules/anggota/talangan.js"></script>
+<script src="js/modules/pengurus/pengurus.js"></script>
+<script src="js/modules/pengurus/pengurus2.js"></script>
+<script src="js/modules/pengurus/pengumuman.js"></script>
+<script src="js/core/banner.js"></script>
+<script src="js/core/lokasi.js"></script>
+<script src="js/core/foto.js"></script>
+<script src="js/core/jabatan.js"></script>
+<script src="js/config/firebase-config.js"></script>
+<script src="js/core/notif.js"></script>
+<script src="js/core/profilbar.js"></script>
 </body>
 </html>
